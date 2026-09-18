@@ -291,23 +291,20 @@ const AdminUsersPage = () => {
       {/* Delete User Confirmation Modal */}
       {deleteTarget && (
         <div className="modal show d-block" style={{ backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 1050 }} tabIndex="-1">
-          <div className="modal-dialog modal-dialog-centered">
-            <div className="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
-              <div className="modal-header bg-danger text-white border-0 py-3 px-4">
-                <div className="d-flex align-items-center gap-2">
-                  <LuTriangleAlert size={22} />
-                  <h5 className="modal-title fw-bold mb-0" style={{ fontSize: '1.1rem' }}>Delete User Account</h5>
-                </div>
+          <div className="modal-dialog modal-dialog-centered" style={{ maxWidth: '480px' }}>
+            <div className="modal-content border-0 shadow-lg rounded-4 overflow-hidden bg-white">
+              <div className="modal-header border-bottom py-3 px-4 d-flex justify-content-between align-items-center">
+                <h5 className="modal-title fw-bold text-dark mb-0 fs-6">Delete User Account</h5>
                 <button
                   type="button"
-                  className="btn-close btn-close-white shadow-none"
+                  className="btn-close shadow-none"
                   onClick={() => setDeleteTarget(null)}
                   disabled={isDeleting}
                 ></button>
               </div>
 
               <div className="modal-body p-4">
-                <p className="text-muted mb-3">
+                <p className="text-secondary mb-3">
                   Are you sure you want to permanently delete this delegate/user account?
                 </p>
 
@@ -327,18 +324,15 @@ const AdminUsersPage = () => {
                   </div>
                 </div>
 
-                <div className="alert alert-warning d-flex gap-2 align-items-start small mb-0 rounded-3">
-                  <LuTriangleAlert size={18} className="flex-shrink-0 mt-0.5 text-warning-emphasis" />
-                  <div>
-                    <strong>Warning:</strong> This will also remove any registrations, uploaded abstracts, and invoices linked to this user from the database. This action cannot be undone.
-                  </div>
+                <div className="alert alert-warning border-warning-subtle small mb-0 rounded-3">
+                  <strong>Warning:</strong> This will also remove any registrations, uploaded abstracts, and invoices linked to this user from the database. This action cannot be undone.
                 </div>
               </div>
 
               <div className="modal-footer bg-light border-0 py-3 px-4 d-flex justify-content-end gap-2">
                 <button
                   type="button"
-                  className="btn btn-outline-secondary px-3 rounded-3"
+                  className="btn btn-outline-secondary px-3 rounded-2 fw-medium"
                   onClick={() => setDeleteTarget(null)}
                   disabled={isDeleting}
                 >
@@ -346,21 +340,11 @@ const AdminUsersPage = () => {
                 </button>
                 <button
                   type="button"
-                  className="btn btn-danger px-4 rounded-3 d-inline-flex align-items-center gap-2"
+                  className="btn btn-danger px-4 rounded-2 fw-medium"
                   onClick={handleDeleteUser}
                   disabled={isDeleting}
                 >
-                  {isDeleting ? (
-                    <>
-                      <span className="spinner-border spinner-border-sm" role="status"></span>
-                      <span>Deleting...</span>
-                    </>
-                  ) : (
-                    <>
-                      <LuTrash2 size={16} />
-                      <span>Confirm Delete</span>
-                    </>
-                  )}
+                  {isDeleting ? 'Deleting...' : 'Confirm Delete'}
                 </button>
               </div>
             </div>
