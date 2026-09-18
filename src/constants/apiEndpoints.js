@@ -10,14 +10,15 @@ export const API_ENDPOINTS = {
     ADMIN_LOGIN: '/auth/admin/login',
     LOGOUT: '/auth/logout',
     VERIFY_TOKEN: '/auth/verify',
+    FORGOT_PASSWORD: '/auth/forgot-password',
+    VERIFY_RESET_TOKEN: '/auth/verify-reset-token',
+    RESET_PASSWORD: '/auth/reset-password',
   },
 
   // User Profile
   USER: {
     PROFILE: '/user/profile',
     UPDATE_PROFILE: '/user/profile',
-    DELETE_ACCOUNT: '/user/profile',
-    CHANGE_PASSWORD: '/user/change-password',
   },
 
   // Dashboard
@@ -39,6 +40,16 @@ export const API_ENDPOINTS = {
     INVOICE_BY_ID: (id) => `/registration/invoices/${id}`,
   },
 
+  // Payment & Transactions
+  PAYMENT: {
+    CREATE_ORDER: '/payment/create-order',
+    PROCESS: '/payment/process',
+    VERIFY: '/payment/verify',
+    STATUS: '/payment/status',
+    HISTORY: '/payment/history',
+    DETAILS: (registrationId) => `/payment/details/${registrationId}`,
+  },
+
   // Abstracts
   ABSTRACTS: {
     SUBMIT: '/abstracts',
@@ -55,6 +66,8 @@ export const API_ENDPOINTS = {
     UPDATE_ABSTRACT_STATUS: (id) => `/admin/abstracts/${id}/status`,
     INVOICES: '/admin/invoices',
     USERS: '/admin/users',
+    USER_BY_ID: (id) => `/admin/users/${id}`,
+    UPDATE_USER: (id) => `/admin/users/${id}`,
     DELETE_USER: (id) => `/admin/users/${id}`,
   },
 };

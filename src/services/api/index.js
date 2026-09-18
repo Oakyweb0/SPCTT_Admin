@@ -3,6 +3,7 @@ export { default as authApi } from './authApi';
 export { default as userApi } from './userApi';
 export { default as dashboardApi } from './dashboardApi';
 export { default as registrationApi } from './registrationApi';
+export { default as paymentApi } from './paymentApi';
 export { default as abstractApi } from './abstractApi';
 export { default as adminApi } from './adminApi';
 
@@ -24,6 +25,7 @@ import authApi from './authApi';
 import userApi from './userApi';
 import dashboardApi from './dashboardApi';
 import registrationApi from './registrationApi';
+import paymentApi from './paymentApi';
 import abstractApi from './abstractApi';
 import adminApi from './adminApi';
 import {
@@ -44,6 +46,7 @@ export default {
   userApi,
   dashboardApi,
   registrationApi,
+  paymentApi,
   abstractApi,
   adminApi,
   getUserAuth,

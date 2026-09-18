@@ -16,21 +16,6 @@ export const userApi = {
   updateProfile: (profileData) => {
     return apiClient.put(API_ENDPOINTS.USER.UPDATE_PROFILE, profileData);
   },
-
-  /**
-   * Change user password
-   * @param {Object} passwordData - { currentPassword, newPassword }
-   */
-  changePassword: (passwordData) => {
-    return apiClient.post(API_ENDPOINTS.USER.CHANGE_PASSWORD, passwordData);
-  },
-
-  /**
-   * Delete authenticated user profile
-   */
-  deleteAccount: () => {
-    return apiClient.delete(API_ENDPOINTS.USER.DELETE_ACCOUNT);
-  },
 };
 
 export default userApi;

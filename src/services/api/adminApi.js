@@ -44,8 +44,17 @@ export const adminApi = {
   /**
    * 5. Users Management
    */
-  getUsers: () => {
-    return apiClient.get(API_ENDPOINTS.ADMIN.USERS);
+  getUsers: (params = {}) => {
+    const query = buildQueryString(params);
+    return apiClient.get(`${API_ENDPOINTS.ADMIN.USERS}${query}`);
+  },
+
+  getUserById: (id) => {
+    return apiClient.get(API_ENDPOINTS.ADMIN.USER_BY_ID(id));
+  },
+
+  updateUser: (id, userData) => {
+    return apiClient.put(API_ENDPOINTS.ADMIN.UPDATE_USER(id), userData);
   },
 
   /**

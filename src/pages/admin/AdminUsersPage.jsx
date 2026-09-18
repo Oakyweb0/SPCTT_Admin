@@ -9,6 +9,7 @@ import {
   LuShieldCheck,
   LuCalendar,
   LuTrash2,
+  LuPencil,
   LuTriangleAlert,
   LuCircleAlert,
   LuCheck,
@@ -27,6 +28,20 @@ const AdminUsersPage = () => {
   const [isDeleting, setIsDeleting] = useState(false);
   const [notification, setNotification] = useState(null);
 
+  // Edit state
+  const [editTarget, setEditTarget] = useState(null);
+  const [editForm, setEditForm] = useState({
+    title: 'Mr.',
+    name: '',
+    email: '',
+    phone: '',
+    organization: '',
+    role: 'user',
+    status: 'active'
+  });
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [editError, setEditError] = useState(null);
+
   const loadUsers = async () => {
     try {
       setLoading(true);
@@ -44,6 +59,51 @@ const AdminUsersPage = () => {
   useEffect(() => {
     loadUsers();
   }, []);
+
+  const handleOpenEdit = (user) => {
+    setEditTarget(user);
+    setEditError(null);
+    setEditForm({
+      title: user.title || 'Mr.',
+      name: user.name || '',
+      email: user.email || '',
+      phone: user.phone || '',
+      organization: user.organization || '',
+      role: user.role || 'user',
+      status: user.status || 'active'
+    });
+  };
+
+  const handleUpdateUser = async (e) => {
+    if (e) e.preventDefault();
+    if (!editTarget) return;
+    try {
+      setIsUpdating(true);
+      setEditError(null);
+      
+      const payload = { ...editForm };
+
+      const res = await adminApi.updateUser(editTarget.id, payload);
+      if (res.status) {
+        setNotification({
+          type: 'success',
+          message: `User '${res.data?.name || editForm.name}' (ID: #${editTarget.id}) updated successfully!`
+        });
+        setEditTarget(null);
+        await loadUsers();
+      } else {
+        setEditError(res.message || 'Failed to update user.');
+      }
+    } catch (err) {
+      console.error('Error updating user:', err);
+      setEditError(err.response?.data?.message || err.message || 'Failed to update user.');
+    } finally {
+      setIsUpdating(false);
+      setTimeout(() => {
+        setNotification(null);
+      }, 5000);
+    }
+  };
 
   const handleDeleteUser = async () => {
     if (!deleteTarget) return;
@@ -270,15 +330,26 @@ const AdminUsersPage = () => {
                       </div>
                     </td>
                     <td className="text-center text-nowrap">
-                      <button
-                        onClick={() => setDeleteTarget(u)}
-                        className="btn btn-outline-danger btn-sm px-3 py-1.5 rounded-2 d-inline-flex align-items-center gap-1.5 transition-all shadow-none"
-                        title={`Delete ${u.name}`}
-                        style={{ fontSize: '0.78rem', fontWeight: 500 }}
-                      >
-                        <LuTrash2 size={14} />
-                        <span>Delete</span>
-                      </button>
+                      <div className="d-inline-flex align-items-center" style={{ gap: '10px' }}>
+                        <button
+                          onClick={() => handleOpenEdit(u)}
+                          className="btn btn-outline-primary btn-sm px-2.5 py-1.5 rounded-2 d-inline-flex align-items-center gap-1 transition-all shadow-none"
+                          title={`Edit ${u.name}`}
+                          style={{ fontSize: '0.78rem', fontWeight: 500 }}
+                        >
+                          <LuPencil size={13} />
+                          <span>Edit</span>
+                        </button>
+                        <button
+                          onClick={() => setDeleteTarget(u)}
+                          className="btn btn-outline-danger btn-sm px-2.5 py-1.5 rounded-2 d-inline-flex align-items-center gap-1 transition-all shadow-none"
+                          title={`Delete ${u.name}`}
+                          style={{ fontSize: '0.78rem', fontWeight: 500 }}
+                        >
+                          <LuTrash2 size={13} />
+                          <span>Delete</span>
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))
@@ -287,6 +358,175 @@ const AdminUsersPage = () => {
           </table>
         </div>
       </div>
+
+      {/* Edit User Modal */}
+      {editTarget && (
+        <div className="modal show d-block" style={{ backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 1050 }} tabIndex="-1">
+          <div className="modal-dialog modal-dialog-centered modal-lg" style={{ maxWidth: '640px' }}>
+            <div className="modal-content border-0 shadow-lg rounded-4 overflow-hidden bg-white">
+              <div className="modal-header border-bottom py-3 px-4 d-flex justify-content-between align-items-center bg-light">
+                <div className="d-flex align-items-center gap-2">
+                  <div className="bg-primary-subtle text-primary p-2 rounded-circle">
+                    <LuPencil size={16} />
+                  </div>
+                  <div>
+                    <h5 className="modal-title fw-bold text-dark mb-0 fs-6">Edit Delegate / User</h5>
+                    <small className="text-muted">User ID: #{editTarget.id}</small>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  className="btn-close shadow-none"
+                  onClick={() => setEditTarget(null)}
+                  disabled={isUpdating}
+                ></button>
+              </div>
+
+              <form onSubmit={handleUpdateUser}>
+                <div className="modal-body p-4">
+                  {editError && (
+                    <div className="alert alert-danger py-2 px-3 small rounded-3 mb-3 d-flex align-items-center gap-2">
+                      <LuCircleAlert size={16} className="flex-shrink-0" />
+                      <span>{editError}</span>
+                    </div>
+                  )}
+
+                  <div className="row g-3">
+                    {/* Title */}
+                    <div className="col-md-3">
+                      <label className="form-label small fw-semibold text-muted text-uppercase">Title</label>
+                      <select
+                        className="form-select shadow-none"
+                        value={editForm.title}
+                        onChange={(e) => setEditForm({ ...editForm, title: e.target.value })}
+                        disabled={isUpdating}
+                      >
+                        <option value="Mr.">Mr.</option>
+                        <option value="Ms.">Ms.</option>
+                        <option value="Mrs.">Mrs.</option>
+                        <option value="Dr.">Dr.</option>
+                        <option value="Prof.">Prof.</option>
+                      </select>
+                    </div>
+
+                    {/* Full Name */}
+                    <div className="col-md-9">
+                      <label className="form-label small fw-semibold text-muted text-uppercase">Full Name *</label>
+                      <input
+                        type="text"
+                        className="form-control shadow-none"
+                        required
+                        value={editForm.name}
+                        onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+                        disabled={isUpdating}
+                        placeholder="Delegate full name"
+                      />
+                    </div>
+
+                    {/* Email */}
+                    <div className="col-md-6">
+                      <label className="form-label small fw-semibold text-muted text-uppercase">Email Address</label>
+                      <input
+                        type="email"
+                        className="form-control shadow-none bg-light"
+                        value={editForm.email}
+                        disabled
+                        readOnly
+                        style={{ cursor: 'not-allowed' }}
+                        placeholder="email@example.com"
+                      />
+                    </div>
+
+                    {/* Phone */}
+                    <div className="col-md-6">
+                      <label className="form-label small fw-semibold text-muted text-uppercase">Phone / Mobile</label>
+                      <input
+                        type="tel"
+                        className="form-control shadow-none"
+                        value={editForm.phone}
+                        onChange={(e) => setEditForm({ ...editForm, phone: e.target.value })}
+                        disabled={isUpdating}
+                        placeholder="+91 98765 43210"
+                      />
+                    </div>
+
+                    {/* Organization */}
+                    <div className="col-12">
+                      <label className="form-label small fw-semibold text-muted text-uppercase">Institution / Organization</label>
+                      <input
+                        type="text"
+                        className="form-control shadow-none"
+                        value={editForm.organization}
+                        onChange={(e) => setEditForm({ ...editForm, organization: e.target.value })}
+                        disabled={isUpdating}
+                        placeholder="Hospital, University or Company"
+                      />
+                    </div>
+
+                    {/* Role */}
+                    <div className="col-md-6">
+                      <label className="form-label small fw-semibold text-muted text-uppercase">System Role</label>
+                      <select
+                        className="form-select shadow-none"
+                        value={editForm.role}
+                        onChange={(e) => setEditForm({ ...editForm, role: e.target.value })}
+                        disabled={isUpdating}
+                      >
+                        <option value="user">User (Delegate)</option>
+                        <option value="manager">Manager</option>
+                        <option value="admin">Administrator</option>
+                      </select>
+                    </div>
+
+                    {/* Status */}
+                    <div className="col-md-6">
+                      <label className="form-label small fw-semibold text-muted text-uppercase">Account Status</label>
+                      <select
+                        className="form-select shadow-none"
+                        value={editForm.status}
+                        onChange={(e) => setEditForm({ ...editForm, status: e.target.value })}
+                        disabled={isUpdating}
+                      >
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
+                        <option value="banned">Banned (Suspended)</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="modal-footer bg-light border-top py-3 px-4 d-flex justify-content-end gap-2">
+                  <button
+                    type="button"
+                    className="btn btn-outline-secondary px-3 rounded-2 fw-medium shadow-none"
+                    onClick={() => setEditTarget(null)}
+                    disabled={isUpdating}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="btn btn-success px-4 rounded-2 fw-medium shadow-none d-inline-flex align-items-center gap-1.5"
+                    disabled={isUpdating}
+                  >
+                    {isUpdating ? (
+                      <>
+                        <span className="spinner-border spinner-border-sm" role="status"></span>
+                        <span>Saving...</span>
+                      </>
+                    ) : (
+                      <>
+                        <LuCheck size={16} />
+                        <span>Save Changes</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Delete User Confirmation Modal */}
       {deleteTarget && (
@@ -332,7 +572,7 @@ const AdminUsersPage = () => {
               <div className="modal-footer bg-light border-0 py-3 px-4 d-flex justify-content-end gap-2">
                 <button
                   type="button"
-                  className="btn btn-outline-secondary px-3 rounded-2 fw-medium"
+                  className="btn btn-outline-secondary px-3 rounded-2 fw-medium shadow-none"
                   onClick={() => setDeleteTarget(null)}
                   disabled={isDeleting}
                 >
@@ -340,7 +580,7 @@ const AdminUsersPage = () => {
                 </button>
                 <button
                   type="button"
-                  className="btn btn-danger px-4 rounded-2 fw-medium"
+                  className="btn btn-danger px-4 rounded-2 fw-medium shadow-none"
                   onClick={handleDeleteUser}
                   disabled={isDeleting}
                 >
