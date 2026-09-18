@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { getToken, clearAuthSession, clearUserAuth } from '../../utils/storage';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? 'http://localhost:5000/api' : 'https://api.spctt.org/api');
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://api.spctt.org/api';
 
 /**
  * Custom Axios Instance

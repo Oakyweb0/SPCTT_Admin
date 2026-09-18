@@ -54,7 +54,7 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="dashboard-page-container container-fluid px-4 py-3">
+    <div className="dashboard-page-container w-100">
       {/* 1. Welcome Banner */}
       <div className="dashboard-welcome-banner mb-4">
         <div className="banner-content">
@@ -199,14 +199,14 @@ const Dashboard = () => {
 
             <div className="dashboard-card-body p-0">
               <div className="activity-table-container">
-                <table className="spctt-table">
+                <table className="spctt-table spctt-dashboard-table">
                   <thead>
                     <tr>
-                      <th>Code</th>
-                      <th>Delegate</th>
-                      <th>Category</th>
-                      <th className="text-end">Amount</th>
-                      <th className="text-center">Status</th>
+                      <th style={{ width: '20%' }}>Code</th>
+                      <th style={{ width: '32%' }}>Delegate</th>
+                      <th style={{ width: '20%' }}>Category</th>
+                      <th className="text-end" style={{ width: '15%' }}>Amount</th>
+                      <th className="text-center" style={{ width: '13%' }}>Status</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -219,28 +219,38 @@ const Dashboard = () => {
                       </tr>
                     ) : stats.recentRegistrations?.length === 0 ? (
                       <tr>
-                        <td colSpan={5} className="text-center py-4 text-muted">
-                          No registrations found yet.
+                        <td colSpan={5}>
+                          <div className="text-center py-4 my-2">
+                            <div className="d-inline-flex p-2.5 rounded-circle bg-primary-subtle text-primary mb-2">
+                              <LuClipboardList size={22} />
+                            </div>
+                            <div className="text-dark fw-semibold small">No registrations found yet</div>
+                            <div className="text-muted" style={{ fontSize: '0.75rem' }}>Delegate registrations will appear here</div>
+                          </div>
                         </td>
                       </tr>
                     ) : (
                       stats.recentRegistrations.map((reg) => (
                         <tr key={reg.id}>
                           <td>
-                            <span className="badge bg-light text-primary border font-monospace">
+                            <span className="badge bg-light text-primary border font-monospace px-1.5 py-0.5">
                               {reg.registration_code}
                             </span>
                           </td>
                           <td>
-                            <div className="fw-bold text-dark">{reg.title || ''} {reg.full_name || 'Delegate'}</div>
-                            <div className="text-muted" style={{ fontSize: '0.75rem' }}>{reg.email}</div>
+                            <div className="fw-bold text-dark text-truncate" style={{ maxWidth: '160px' }}>
+                              {reg.title || ''} {reg.full_name || 'Delegate'}
+                            </div>
+                            <div className="text-muted text-truncate" style={{ fontSize: '0.75rem', maxWidth: '160px' }}>
+                              {reg.email}
+                            </div>
                           </td>
                           <td>
                             <span className="badge bg-secondary-subtle text-secondary" style={{ fontSize: '0.72rem' }}>
                               {reg.category_name || 'Standard'}
                             </span>
                           </td>
-                          <td className="text-end fw-bold text-dark">
+                          <td className="text-end fw-bold text-dark text-nowrap">
                             {formatCurrency(reg.grand_total)}
                           </td>
                           <td className="text-center">
@@ -248,7 +258,7 @@ const Dashboard = () => {
                               reg.payment_status === 'paid' 
                                 ? 'bg-success-subtle text-success border border-success' 
                                 : 'bg-warning-subtle text-warning border border-warning'
-                            } text-uppercase px-2.5 py-1 rounded-pill`} style={{ fontSize: '0.68rem', letterSpacing: '0.04em' }}>
+                            } text-uppercase px-2 py-0.5 rounded-pill`} style={{ fontSize: '0.65rem', letterSpacing: '0.03em' }}>
                               {reg.payment_status}
                             </span>
                           </td>
@@ -277,13 +287,13 @@ const Dashboard = () => {
 
             <div className="dashboard-card-body p-0">
               <div className="activity-table-container">
-                <table className="spctt-table">
+                <table className="spctt-table spctt-dashboard-table">
                   <thead>
                     <tr>
-                      <th>Code</th>
-                      <th>Abstract Title</th>
-                      <th>Category</th>
-                      <th className="text-center">Status</th>
+                      <th style={{ width: '22%' }}>Code</th>
+                      <th style={{ width: '43%' }}>Abstract Title</th>
+                      <th style={{ width: '20%' }}>Category</th>
+                      <th className="text-center" style={{ width: '15%' }}>Status</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -296,23 +306,29 @@ const Dashboard = () => {
                       </tr>
                     ) : stats.recentAbstracts?.length === 0 ? (
                       <tr>
-                        <td colSpan={4} className="text-center py-4 text-muted">
-                          No abstracts submitted yet.
+                        <td colSpan={4}>
+                          <div className="text-center py-4 my-2">
+                            <div className="d-inline-flex p-2.5 rounded-circle bg-info-subtle text-info mb-2">
+                              <LuFileText size={22} />
+                            </div>
+                            <div className="text-dark fw-semibold small">No abstracts submitted yet</div>
+                            <div className="text-muted" style={{ fontSize: '0.75rem' }}>Submitted research papers will appear here</div>
+                          </div>
                         </td>
                       </tr>
                     ) : (
                       stats.recentAbstracts.map((abs) => (
                         <tr key={abs.id}>
                           <td>
-                            <span className="badge bg-light text-info border font-monospace">
+                            <span className="badge bg-light text-info border font-monospace px-1.5 py-0.5">
                               {abs.abstract_code}
                             </span>
                           </td>
                           <td>
-                            <div className="fw-bold text-dark text-truncate" style={{ maxWidth: '220px' }}>
+                            <div className="fw-bold text-dark text-truncate" style={{ maxWidth: '180px' }}>
                               {abs.title}
                             </div>
-                            <div className="text-muted" style={{ fontSize: '0.75rem' }}>
+                            <div className="text-muted text-truncate" style={{ fontSize: '0.75rem', maxWidth: '180px' }}>
                               By {abs.authors}
                             </div>
                           </td>
@@ -327,7 +343,7 @@ const Dashboard = () => {
                               abs.status === 'rejected' ? 'bg-danger-subtle text-danger border border-danger' :
                               abs.status === 'under_review' ? 'bg-info-subtle text-info border border-info' :
                               'bg-warning-subtle text-warning border border-warning'
-                            } text-uppercase px-2.5 py-1 rounded-pill`} style={{ fontSize: '0.68rem', letterSpacing: '0.04em' }}>
+                            } text-uppercase px-2 py-0.5 rounded-pill`} style={{ fontSize: '0.65rem', letterSpacing: '0.03em' }}>
                               {abs.status ? abs.status.replace('_', ' ') : 'submitted'}
                             </span>
                           </td>

@@ -165,7 +165,9 @@ a:hover {
 
 .admin-content-area {
   flex: 1;
-  padding: 1.75rem 2rem 2.5rem;
+  padding: 1.5rem 1.75rem 2.5rem;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 /* --------------------------------------------------------------------------
@@ -1048,11 +1050,14 @@ a:hover {
    -------------------------------------------------------------------------- */
 .activity-table-container {
   overflow-x: auto;
+  width: 100%;
+  -webkit-overflow-scrolling: touch;
 }
 
 .spctt-table {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
   margin: 0;
 }
 
@@ -1837,10 +1842,37 @@ a:hover {
 /* ==========================================================================
    Table & Badge Refinements
    ========================================================================== */
+.activity-table-container {
+  overflow-x: auto;
+  width: 100%;
+  -webkit-overflow-scrolling: touch;
+}
+
 .spctt-table {
   width: 100%;
   border-collapse: separate;
   border-spacing: 0;
+  margin: 0;
+}
+
+.spctt-table-wide {
+  min-width: 960px;
+}
+
+.spctt-dashboard-table {
+  width: 100%;
+  min-width: 100%;
+  table-layout: auto;
+}
+
+.spctt-dashboard-table thead th {
+  padding: 10px 14px;
+  font-size: 0.72rem;
+}
+
+.spctt-dashboard-table tbody td {
+  padding: 10px 14px;
+  font-size: 0.82rem;
 }
 
 .spctt-table thead th {

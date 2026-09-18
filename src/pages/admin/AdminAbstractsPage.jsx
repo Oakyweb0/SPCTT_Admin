@@ -68,7 +68,7 @@ const AdminAbstractsPage = () => {
   });
 
   return (
-    <div className="dashboard-page-container container-fluid px-4 py-3">
+    <div className="dashboard-page-container w-100">
       {/* Header Banner */}
       <div className="dashboard-card-section mb-4">
         <div className="dashboard-card-header bg-white py-3 px-4 d-flex align-items-center justify-content-between flex-wrap gap-3">
@@ -84,7 +84,7 @@ const AdminAbstractsPage = () => {
           <button
             onClick={loadAbstracts}
             disabled={loading}
-            className="btn btn-outline-info btn-sm d-inline-flex align-items-center gap-2 px-3 py-2 rounded-3"
+            className="btn btn-outline-info btn-sm d-inline-flex align-items-center gap-2 px-3 py-2 rounded-3 shadow-none"
           >
             <LuRefreshCw className={loading ? 'fa-spin' : ''} />
             <span>Refresh</span>
@@ -103,7 +103,7 @@ const AdminAbstractsPage = () => {
                   type="text"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  placeholder=" Search abstracts by title, author name, code, submitter..."
+                  placeholder="Search abstracts by title, author name, code, submitter..."
                   className="form-control shadow-none"
                 />
               </div>
@@ -113,7 +113,7 @@ const AdminAbstractsPage = () => {
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                className="form-select form-select-sm w-auto"
+                className="form-select form-select-sm w-auto shadow-none"
               >
                 <option value="">All Statuses</option>
                 <option value="submitted">Submitted</option>
@@ -127,15 +127,15 @@ const AdminAbstractsPage = () => {
 
         {/* Abstracts Table */}
         <div className="activity-table-container">
-          <table className="spctt-table">
+          <table className="spctt-table spctt-table-wide">
             <thead>
               <tr>
-                <th>Code</th>
-                <th>Abstract Title & Authors</th>
-                <th>Category</th>
-                <th>Submitter</th>
-                <th className="text-center">Status</th>
-                <th className="text-center">Actions</th>
+                <th style={{ minWidth: '120px' }}>Code</th>
+                <th style={{ minWidth: '260px' }}>Abstract Title & Authors</th>
+                <th style={{ minWidth: '140px' }}>Category</th>
+                <th style={{ minWidth: '180px' }}>Submitter</th>
+                <th className="text-center" style={{ minWidth: '120px' }}>Status</th>
+                <th className="text-center" style={{ minWidth: '160px' }}>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -195,14 +195,14 @@ const AdminAbstractsPage = () => {
                         {abs.status ? abs.status.replace('_', ' ') : 'submitted'}
                       </span>
                     </td>
-                    <td className="text-center">
+                    <td className="text-center text-nowrap">
                       <div className="d-inline-flex gap-2">
                         <button
                           onClick={() => setSelectedAbs(abs)}
-                          className="btn btn-sm btn-light border d-inline-flex align-items-center gap-1 px-2.5 py-1"
-                          style={{ fontSize: '0.75rem' }}
+                          className="btn btn-sm btn-light border d-inline-flex align-items-center gap-1.5 px-3 py-1.5 rounded-2 shadow-none"
+                          style={{ fontSize: '0.78rem', fontWeight: 500 }}
                         >
-                          <LuEye size={13} /> View
+                          <LuEye size={13} /> <span>View</span>
                         </button>
                         <button
                           onClick={() => {
@@ -210,10 +210,10 @@ const AdminAbstractsPage = () => {
                             setReviewStatus(abs.status || 'accepted');
                             setReviewComments(abs.review_comments || '');
                           }}
-                          className="btn btn-sm btn-info text-white d-inline-flex align-items-center gap-1 px-2.5 py-1"
-                          style={{ fontSize: '0.75rem' }}
+                          className="btn btn-sm btn-info text-white d-inline-flex align-items-center gap-1.5 px-3 py-1.5 rounded-2 shadow-none"
+                          style={{ fontSize: '0.78rem', fontWeight: 500 }}
                         >
-                          <LuCheck size={13} /> Review
+                          <LuCheck size={13} /> <span>Review</span>
                         </button>
                       </div>
                     </td>

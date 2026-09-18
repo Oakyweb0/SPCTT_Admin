@@ -70,7 +70,7 @@ const AdminRegistrationsPage = () => {
   };
 
   return (
-    <div className="dashboard-page-container container-fluid px-4 py-3">
+    <div className="dashboard-page-container w-100">
       {/* 1. Header Banner */}
       <div className="dashboard-card-section mb-4">
         <div className="dashboard-card-header bg-white py-3 px-4 d-flex align-items-center justify-content-between flex-wrap gap-3">
@@ -86,7 +86,7 @@ const AdminRegistrationsPage = () => {
           <button
             onClick={loadRegistrations}
             disabled={loading}
-            className="btn btn-outline-primary btn-sm d-inline-flex align-items-center gap-2 px-3 py-2 rounded-3"
+            className="btn btn-outline-primary btn-sm d-inline-flex align-items-center gap-2 px-3 py-2 rounded-3 shadow-none"
           >
             <LuRefreshCw className={loading ? 'fa-spin' : ''} />
             <span>Refresh</span>
@@ -110,7 +110,7 @@ const AdminRegistrationsPage = () => {
                     className="form-control shadow-none"
                   />
                 </div>
-                <button type="submit" className="btn btn-primary px-3 text-nowrap">
+                <button type="submit" className="btn btn-primary px-3 text-nowrap shadow-none">
                   Search
                 </button>
               </form>
@@ -120,7 +120,7 @@ const AdminRegistrationsPage = () => {
               <select
                 value={paymentFilter}
                 onChange={(e) => setPaymentFilter(e.target.value)}
-                className="form-select form-select-sm w-auto"
+                className="form-select form-select-sm w-auto shadow-none"
               >
                 <option value="">All Payments</option>
                 <option value="paid">Paid</option>
@@ -131,7 +131,7 @@ const AdminRegistrationsPage = () => {
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                className="form-select form-select-sm w-auto"
+                className="form-select form-select-sm w-auto shadow-none"
               >
                 <option value="">All Statuses</option>
                 <option value="confirmed">Confirmed</option>
@@ -145,17 +145,17 @@ const AdminRegistrationsPage = () => {
 
         {/* Table */}
         <div className="activity-table-container">
-          <table className="spctt-table">
+          <table className="spctt-table spctt-table-wide">
             <thead>
               <tr>
-                <th>Reg Code</th>
-                <th>Delegate Details</th>
-                <th>Category</th>
-                <th>Organization</th>
-                <th className="text-end">Grand Total</th>
-                <th className="text-center">Payment</th>
-                <th className="text-center">Status</th>
-                <th className="text-center">Action</th>
+                <th style={{ minWidth: '130px' }}>Reg Code</th>
+                <th style={{ minWidth: '190px' }}>Delegate Details</th>
+                <th style={{ minWidth: '150px' }}>Category</th>
+                <th style={{ minWidth: '160px' }}>Organization</th>
+                <th className="text-end" style={{ minWidth: '120px' }}>Grand Total</th>
+                <th className="text-center" style={{ minWidth: '100px' }}>Payment</th>
+                <th className="text-center" style={{ minWidth: '100px' }}>Status</th>
+                <th className="text-center" style={{ minWidth: '90px' }}>Action</th>
               </tr>
             </thead>
             <tbody>
@@ -230,7 +230,7 @@ const AdminRegistrationsPage = () => {
                         {reg.status}
                       </span>
                     </td>
-                    <td className="text-center">
+                    <td className="text-center text-nowrap">
                       <button
                         onClick={() => {
                           setSelectedReg(reg);
@@ -239,8 +239,8 @@ const AdminRegistrationsPage = () => {
                             paymentStatus: reg.payment_status
                           });
                         }}
-                        className="btn btn-outline-primary btn-sm px-2.5 py-1 rounded-3"
-                        style={{ fontSize: '0.75rem' }}
+                        className="btn btn-outline-primary btn-sm px-3 py-1.5 rounded-2 d-inline-flex align-items-center gap-1.5 shadow-none"
+                        style={{ fontSize: '0.78rem', fontWeight: 500 }}
                       >
                         Edit
                       </button>

@@ -99,7 +99,7 @@ const AdminUsersPage = () => {
   };
 
   return (
-    <div className="dashboard-page-container container-fluid px-4 py-3">
+    <div className="dashboard-page-container w-100">
       {/* Toast Notification */}
       {notification && (
         <div className={`alert alert-${notification.type} alert-dismissible fade show d-flex align-items-center justify-content-between shadow-sm rounded-3 mb-3`} role="alert">
@@ -126,7 +126,7 @@ const AdminUsersPage = () => {
           <button
             onClick={loadUsers}
             disabled={loading}
-            className="btn btn-outline-success btn-sm d-inline-flex align-items-center gap-2 px-3 py-2 rounded-3"
+            className="btn btn-outline-success btn-sm d-inline-flex align-items-center gap-2 px-3 py-2 rounded-3 shadow-none"
           >
             <LuRefreshCw className={loading ? 'fa-spin' : ''} />
             <span>Refresh</span>
@@ -155,7 +155,7 @@ const AdminUsersPage = () => {
               <select
                 value={roleFilter}
                 onChange={(e) => setRoleFilter(e.target.value)}
-                className="form-select form-select-sm w-auto"
+                className="form-select form-select-sm w-auto shadow-none"
               >
                 <option value="">All Roles</option>
                 <option value="user">User / Delegate</option>
@@ -168,16 +168,16 @@ const AdminUsersPage = () => {
 
         {/* Users Table */}
         <div className="activity-table-container">
-          <table className="spctt-table">
+          <table className="spctt-table spctt-table-wide">
             <thead>
               <tr>
-                <th>Delegate Profile</th>
-                <th>Contact Details</th>
-                <th>Institution / Organization</th>
-                <th className="text-center">Role</th>
-                <th className="text-center">Status</th>
-                <th>Registered Date</th>
-                <th className="text-center">Action</th>
+                <th style={{ minWidth: '200px' }}>Delegate Profile</th>
+                <th style={{ minWidth: '200px' }}>Contact Details</th>
+                <th style={{ minWidth: '180px' }}>Institution / Organization</th>
+                <th className="text-center" style={{ minWidth: '100px' }}>Role</th>
+                <th className="text-center" style={{ minWidth: '100px' }}>Status</th>
+                <th style={{ minWidth: '140px' }}>Registered Date</th>
+                <th className="text-center" style={{ minWidth: '100px' }}>Action</th>
               </tr>
             </thead>
             <tbody>
@@ -269,12 +269,12 @@ const AdminUsersPage = () => {
                         <span>{new Date(u.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}</span>
                       </div>
                     </td>
-                    <td className="text-center">
+                    <td className="text-center text-nowrap">
                       <button
                         onClick={() => setDeleteTarget(u)}
-                        className="btn btn-outline-danger btn-sm p-1.5 px-2.5 rounded-2 d-inline-flex align-items-center gap-1.5 transition-all"
+                        className="btn btn-outline-danger btn-sm px-3 py-1.5 rounded-2 d-inline-flex align-items-center gap-1.5 transition-all shadow-none"
                         title={`Delete ${u.name}`}
-                        style={{ fontSize: '0.78rem' }}
+                        style={{ fontSize: '0.78rem', fontWeight: 500 }}
                       >
                         <LuTrash2 size={14} />
                         <span>Delete</span>
