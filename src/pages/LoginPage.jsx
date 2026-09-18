@@ -78,7 +78,7 @@ const LoginPage = () => {
       }
     } catch (err) {
       console.error('Login error:', err);
-      setErrorMsg(err.message || 'Could not connect to backend server. Ensure API is running on port 5000.');
+      setErrorMsg(err.message || 'Could not connect to API server. Please check your network or server status.');
       setIsLoading(false);
     }
   };

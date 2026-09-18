@@ -14,7 +14,8 @@ import {
   LuChevronDown, 
   LuCheck, 
   LuX,
-  LuShieldCheck
+  LuShieldCheck,
+  LuCode
 } from 'react-icons/lu';
 import { getStoredAuth, clearAuthSession, userApi, saveAuthSession } from '../../services/api';
 

@@ -47,6 +47,14 @@ export const adminApi = {
   getUsers: () => {
     return apiClient.get(API_ENDPOINTS.ADMIN.USERS);
   },
+
+  /**
+   * Delete User by ID
+   * @param {number|string} id
+   */
+  deleteUser: (id) => {
+    return apiClient.delete(API_ENDPOINTS.ADMIN.DELETE_USER(id));
+  },
 };
 
 export default adminApi;

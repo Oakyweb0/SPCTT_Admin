@@ -16,6 +16,7 @@ export const API_ENDPOINTS = {
   USER: {
     PROFILE: '/user/profile',
     UPDATE_PROFILE: '/user/profile',
+    DELETE_ACCOUNT: '/user/profile',
     CHANGE_PASSWORD: '/user/change-password',
   },
 
@@ -54,6 +55,7 @@ export const API_ENDPOINTS = {
     UPDATE_ABSTRACT_STATUS: (id) => `/admin/abstracts/${id}/status`,
     INVOICES: '/admin/invoices',
     USERS: '/admin/users',
+    DELETE_USER: (id) => `/admin/users/${id}`,
   },
 };
 

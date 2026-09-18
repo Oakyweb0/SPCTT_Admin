@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { 
-  LuSearch, 
-  LuRefreshCw, 
-  LuFileText, 
-  LuEye, 
+import {
+  LuSearch,
+  LuRefreshCw,
+  LuFileText,
+  LuEye,
   LuCheck,
   LuX
 } from 'react-icons/lu';
@@ -103,7 +103,7 @@ const AdminAbstractsPage = () => {
                   type="text"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  placeholder="Search abstracts by title, author name, code, submitter..."
+                  placeholder=" Search abstracts by title, author name, code, submitter..."
                   className="form-control shadow-none"
                 />
               </div>
@@ -187,12 +187,11 @@ const AdminAbstractsPage = () => {
                       <div>{abs.submitter_email}</div>
                     </td>
                     <td className="text-center">
-                      <span className={`badge ${
-                        abs.status === 'accepted' ? 'bg-success-subtle text-success border border-success' :
+                      <span className={`badge ${abs.status === 'accepted' ? 'bg-success-subtle text-success border border-success' :
                         abs.status === 'rejected' ? 'bg-danger-subtle text-danger border border-danger' :
-                        abs.status === 'under_review' ? 'bg-info-subtle text-info border border-info' :
-                        'bg-warning-subtle text-warning border border-warning'
-                      } text-uppercase px-2.5 py-1 rounded-pill`} style={{ fontSize: '0.68rem', letterSpacing: '0.04em' }}>
+                          abs.status === 'under_review' ? 'bg-info-subtle text-info border border-info' :
+                            'bg-warning-subtle text-warning border border-warning'
+                        } text-uppercase px-2.5 py-1 rounded-pill`} style={{ fontSize: '0.68rem', letterSpacing: '0.04em' }}>
                         {abs.status ? abs.status.replace('_', ' ') : 'submitted'}
                       </span>
                     </td>

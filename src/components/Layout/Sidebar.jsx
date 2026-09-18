@@ -4,7 +4,6 @@ import { LuLayoutDashboard, LuClipboardList, LuFileText, LuUsers } from 'react-i
 import logoImg from '../../assets/images/logo.png';
 
 const Sidebar = ({ onNavigate }) => {
-  // Exactly 4 simple menu items
   const menuItems = [
     {
       name: 'Dashboard',
