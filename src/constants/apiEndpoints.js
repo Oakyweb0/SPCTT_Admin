@@ -1,0 +1,60 @@
+/**
+ * Centralized API Endpoints Configuration
+ */
+
+export const API_ENDPOINTS = {
+  // Authentication
+  AUTH: {
+    USER_REGISTER: '/auth/register',
+    USER_LOGIN: '/auth/login',
+    ADMIN_LOGIN: '/auth/admin/login',
+    LOGOUT: '/auth/logout',
+    VERIFY_TOKEN: '/auth/verify',
+  },
+
+  // User Profile
+  USER: {
+    PROFILE: '/user/profile',
+    UPDATE_PROFILE: '/user/profile',
+    CHANGE_PASSWORD: '/user/change-password',
+  },
+
+  // Dashboard
+  DASHBOARD: {
+    ADMIN_STATS: '/admin/dashboard-stats',
+    USER_STATS: '/user/dashboard-stats',
+  },
+
+  // Registration & Wizard
+  REGISTRATION: {
+    CATEGORIES: '/registration/categories',
+    CURRENT: '/registration/current',
+    STEP1_CATEGORY: '/registration/step1-category',
+    STEP2_ATTENDEE: '/registration/step2-attendee',
+    STEP3_ACCOMPANYING: '/registration/step3-accompanying',
+    STEP4_BILLING: '/registration/step4-billing',
+    PAYMENT: '/registration/payment',
+    INVOICES: '/registration/invoices',
+    INVOICE_BY_ID: (id) => `/registration/invoices/${id}`,
+  },
+
+  // Abstracts
+  ABSTRACTS: {
+    SUBMIT: '/abstracts',
+    MY_ABSTRACTS: '/abstracts/my',
+    BY_ID: (id) => `/abstracts/${id}`,
+  },
+
+  // Admin Operations
+  ADMIN: {
+    STATS: '/admin/dashboard-stats',
+    REGISTRATIONS: '/admin/registrations',
+    UPDATE_REGISTRATION_STATUS: (id) => `/admin/registrations/${id}/status`,
+    ABSTRACTS: '/admin/abstracts',
+    UPDATE_ABSTRACT_STATUS: (id) => `/admin/abstracts/${id}/status`,
+    INVOICES: '/admin/invoices',
+    USERS: '/admin/users',
+  },
+};
+
+export default API_ENDPOINTS;
