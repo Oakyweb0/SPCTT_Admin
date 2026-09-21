@@ -72,11 +72,18 @@ const AbstractSubmissionPage = () => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
+  const MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024; // 5MB
+
   const handlePdfChange = (e) => {
     const file = e.target.files[0];
     if (file) {
       if (file.type !== 'application/pdf' && !file.name.toLowerCase().endsWith('.pdf')) {
         setError('Please select a valid PDF file.');
+        return;
+      }
+      if (file.size > MAX_FILE_SIZE_BYTES) {
+        setError(`PDF size (${(file.size / (1024 * 1024)).toFixed(1)}MB) exceeds the 5MB limit. Please upload a smaller PDF.`);
+        if (pdfInputRef.current) pdfInputRef.current.value = '';
         return;
       }
       setPdfFile(file);
@@ -89,6 +96,11 @@ const AbstractSubmissionPage = () => {
     if (file) {
       if (!file.type.startsWith('image/')) {
         setError('Please select a valid image file (JPG, PNG, WEBP).');
+        return;
+      }
+      if (file.size > MAX_FILE_SIZE_BYTES) {
+        setError(`Image size (${(file.size / (1024 * 1024)).toFixed(1)}MB) exceeds the 5MB limit. Please upload a smaller image.`);
+        if (imageInputRef.current) imageInputRef.current.value = '';
         return;
       }
       setImageFile(file);
@@ -377,7 +389,7 @@ const AbstractSubmissionPage = () => {
                   >
                     <LuCloudUpload className="text-red-500 mb-1" size={26} />
                     <span className="text-xs font-semibold text-gray-700">Click to Select PDF</span>
-                    <span className="text-[11px] text-gray-400 mt-0.5">Maximum size: 25MB (.pdf)</span>
+                    <span className="text-[11px] text-gray-500 mt-0.5">Maximum size: 5MB (.pdf only)</span>
                   </label>
                 ) : (
                   <div className="flex items-center justify-between p-3 bg-white border border-red-200 rounded-lg shadow-2xs">
@@ -424,7 +436,7 @@ const AbstractSubmissionPage = () => {
                   >
                     <LuCloudUpload className="text-blue-500 mb-1" size={26} />
                     <span className="text-xs font-semibold text-gray-700">Click to Select Image</span>
-                    <span className="text-[11px] text-gray-400 mt-0.5">JPG, PNG, WEBP formats</span>
+                    <span className="text-[11px] text-gray-500 mt-0.5">Maximum size: 5MB (JPG, PNG, WEBP)</span>
                   </label>
                 ) : (
                   <div className="flex items-center justify-between p-3 bg-white border border-blue-200 rounded-lg shadow-2xs">
