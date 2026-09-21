@@ -314,12 +314,12 @@ const AdminAbstractsPage = () => {
                           {abs.status ? abs.status.replace('_', ' ') : 'submitted'}
                         </span>
                       </td>
-                      <td className="py-3 px-3.5 align-middle text-center text-nowrap pe-4">
-                        <div className="d-inline-flex align-items-center gap-2.5">
+                      <td className="py-3 px-3 align-middle text-center text-nowrap pe-4">
+                        <div className="d-inline-flex align-items-center" style={{ gap: '10px' }}>
                           <button
                             onClick={() => setSelectedAbs(abs)}
                             className="btn btn-sm btn-light border d-inline-flex align-items-center gap-1.5 py-1.5 px-2.5 rounded-2 shadow-none"
-                            style={{ fontSize: '0.76rem', fontWeight: 600 }}
+                            style={{ fontSize: '0.78rem', fontWeight: 600 }}
                             title="View Abstract Details"
                           >
                             <LuEye size={13} /> <span>View</span>
@@ -331,7 +331,7 @@ const AdminAbstractsPage = () => {
                               setReviewComments(abs.review_comments || '');
                             }}
                             className="btn btn-sm btn-info text-white d-inline-flex align-items-center gap-1.5 py-1.5 px-2.5 rounded-2 shadow-none"
-                            style={{ fontSize: '0.76rem', fontWeight: 600 }}
+                            style={{ fontSize: '0.78rem', fontWeight: 600 }}
                             title="Review Abstract Decision"
                           >
                             <LuCheck size={13} /> <span>Review</span>
