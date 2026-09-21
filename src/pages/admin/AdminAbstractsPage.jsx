@@ -289,18 +289,19 @@ const AdminAbstractsPage = () => {
                     </h6>
                     {selectedAbs.abstract_text ? (
                       <div
-                        className="p-3.5 bg-light rounded-3 border text-dark"
+                        className="bg-light rounded-3 border text-dark"
                         style={{
+                          padding: '0.75rem 1.25rem',
                           whiteSpace: 'pre-wrap',
-                          lineHeight: '1.8',
-                          textAlign: 'justify',
-                          fontSize: '0.92rem'
+                          lineHeight: '1.6',
+                          fontSize: '0.90rem',
+                          color: 'var(--spctt-dark)'
                         }}
                       >
                         {selectedAbs.abstract_text}
                       </div>
                     ) : (
-                      <div className="alert alert-light border text-muted small mb-0">
+                      <div className="alert alert-light border text-muted small mb-0 p-3">
                         No text summary provided. Please refer to the attached PDF document below.
                       </div>
                     )}
