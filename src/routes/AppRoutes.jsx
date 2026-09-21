@@ -46,12 +46,12 @@ const AppRoutes = () => {
       <Route
         path="/"
         element={
-          isUserLoggedIn ? (
-            <Navigate to="/user/dashboard" replace />
-          ) : isAdminLoggedIn ? (
+          isAdminLoggedIn ? (
             <Navigate to="/admin/dashboard" replace />
+          ) : isUserLoggedIn ? (
+            <Navigate to="/user/dashboard" replace />
           ) : (
-            <Navigate to="/user/register" replace />
+            <Navigate to="/admin/login" replace />
           )
         }
       />
@@ -127,7 +127,7 @@ const AppRoutes = () => {
       </Route>
 
       {/* Global Fallback */}
-      <Route path="*" element={<Navigate to="/user/register" replace />} />
+      <Route path="*" element={<Navigate to="/admin/login" replace />} />
     </Routes>
   );
 };
