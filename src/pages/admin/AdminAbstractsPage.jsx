@@ -177,20 +177,21 @@ const AdminAbstractsPage = () => {
               <div className="d-flex align-items-center gap-3">
                 <button
                   onClick={() => setSelectedAbs(null)}
-                  className="btn btn-outline-secondary d-inline-flex align-items-center gap-2 px-3 py-2 rounded-3 shadow-none fw-medium"
+                  className="btn btn-sm btn-outline-secondary d-inline-flex align-items-center justify-content-center gap-1.5 px-2.5 rounded-2 shadow-none"
+                  style={{ height: '34px', fontSize: '0.78rem', fontWeight: 600 }}
                 >
-                  <LuArrowLeft size={18} />
+                  <LuArrowLeft size={14} />
                   <span>Back to Submissions</span>
                 </button>
-                <div className="vr d-none d-sm-block my-1 text-muted"></div>
+                <div className="vr d-none d-sm-block my-1 text-muted" style={{ height: '18px' }}></div>
                 <div className="d-flex align-items-center gap-2 flex-wrap">
-                  <span className="badge bg-primary-subtle text-primary border font-monospace px-2.5 py-1.5" style={{ fontSize: '0.82rem', fontWeight: 600 }}>
+                  <span className="badge bg-primary-subtle text-primary border font-monospace px-2 py-1" style={{ fontSize: '0.75rem', fontWeight: 600 }}>
                     {selectedAbs.abstract_code}
                   </span>
                   <span
-                    className="badge px-3 py-1.5 rounded-pill text-uppercase"
+                    className="badge px-2.5 py-1 rounded-pill text-uppercase"
                     style={{
-                      fontSize: '0.75rem',
+                      fontSize: '0.72rem',
                       fontWeight: 700,
                       backgroundColor: (selectedAbs.category || '').toLowerCase() === 'oral' ? '#faf5ff' : '#f0fdfa',
                       color: (selectedAbs.category || '').toLowerCase() === 'oral' ? '#7e22ce' : '#0f766e',
@@ -200,9 +201,9 @@ const AdminAbstractsPage = () => {
                     {selectedAbs.category || 'Poster'}
                   </span>
                   <span
-                    className="badge text-uppercase px-3 py-1.5 rounded-pill"
+                    className="badge text-uppercase px-2.5 py-1 rounded-pill"
                     style={{
-                      fontSize: '0.75rem',
+                      fontSize: '0.72rem',
                       fontWeight: 700,
                       backgroundColor:
                         selectedAbs.status === 'accepted' ? '#dcfce7' :
@@ -229,10 +230,11 @@ const AdminAbstractsPage = () => {
                 <button
                   type="button"
                   onClick={() => setDeleteTarget(selectedAbs)}
-                  className="btn btn-outline-danger d-inline-flex align-items-center gap-1.5 px-3 py-2 rounded-3 shadow-none fw-medium"
+                  className="btn btn-sm btn-outline-danger d-inline-flex align-items-center justify-content-center gap-1.5 px-3 rounded-2 shadow-none fw-medium"
+                  style={{ height: '34px', fontSize: '0.80rem' }}
                   title="Delete Abstract"
                 >
-                  <LuTrash2 size={16} /> <span>Delete</span>
+                  <LuTrash2 size={15} /> <span>Delete</span>
                 </button>
                 <button
                   type="button"
@@ -241,9 +243,10 @@ const AdminAbstractsPage = () => {
                     setReviewStatus(selectedAbs.status || 'accepted');
                     setReviewComments(selectedAbs.review_comments || '');
                   }}
-                  className="btn btn-info text-white d-inline-flex align-items-center gap-1.5 px-3.5 py-2 rounded-3 shadow-xs fw-semibold"
+                  className="btn btn-sm btn-primary d-inline-flex align-items-center justify-content-center px-3 rounded-2 shadow-none fw-semibold"
+                  style={{ height: '34px', fontSize: '0.80rem' }}
                 >
-                  <LuCheck size={16} /> <span>Update Review Decision</span>
+                  <span>Update Review</span>
                 </button>
               </div>
             </div>
@@ -452,7 +455,7 @@ const AdminAbstractsPage = () => {
                 <div className="dashboard-card-section bg-white p-4 rounded-3 border shadow-xs">
                   <div className="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom">
                     <h6 className="fw-bold text-dark text-uppercase small tracking-wider m-0 d-flex align-items-center gap-2">
-                      <LuCheck size={16} className="text-info" />
+                      <LuCheck size={16} className="text-primary" />
                       <span>Review Status</span>
                     </h6>
                     <button
@@ -461,7 +464,7 @@ const AdminAbstractsPage = () => {
                         setReviewStatus(selectedAbs.status || 'accepted');
                         setReviewComments(selectedAbs.review_comments || '');
                       }}
-                      className="btn btn-sm btn-outline-info py-0.5 px-2.5 rounded-2 shadow-none"
+                      className="btn btn-sm btn-outline-primary py-0.5 px-2.5 rounded-2 shadow-none"
                       style={{ fontSize: '0.75rem', fontWeight: 600 }}
                     >
                       Edit Decision
@@ -739,7 +742,7 @@ const AdminAbstractsPage = () => {
                           <div className="d-inline-flex align-items-center justify-content-center" style={{ gap: '6px' }}>
                             <button
                               onClick={() => setSelectedAbs(abs)}
-                              className="btn btn-sm btn-light border d-inline-flex align-items-center justify-content-center rounded-2 shadow-none text-dark"
+                              className="btn btn-sm btn-outline-secondary d-inline-flex align-items-center justify-content-center rounded-2 shadow-none"
                               style={{ width: '32px', height: '32px', padding: 0 }}
                               title="View Full Abstract Details"
                             >
@@ -751,11 +754,11 @@ const AdminAbstractsPage = () => {
                                 setReviewStatus(abs.status || 'accepted');
                                 setReviewComments(abs.review_comments || '');
                               }}
-                              className="btn btn-sm btn-info text-white d-inline-flex align-items-center gap-1 py-1 px-2.5 rounded-2 shadow-none"
+                              className="btn btn-sm btn-primary d-inline-flex align-items-center justify-content-center px-2.5 rounded-2 shadow-none"
                               style={{ fontSize: '0.78rem', fontWeight: 600, height: '32px' }}
                               title="Review Decision"
                             >
-                              <LuCheck size={14} /> <span>Review</span>
+                              <span>Review</span>
                             </button>
                             <button
                               onClick={() => setDeleteTarget(abs)}
@@ -825,7 +828,7 @@ const AdminAbstractsPage = () => {
                 <button
                   type="button"
                   onClick={() => setReviewModalAbs(null)}
-                  className="btn btn-light"
+                  className="btn btn-outline-secondary px-3 shadow-none"
                 >
                   Cancel
                 </button>
@@ -833,7 +836,7 @@ const AdminAbstractsPage = () => {
                   type="button"
                   onClick={handleUpdateStatus}
                   disabled={updating}
-                  className="btn btn-info text-white px-4"
+                  className="btn btn-primary px-4 shadow-none"
                 >
                   {updating ? 'Saving...' : 'Save Decision'}
                 </button>
