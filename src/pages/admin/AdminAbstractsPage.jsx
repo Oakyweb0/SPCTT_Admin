@@ -473,18 +473,18 @@ const AdminAbstractsPage = () => {
           </div>
 
           {/* Abstracts Table */}
-          <div className="activity-table-container">
-            <table className="spctt-table w-100" style={{ tableLayout: 'auto' }}>
+          <div className="activity-table-container table-responsive">
+            <table className="spctt-table w-100" style={{ minWidth: '920px' }}>
               <thead>
                 <tr style={{ background: '#f8fafc' }}>
-                  <th className="py-2.5 px-3 text-nowrap" style={{ width: '9%' }}>Code</th>
-                  <th className="py-2.5 px-3" style={{ width: '28%' }}>Topic & Presenter</th>
-                  <th className="py-2.5 px-3" style={{ width: '16%' }}>Institute</th>
-                  <th className="py-2.5 px-3 text-center" style={{ width: '9%' }}>Category</th>
-                  <th className="py-2.5 px-3" style={{ width: '15%' }}>Contact</th>
-                  <th className="py-2.5 px-3 text-center" style={{ width: '8%' }}>Files</th>
-                  <th className="py-2.5 px-3 text-center" style={{ width: '8%' }}>Status</th>
-                  <th className="py-2.5 px-3 text-center pe-4" style={{ width: '12%' }}>Actions</th>
+                  <th className="py-3 px-3 text-nowrap" style={{ width: '10%' }}>Code</th>
+                  <th className="py-3 px-3" style={{ width: '26%' }}>Topic & Presenter</th>
+                  <th className="py-3 px-3" style={{ width: '18%' }}>Institute</th>
+                  <th className="py-3 px-2 text-center" style={{ width: '9%' }}>Category</th>
+                  <th className="py-3 px-3" style={{ width: '15%' }}>Contact</th>
+                  <th className="py-3 px-2 text-center" style={{ width: '8%' }}>Files</th>
+                  <th className="py-3 px-2 text-center" style={{ width: '9%' }}>Status</th>
+                  <th className="py-3 px-3 text-center" style={{ width: '11%', minWidth: '130px' }}>Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -520,40 +520,36 @@ const AdminAbstractsPage = () => {
 
                     return (
                       <tr key={abs.id} style={{ borderBottom: '1px solid #eef2f6' }}>
-                        <td className="py-2.5 px-3 align-middle text-nowrap">
-                          <span className="badge bg-light text-primary border font-monospace px-2 py-1" style={{ fontSize: '0.75rem', fontWeight: 600 }}>
+                        <td className="py-3 px-3 align-middle text-nowrap">
+                          <span className="badge bg-light text-primary border font-monospace px-2 py-1" style={{ fontSize: '0.78rem', fontWeight: 600 }}>
                             {abs.abstract_code}
                           </span>
                         </td>
-                        <td className="py-2.5 px-3 align-middle">
+                        <td className="py-3 px-3 align-middle">
                           <div
                             className="fw-bold text-dark"
                             style={{
-                              display: '-webkit-box',
-                              WebkitLineClamp: 2,
-                              WebkitBoxOrient: 'vertical',
-                              overflow: 'hidden',
-                              lineHeight: '1.3',
-                              fontSize: '0.85rem'
+                              lineHeight: '1.35',
+                              fontSize: '0.86rem',
+                              marginBottom: '2px'
                             }}
                             title={abs.topic || abs.title}
                           >
                             {abs.topic || abs.title}
                           </div>
-                          <div className="text-muted small mt-0.5" style={{ fontSize: '0.75rem' }}>
+                          <div className="text-muted small" style={{ fontSize: '0.75rem' }}>
                             Author: <span className="text-dark fw-medium">{abs.name || abs.authors || abs.submitter_name || '—'}</span>
                           </div>
                         </td>
-                        <td className="py-2.5 px-3 align-middle small text-muted">
+                        <td className="py-3 px-3 align-middle small text-muted">
                           <div
-                            className="text-truncate"
-                            style={{ maxWidth: '160px', fontSize: '0.78rem' }}
+                            style={{ fontSize: '0.80rem', lineHeight: '1.3', color: '#475569' }}
                             title={abs.institute_name || abs.affiliation || abs.submitter_org}
                           >
                             {abs.institute_name || abs.affiliation || abs.submitter_org || '—'}
                           </div>
                         </td>
-                        <td className="py-2.5 px-3 align-middle text-center">
+                        <td className="py-3 px-2 align-middle text-center">
                           <span
                             className="badge px-2.5 py-1 rounded-pill"
                             style={{
@@ -567,23 +563,23 @@ const AdminAbstractsPage = () => {
                             {abs.category || 'Poster'}
                           </span>
                         </td>
-                        <td className="py-2.5 px-3 align-middle small">
-                          <div className="text-truncate text-dark fw-medium" style={{ maxWidth: '160px', fontSize: '0.78rem' }} title={abs.email || abs.submitter_email}>
+                        <td className="py-3 px-3 align-middle small">
+                          <div className="text-truncate text-dark fw-medium" style={{ maxWidth: '170px', fontSize: '0.80rem' }} title={abs.email || abs.submitter_email}>
                             {abs.email || abs.submitter_email || '—'}
                           </div>
-                          <div className="text-muted" style={{ fontSize: '0.73rem' }}>
+                          <div className="text-muted" style={{ fontSize: '0.75rem' }}>
                             {abs.phone || abs.submitter_phone || '—'}
                           </div>
                         </td>
-                        <td className="py-2.5 px-3 align-middle text-center">
+                        <td className="py-3 px-2 align-middle text-center">
                           <div className="d-flex align-items-center justify-content-center gap-1">
                             {pdfUrl && (
                               <a
                                 href={getFullUrl(pdfUrl)}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="btn btn-sm btn-outline-danger d-inline-flex align-items-center gap-1 py-1 px-1.5 rounded shadow-none"
-                                style={{ fontSize: '0.70rem', fontWeight: 600, padding: '2px 6px' }}
+                                className="btn btn-sm btn-outline-danger d-inline-flex align-items-center gap-1 rounded shadow-none"
+                                style={{ fontSize: '0.68rem', fontWeight: 700, padding: '2px 5px' }}
                                 title="Open PDF Document"
                               >
                                 <LuFileText size={12} /> <span>PDF</span>
@@ -594,8 +590,8 @@ const AdminAbstractsPage = () => {
                                 href={getFullUrl(imageUrl)}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="btn btn-sm btn-outline-primary d-inline-flex align-items-center gap-1 py-1 px-1.5 rounded shadow-none"
-                                style={{ fontSize: '0.70rem', fontWeight: 600, padding: '2px 6px' }}
+                                className="btn btn-sm btn-outline-primary d-inline-flex align-items-center gap-1 rounded shadow-none"
+                                style={{ fontSize: '0.68rem', fontWeight: 700, padding: '2px 5px' }}
                                 title="Open Image"
                               >
                                 <LuImage size={12} /> <span>IMG</span>
@@ -606,11 +602,11 @@ const AdminAbstractsPage = () => {
                             )}
                           </div>
                         </td>
-                        <td className="py-2.5 px-3 align-middle text-center">
+                        <td className="py-3 px-2 align-middle text-center">
                           <span
-                            className="badge text-uppercase px-2 py-1 rounded-pill"
+                            className="badge text-uppercase px-2.5 py-1 rounded-pill"
                             style={{
-                              fontSize: '0.67rem',
+                              fontSize: '0.68rem',
                               letterSpacing: '0.03em',
                               fontWeight: 700,
                               backgroundColor:
@@ -631,15 +627,15 @@ const AdminAbstractsPage = () => {
                             {abs.status ? abs.status.replace('_', ' ') : 'submitted'}
                           </span>
                         </td>
-                        <td className="py-3 px-3 align-middle text-center text-nowrap pe-4">
-                          <div className="d-inline-flex align-items-center" style={{ gap: '8px' }}>
+                        <td className="py-3 px-3 align-middle text-center">
+                          <div className="d-inline-flex align-items-center justify-content-center" style={{ gap: '6px' }}>
                             <button
                               onClick={() => setSelectedAbs(abs)}
-                              className="btn btn-sm btn-light border d-inline-flex align-items-center gap-1.5 py-1.5 px-2.5 rounded-2 shadow-none"
-                              style={{ fontSize: '0.78rem', fontWeight: 600 }}
-                              title="View Abstract Details"
+                              className="btn btn-sm btn-light border d-inline-flex align-items-center justify-content-center rounded-2 shadow-none text-dark"
+                              style={{ width: '32px', height: '32px', padding: 0 }}
+                              title="View Full Abstract Details"
                             >
-                              <LuEye size={13} /> <span>View</span>
+                              <LuEye size={15} />
                             </button>
                             <button
                               onClick={() => {
@@ -647,19 +643,19 @@ const AdminAbstractsPage = () => {
                                 setReviewStatus(abs.status || 'accepted');
                                 setReviewComments(abs.review_comments || '');
                               }}
-                              className="btn btn-sm btn-info text-white d-inline-flex align-items-center gap-1.5 py-1.5 px-2.5 rounded-2 shadow-none"
-                              style={{ fontSize: '0.78rem', fontWeight: 600 }}
-                              title="Review Abstract Decision"
+                              className="btn btn-sm btn-info text-white d-inline-flex align-items-center gap-1 py-1 px-2.5 rounded-2 shadow-none"
+                              style={{ fontSize: '0.78rem', fontWeight: 600, height: '32px' }}
+                              title="Review Decision"
                             >
-                              <LuCheck size={13} /> <span>Review</span>
+                              <LuCheck size={14} /> <span>Review</span>
                             </button>
                             <button
                               onClick={() => setDeleteTarget(abs)}
-                              className="btn btn-sm btn-outline-danger d-inline-flex align-items-center gap-1.5 py-1.5 px-2.5 rounded-2 shadow-none"
-                              style={{ fontSize: '0.78rem', fontWeight: 600 }}
+                              className="btn btn-sm btn-outline-danger d-inline-flex align-items-center justify-content-center rounded-2 shadow-none"
+                              style={{ width: '32px', height: '32px', padding: 0 }}
                               title="Delete Abstract"
                             >
-                              <LuTrash2 size={13} /> <span>Delete</span>
+                              <LuTrash2 size={15} />
                             </button>
                           </div>
                         </td>
