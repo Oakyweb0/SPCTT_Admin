@@ -22,7 +22,8 @@ const RegistrationWizardPage = () => {
     { id: 2, code: 'NON_MEMBERS', name: 'Non-Members (Consultants)', price: 4000 },
     { id: 3, code: 'FELLOWS_STUDENTS', name: 'Fellows/ Students', price: 2500 },
     { id: 4, code: 'NURSES', name: 'Nurses', price: 2000 },
-    { id: 5, code: 'INDUSTRY_DELEGATES', name: 'Industry Delegates', price: 6000 }
+    { id: 5, code: 'INDUSTRY_DELEGATES', name: 'Industry Delegates', price: 6000 },
+    { id: 6, code: 'ACCOMPANYING_PERSONS', name: 'Accompanying Persons (including children > 10 yrs old)', price: 4000 }
   ]);
 
   // Selected Category (Step 1)
