@@ -63,7 +63,7 @@ const UserHeader = ({ pageTitle }) => {
         />
         
         <div className="max-w-6xl mx-auto text-center relative z-10">
-          <h1 className="text-2xl md:text-3xl font-bold tracking-wide">
+          <h1 className="text-2xl md:text-3xl font-bold tracking-wide !text-white text-white">
             {pageTitle || 'SPCTT 2026'}
           </h1>
         </div>
