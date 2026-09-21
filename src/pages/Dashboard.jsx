@@ -202,24 +202,23 @@ const Dashboard = () => {
                 <table className="spctt-table spctt-dashboard-table">
                   <thead>
                     <tr>
-                      <th style={{ width: '20%' }}>Code</th>
-                      <th style={{ width: '32%' }}>Delegate</th>
+                      <th style={{ width: '22%' }}>Code</th>
+                      <th style={{ width: '43%' }}>Delegate</th>
                       <th style={{ width: '20%' }}>Category</th>
-                      <th className="text-end" style={{ width: '15%' }}>Amount</th>
-                      <th className="text-center" style={{ width: '13%' }}>Status</th>
+                      <th className="text-center" style={{ width: '15%' }}>Status</th>
                     </tr>
                   </thead>
                   <tbody>
                     {loading ? (
                       <tr>
-                        <td colSpan={5} className="text-center py-4 text-muted">
+                        <td colSpan={4} className="text-center py-4 text-muted">
                           <div className="spinner-border spinner-border-sm text-primary me-2"></div>
                           Loading registrations...
                         </td>
                       </tr>
                     ) : stats.recentRegistrations?.length === 0 ? (
                       <tr>
-                        <td colSpan={5}>
+                        <td colSpan={4}>
                           <div className="text-center py-4 my-2">
                             <div className="d-inline-flex p-2.5 rounded-circle bg-primary-subtle text-primary mb-2">
                               <LuClipboardList size={22} />
@@ -238,28 +237,27 @@ const Dashboard = () => {
                             </span>
                           </td>
                           <td>
-                            <div className="fw-bold text-dark text-truncate" style={{ maxWidth: '160px' }}>
+                            <div className="fw-bold text-dark text-truncate" style={{ maxWidth: '180px' }}>
                               {reg.title || ''} {reg.full_name || 'Delegate'}
                             </div>
-                            <div className="text-muted text-truncate" style={{ fontSize: '0.75rem', maxWidth: '160px' }}>
+                            <div className="text-muted text-truncate" style={{ fontSize: '0.75rem', maxWidth: '180px' }}>
                               {reg.email}
                             </div>
                           </td>
                           <td>
-                            <span className="badge bg-secondary-subtle text-secondary" style={{ fontSize: '0.72rem' }}>
+                            <span className="badge bg-light text-dark border text-truncate d-inline-block" style={{ fontSize: '0.72rem', maxWidth: '140px' }} title={reg.category_name || 'Standard'}>
                               {reg.category_name || 'Standard'}
                             </span>
-                          </td>
-                          <td className="text-end fw-bold text-dark text-nowrap">
-                            {formatCurrency(reg.grand_total)}
                           </td>
                           <td className="text-center">
                             <span className={`badge ${
                               reg.payment_status === 'paid' 
                                 ? 'bg-success-subtle text-success border border-success' 
+                                : reg.payment_status === 'failed'
+                                ? 'bg-danger-subtle text-danger border border-danger'
                                 : 'bg-warning-subtle text-warning border border-warning'
                             } text-uppercase px-2 py-0.5 rounded-pill`} style={{ fontSize: '0.65rem', letterSpacing: '0.03em' }}>
-                              {reg.payment_status}
+                              {reg.payment_status || 'pending'}
                             </span>
                           </td>
                         </tr>
