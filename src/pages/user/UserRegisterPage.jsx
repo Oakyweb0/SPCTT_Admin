@@ -76,164 +76,203 @@ const UserRegisterPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white flex flex-col font-sans">
-      <UserHeader pageTitle="Create an Account" />
+    <div className="min-h-screen bg-slate-50 flex flex-col font-sans">
+      <UserHeader pageTitle="Create an Account" subtitle="Register for SPCTT 2026 Annual Conference" />
 
-      <main className="flex-1 max-w-4xl w-full mx-auto px-4 py-12 md:py-16">
-        {error && (
-          <div className="mb-6 p-4 rounded bg-red-50 border border-red-200 text-red-700 text-sm">
-            {error}
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Row 1: Title, Full Name, Email Address */}
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-start">
-            {/* Title */}
-            <div className="md:col-span-3">
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                Title <span className="text-red-600">*</span>
-              </label>
-              <select
-                name="title"
-                value={formData.title}
-                onChange={handleChange}
-                className="w-full h-11 px-3 border border-gray-300 rounded bg-white text-gray-800 focus:outline-none focus:border-[#004b63] focus:ring-1 focus:ring-[#004b63] transition-colors"
-                required
-              >
-                <option value="Mr.">Mr.</option>
-                <option value="Ms.">Ms.</option>
-                <option value="Mrs.">Mrs.</option>
-                <option value="Dr.">Dr.</option>
-                <option value="Prof.">Prof.</option>
-              </select>
-            </div>
-
-            {/* Full Name */}
-            <div className="md:col-span-4">
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                Full Name <span className="text-red-600">*</span>
-              </label>
-              <input
-                type="text"
-                name="fullName"
-                value={formData.fullName}
-                onChange={handleChange}
-                placeholder=""
-                className="w-full h-11 px-3 border border-gray-300 rounded text-gray-800 focus:outline-none focus:border-[#004b63] focus:ring-1 focus:ring-[#004b63] transition-colors"
-                required
-              />
-            </div>
-
-            {/* Email Address */}
-            <div className="md:col-span-5">
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                Email Address <span className="text-red-600">*</span>
-              </label>
-              <input
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                placeholder=""
-                className="w-full h-11 px-3 border border-gray-300 rounded text-gray-800 focus:outline-none focus:border-[#004b63] focus:ring-1 focus:ring-[#004b63] transition-colors"
-                required
-              />
-            </div>
+      <main className="flex-1 max-w-4xl w-full mx-auto px-4 py-8 md:py-12">
+        <div className="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6 md:p-10">
+          <div className="border-b border-gray-100 pb-5 mb-8">
+            <h2 className="text-xl font-bold text-gray-800 tracking-tight">
+              Personal & Contact Information
+            </h2>
+            <p className="text-sm text-gray-500 mt-1">
+              Please enter your details to create your conference delegate account. Fields marked with <span className="text-red-500 font-semibold">*</span> are required.
+            </p>
           </div>
 
-          {/* Row 2: Organization / Institution Name & Mobile Number */}
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-start">
-            {/* Organization */}
-            <div className="md:col-span-7">
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                Organization / Institution Name <span className="text-red-600">*</span>
-              </label>
-              <input
-                type="text"
-                name="organization"
-                value={formData.organization}
-                onChange={handleChange}
-                placeholder=""
-                className="w-full h-11 px-3 border border-gray-300 rounded text-gray-800 focus:outline-none focus:border-[#004b63] focus:ring-1 focus:ring-[#004b63] transition-colors"
-                required
-              />
+          {error && (
+            <div className="mb-6 p-4 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm flex items-center gap-3">
+              <i className="fa-solid fa-circle-exclamation text-base"></i>
+              <span>{error}</span>
             </div>
+          )}
 
-            {/* Mobile Number with country selector */}
-            <div className="md:col-span-5">
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                Mobile Number
-              </label>
-              <div className="flex items-center border border-gray-300 rounded h-11 overflow-hidden focus-within:border-[#004b63] focus-within:ring-1 focus-within:ring-[#004b63]">
-                <div className="flex items-center gap-1.5 px-3 bg-gray-50 border-r border-gray-200 text-sm text-gray-700 select-none">
-                  <span>🇮🇳</span>
-                  <span>+91</span>
-                </div>
-                <input
-                  type="tel"
-                  name="phone"
-                  value={formData.phone}
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Row 1: Title, Full Name, Email Address */}
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-5 items-start">
+              {/* Title */}
+              <div className="md:col-span-3">
+                <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-2">
+                  Title <span className="text-red-600">*</span>
+                </label>
+                <select
+                  name="title"
+                  value={formData.title}
                   onChange={handleChange}
-                  placeholder="11 2345 6789"
-                  maxLength={15}
-                  className="flex-1 h-full px-3 text-gray-800 focus:outline-none"
+                  className="w-full h-11 px-3.5 border border-gray-300 rounded-lg bg-white text-gray-800 text-sm focus:outline-none focus:border-[#476EAC] focus:ring-2 focus:ring-[#476EAC]/20 transition-all cursor-pointer"
+                  required
+                >
+                  <option value="Mr.">Mr.</option>
+                  <option value="Ms.">Ms.</option>
+                  <option value="Mrs.">Mrs.</option>
+                  <option value="Dr.">Dr.</option>
+                  <option value="Prof.">Prof.</option>
+                </select>
+              </div>
+
+              {/* Full Name */}
+              <div className="md:col-span-4">
+                <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-2">
+                  Full Name <span className="text-red-600">*</span>
+                </label>
+                <input
+                  type="text"
+                  name="fullName"
+                  value={formData.fullName}
+                  onChange={handleChange}
+                  placeholder="e.g. John Doe"
+                  className="w-full h-11 px-3.5 border border-gray-300 rounded-lg text-gray-800 text-sm focus:outline-none focus:border-[#476EAC] focus:ring-2 focus:ring-[#476EAC]/20 transition-all placeholder:text-gray-400"
+                  required
                 />
               </div>
-              <p className="text-xs text-gray-400 mt-1">Max Length : 15 Numbers</p>
-            </div>
-          </div>
 
-          {/* Row 3: Set Password & Repeat Password */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                Set Password <span className="text-red-600">*</span>
-              </label>
-              <input
-                type="password"
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                className="w-full h-11 px-3 border border-gray-300 rounded text-gray-800 focus:outline-none focus:border-[#004b63] focus:ring-1 focus:ring-[#004b63] transition-colors"
-                required
-              />
+              {/* Email Address */}
+              <div className="md:col-span-5">
+                <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-2">
+                  Email Address <span className="text-red-600">*</span>
+                </label>
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  placeholder="e.g. doctor@hospital.org"
+                  className="w-full h-11 px-3.5 border border-gray-300 rounded-lg text-gray-800 text-sm focus:outline-none focus:border-[#476EAC] focus:ring-2 focus:ring-[#476EAC]/20 transition-all placeholder:text-gray-400"
+                  required
+                />
+              </div>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                Repeat Password <span className="text-red-600">*</span>
-              </label>
-              <input
-                type="password"
-                name="repeatPassword"
-                value={formData.repeatPassword}
-                onChange={handleChange}
-                className="w-full h-11 px-3 border border-gray-300 rounded text-gray-800 focus:outline-none focus:border-[#004b63] focus:ring-1 focus:ring-[#004b63] transition-colors"
-                required
-              />
+            {/* Row 2: Organization / Institution Name & Mobile Number */}
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-5 items-start">
+              {/* Organization */}
+              <div className="md:col-span-7">
+                <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-2">
+                  Organization / Institution Name <span className="text-red-600">*</span>
+                </label>
+                <input
+                  type="text"
+                  name="organization"
+                  value={formData.organization}
+                  onChange={handleChange}
+                  placeholder="e.g. Apollo Hospital / AIIMS"
+                  className="w-full h-11 px-3.5 border border-gray-300 rounded-lg text-gray-800 text-sm focus:outline-none focus:border-[#476EAC] focus:ring-2 focus:ring-[#476EAC]/20 transition-all placeholder:text-gray-400"
+                  required
+                />
+              </div>
+
+              {/* Mobile Number with country selector */}
+              <div className="md:col-span-5">
+                <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-2">
+                  Mobile Number
+                </label>
+                <div className="flex items-center border border-gray-300 rounded-lg h-11 overflow-hidden focus-within:border-[#476EAC] focus-within:ring-2 focus-within:ring-[#476EAC]/20 transition-all bg-white">
+                  <div className="flex items-center gap-1.5 px-3 bg-gray-50 border-r border-gray-200 text-xs font-semibold text-gray-600 select-none">
+                    <span>🇮🇳</span>
+                    <span>+91</span>
+                  </div>
+                  <input
+                    type="tel"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleChange}
+                    placeholder="98765 43210"
+                    maxLength={15}
+                    className="flex-1 h-full px-3 text-gray-800 text-sm focus:outline-none placeholder:text-gray-400"
+                  />
+                </div>
+                <p className="text-[11px] text-gray-400 mt-1">Max Length: 15 digits</p>
+              </div>
             </div>
-          </div>
 
-          {/* Submit & Sign In Actions */}
-          <div className="pt-4 flex items-center gap-6">
-            <button
-              type="submit"
-              disabled={loading}
-              className="bg-[#9e1c2b] hover:bg-[#831422] text-white font-medium px-8 py-2.5 rounded text-sm transition-all shadow-sm focus:outline-none cursor-pointer disabled:opacity-50"
-            >
-              {loading ? 'Processing...' : 'Proceed'}
-            </button>
+            {/* Row 3: Set Password & Repeat Password */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 items-start">
+              <div>
+                <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-2">
+                  Set Password <span className="text-red-600">*</span>
+                </label>
+                <input
+                  type="password"
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  placeholder="Minimum 6 characters"
+                  className="w-full h-11 px-3.5 border border-gray-300 rounded-lg text-gray-800 text-sm focus:outline-none focus:border-[#476EAC] focus:ring-2 focus:ring-[#476EAC]/20 transition-all placeholder:text-gray-400"
+                  required
+                />
+              </div>
 
-            <Link
-              to="/user/login"
-              className="text-[#9e1c2b] hover:text-[#831422] font-medium text-sm hover:underline cursor-pointer"
-            >
-              Sign In
+              <div>
+                <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-2">
+                  Repeat Password <span className="text-red-600">*</span>
+                </label>
+                <input
+                  type="password"
+                  name="repeatPassword"
+                  value={formData.repeatPassword}
+                  onChange={handleChange}
+                  placeholder="Re-enter your password"
+                  className="w-full h-11 px-3.5 border border-gray-300 rounded-lg text-gray-800 text-sm focus:outline-none focus:border-[#476EAC] focus:ring-2 focus:ring-[#476EAC]/20 transition-all placeholder:text-gray-400"
+                  required
+                />
+              </div>
+            </div>
+
+            {/* Submit & Sign In Actions */}
+            <div className="pt-6 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-4">
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full sm:w-auto bg-[#C0192B] hover:bg-[#a11424] text-white font-semibold px-8 py-3 rounded-lg text-sm transition-all shadow-sm hover:shadow focus:outline-none cursor-pointer disabled:opacity-50 flex items-center justify-center gap-2"
+              >
+                {loading ? (
+                  <>
+                    <i className="fa-solid fa-spinner fa-spin"></i>
+                    <span>Creating Account...</span>
+                  </>
+                ) : (
+                  <>
+                    <span>Proceed</span>
+                    <i className="fa-solid fa-arrow-right text-xs"></i>
+                  </>
+                )}
+              </button>
+
+              <div className="text-sm text-gray-600">
+                Already have an account?{' '}
+                <Link
+                  to="/user/login"
+                  className="text-[#C0192B] hover:text-[#a11424] font-bold hover:underline cursor-pointer ml-1"
+                >
+                  Sign In here
+                </Link>
+              </div>
+            </div>
+          </form>
+        </div>
+      </main>
+
+      {/* Footer */}
+      <footer className="bg-white border-t border-gray-200 py-6 text-center text-xs text-gray-500">
+        <div className="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
+          <span>&copy; {new Date().getFullYear()} SPCTT 2026. All rights reserved.</span>
+          <div className="flex items-center gap-4">
+            <Link to="/admin/login" className="text-gray-500 hover:text-gray-800 transition-colors">
+              Admin Login
             </Link>
           </div>
-        </form>
-      </main>
+        </div>
+      </footer>
     </div>
   );
 };
