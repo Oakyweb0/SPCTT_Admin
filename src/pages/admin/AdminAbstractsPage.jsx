@@ -3,7 +3,6 @@ import {
   LuSearch,
   LuRefreshCw,
   LuFileText,
-  LuImage,
   LuEye,
   LuCheck,
   LuX,
@@ -42,30 +41,24 @@ const AdminAbstractsPage = () => {
     return `${cleanBase}${url.startsWith('/') ? '' : '/'}${url}`;
   };
 
-  const getFiles = (abs) => {
-    if (!abs) return { pdfUrl: null, imageUrl: null };
+  const getPdfUrl = (abs) => {
+    if (!abs) return null;
     let pdfUrl = abs.pdf_url || null;
-    let imageUrl = abs.image_url || null;
 
     if (abs.file_url) {
       if (typeof abs.file_url === 'string' && (abs.file_url.startsWith('{') || abs.file_url.startsWith('{"'))) {
         try {
           const parsed = JSON.parse(abs.file_url);
           if (parsed.pdf) pdfUrl = parsed.pdf;
-          if (parsed.image) imageUrl = parsed.image;
+          else if (parsed.file) pdfUrl = parsed.file;
         } catch (e) {
           pdfUrl = pdfUrl || abs.file_url;
         }
       } else if (typeof abs.file_url === 'string') {
-        const lower = abs.file_url.toLowerCase();
-        if (lower.endsWith('.jpg') || lower.endsWith('.jpeg') || lower.endsWith('.png') || lower.endsWith('.webp')) {
-          imageUrl = imageUrl || abs.file_url;
-        } else {
-          pdfUrl = pdfUrl || abs.file_url;
-        }
+        pdfUrl = pdfUrl || abs.file_url;
       }
     }
-    return { pdfUrl, imageUrl };
+    return pdfUrl;
   };
 
   const loadAbstracts = async () => {
@@ -308,106 +301,45 @@ const AdminAbstractsPage = () => {
                   </div>
                 </div>
 
-                {/* 2. Attachments & Media Card */}
-                {(() => {
-                  const { pdfUrl: absPdfUrl, imageUrl: absImageUrl } = getFiles(selectedAbs);
-                  return (
-                    <div className="dashboard-card-section bg-white p-4 rounded-3 border shadow-xs">
-                      <h6 className="fw-bold text-dark text-uppercase small tracking-wider mb-3 pb-2 border-bottom">
-                        Attached Documents & Media
-                      </h6>
+                {/* 2. Attached PDF Document Card */}
+                <div className="dashboard-card-section bg-white p-4 rounded-3 border shadow-xs">
+                  <h6 className="fw-bold text-dark text-uppercase small tracking-wider mb-3 pb-2 border-bottom">
+                    Attached Research Document
+                  </h6>
 
-                      <div className="row g-3 mb-3">
-                        {/* PDF Card */}
-                        <div className="col-md-6 col-12">
-                          <div className="p-3 rounded-3 border bg-light h-100 d-flex flex-column justify-content-between">
-                            <div className="d-flex align-items-center gap-3 mb-3">
-                              <div
-                                className="rounded-3 bg-danger-subtle text-danger d-flex align-items-center justify-content-center flex-shrink-0"
-                                style={{ width: '42px', height: '42px' }}
-                              >
-                                <LuFileText size={22} />
-                              </div>
-                              <div>
-                                <h6 className="fw-bold text-dark mb-0.5 fs-6">PDF Document</h6>
-                                <span className="text-muted small" style={{ fontSize: '0.78rem' }}>
-                                  {absPdfUrl ? 'Full Research Paper / Abstract PDF' : 'No document attached'}
-                                </span>
-                              </div>
-                            </div>
-                            {absPdfUrl ? (
-                              <a
-                                href={getFullUrl(absPdfUrl)}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="btn btn-outline-danger w-100 d-inline-flex align-items-center justify-content-center gap-2 py-2 rounded-2 fw-medium shadow-none"
-                              >
-                                <LuFileText size={16} />
-                                <span>Open & Download PDF</span>
-                                <LuExternalLink size={14} />
-                              </a>
-                            ) : (
-                              <button disabled className="btn btn-light text-muted w-100 border py-2 rounded-2 small">
-                                Not Provided
-                              </button>
-                            )}
-                          </div>
-                        </div>
-
-                        {/* Image Card */}
-                        <div className="col-md-6 col-12">
-                          <div className="p-3 rounded-3 border bg-light h-100 d-flex flex-column justify-content-between">
-                            <div className="d-flex align-items-center gap-3 mb-3">
-                              <div
-                                className="rounded-3 bg-primary-subtle text-primary d-flex align-items-center justify-content-center flex-shrink-0"
-                                style={{ width: '42px', height: '42px' }}
-                              >
-                                <LuImage size={22} />
-                              </div>
-                              <div>
-                                <h6 className="fw-bold text-dark mb-0.5 fs-6">Scientific Poster / Image</h6>
-                                <span className="text-muted small" style={{ fontSize: '0.78rem' }}>
-                                  {absImageUrl ? 'Poster Graphic / Diagram / Photo' : 'No image attached'}
-                                </span>
-                              </div>
-                            </div>
-                            {absImageUrl ? (
-                              <a
-                                href={getFullUrl(absImageUrl)}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="btn btn-outline-primary w-100 d-inline-flex align-items-center justify-content-center gap-2 py-2 rounded-2 fw-medium shadow-none"
-                              >
-                                <LuImage size={16} />
-                                <span>View Full-Resolution Image</span>
-                                <LuExternalLink size={14} />
-                              </a>
-                            ) : (
-                              <button disabled className="btn btn-light text-muted w-100 border py-2 rounded-2 small">
-                                Not Provided
-                              </button>
-                            )}
-                          </div>
-                        </div>
+                  <div className="p-3 rounded-3 border bg-light d-flex flex-column justify-content-between">
+                    <div className="d-flex align-items-center gap-3 mb-3">
+                      <div
+                        className="rounded-3 bg-danger-subtle text-danger d-flex align-items-center justify-content-center flex-shrink-0"
+                        style={{ width: '42px', height: '42px' }}
+                      >
+                        <LuFileText size={22} />
                       </div>
-
-                      {/* Clean Image Preview */}
-                      {absImageUrl && (
-                        <div className="p-3 bg-light rounded-3 border text-center mt-3">
-                          <p className="text-muted small mb-2 fw-semibold">Image Preview (Click to open full view):</p>
-                          <a href={getFullUrl(absImageUrl)} target="_blank" rel="noopener noreferrer" className="d-inline-block">
-                            <img
-                              src={getFullUrl(absImageUrl)}
-                              alt="Uploaded Abstract Diagram/Poster"
-                              className="img-fluid rounded border shadow-xs bg-white"
-                              style={{ maxHeight: '280px', maxWidth: '100%', objectFit: 'contain' }}
-                            />
-                          </a>
-                        </div>
-                      )}
+                      <div>
+                        <h6 className="fw-bold text-dark mb-0.5 fs-6">PDF Document</h6>
+                        <span className="text-muted small" style={{ fontSize: '0.78rem' }}>
+                          {getPdfUrl(selectedAbs) ? 'Full Research Paper / Abstract PDF' : 'No document attached'}
+                        </span>
+                      </div>
                     </div>
-                  );
-                })()}
+                    {getPdfUrl(selectedAbs) ? (
+                      <a
+                        href={getFullUrl(getPdfUrl(selectedAbs))}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="btn btn-outline-danger w-100 d-inline-flex align-items-center justify-content-center gap-2 py-2 rounded-2 fw-medium shadow-none"
+                      >
+                        <LuFileText size={16} />
+                        <span>Open & Download PDF</span>
+                        <LuExternalLink size={14} />
+                      </a>
+                    ) : (
+                      <button disabled className="btn btn-light text-muted w-100 border py-2 rounded-2 small">
+                        Not Provided
+                      </button>
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -531,7 +463,7 @@ const AdminAbstractsPage = () => {
               </div>
               <div>
                 <h2 className="dashboard-card-title mb-1">Scientific Abstract Submissions</h2>
-                <p className="text-muted small mb-0">Review research papers (Poster / Oral), examine attachments (PDF & Image), and record review decisions</p>
+                <p className="text-muted small mb-0">Review research papers (Poster / Oral), examine attached PDF documents, and record review decisions</p>
               </div>
             </div>
             <button
@@ -596,11 +528,11 @@ const AdminAbstractsPage = () => {
               <thead>
                 <tr style={{ background: '#f8fafc' }}>
                   <th className="py-3 px-3 text-nowrap" style={{ width: '10%' }}>Code</th>
-                  <th className="py-3 px-3" style={{ width: '26%' }}>Topic & Presenter</th>
-                  <th className="py-3 px-3" style={{ width: '18%' }}>Institute</th>
+                  <th className="py-3 px-3" style={{ width: '27%' }}>Topic & Presenter</th>
+                  <th className="py-3 px-3" style={{ width: '19%' }}>Institute</th>
                   <th className="py-3 px-2 text-center" style={{ width: '9%' }}>Category</th>
                   <th className="py-3 px-3" style={{ width: '15%' }}>Contact</th>
-                  <th className="py-3 px-2 text-center" style={{ width: '8%' }}>Files</th>
+                  <th className="py-3 px-2 text-center" style={{ width: '8%' }}>PDF</th>
                   <th className="py-3 px-2 text-center" style={{ width: '9%' }}>Status</th>
                   <th className="py-3 px-3 text-center" style={{ width: '11%', minWidth: '130px' }}>Actions</th>
                 </tr>
@@ -634,7 +566,7 @@ const AdminAbstractsPage = () => {
                   </tr>
                 ) : (
                   filteredAbstracts.map((abs) => {
-                    const { pdfUrl, imageUrl } = getFiles(abs);
+                    const pdfUrl = getPdfUrl(abs);
 
                     return (
                       <tr key={abs.id} style={{ borderBottom: '1px solid #eef2f6' }}>
@@ -690,32 +622,19 @@ const AdminAbstractsPage = () => {
                           </div>
                         </td>
                         <td className="py-3 px-2 align-middle text-center">
-                          <div className="d-flex align-items-center justify-content-center gap-1">
-                            {pdfUrl && (
+                          <div className="d-flex align-items-center justify-content-center">
+                            {pdfUrl ? (
                               <a
                                 href={getFullUrl(pdfUrl)}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="btn btn-sm btn-outline-danger d-inline-flex align-items-center gap-1 rounded shadow-none"
-                                style={{ fontSize: '0.68rem', fontWeight: 700, padding: '2px 5px' }}
+                                style={{ fontSize: '0.70rem', fontWeight: 700, padding: '3px 7px' }}
                                 title="Open PDF Document"
                               >
-                                <LuFileText size={12} /> <span>PDF</span>
+                                <LuFileText size={13} /> <span>PDF</span>
                               </a>
-                            )}
-                            {imageUrl && (
-                              <a
-                                href={getFullUrl(imageUrl)}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="btn btn-sm btn-outline-primary d-inline-flex align-items-center gap-1 rounded shadow-none"
-                                style={{ fontSize: '0.68rem', fontWeight: 700, padding: '2px 5px' }}
-                                title="Open Image"
-                              >
-                                <LuImage size={12} /> <span>IMG</span>
-                              </a>
-                            )}
-                            {!pdfUrl && !imageUrl && (
+                            ) : (
                               <span className="text-muted" style={{ fontSize: '0.70rem' }}>—</span>
                             )}
                           </div>
