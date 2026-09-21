@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 /* ==========================================================================
    SPCTT 2026 Admin Panel — Core Design System & Stylesheet
    Medical Society Design Language (Clean, Professional, Modern, Responsive)
