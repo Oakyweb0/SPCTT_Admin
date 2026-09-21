@@ -34,6 +34,10 @@ export const adminApi = {
     return apiClient.put(API_ENDPOINTS.ADMIN.UPDATE_ABSTRACT_STATUS(id), statusData);
   },
 
+  deleteAbstract: (id) => {
+    return apiClient.delete(API_ENDPOINTS.ADMIN.DELETE_ABSTRACT(id));
+  },
+
   /**
    * 4. Invoices Management
    */

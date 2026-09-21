@@ -7,7 +7,9 @@ import {
   LuEye,
   LuCheck,
   LuX,
-  LuExternalLink
+  LuExternalLink,
+  LuTrash2,
+  LuTriangleAlert
 } from 'react-icons/lu';
 import { adminApi } from '../../services/api';
 
@@ -22,6 +24,11 @@ const AdminAbstractsPage = () => {
   const [reviewStatus, setReviewStatus] = useState('accepted');
   const [reviewComments, setReviewComments] = useState('');
   const [updating, setUpdating] = useState(false);
+
+  // Delete state
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [notification, setNotification] = useState(null);
 
   const getFullUrl = (url) => {
     if (!url) return null;
@@ -92,6 +99,41 @@ const AdminAbstractsPage = () => {
     }
   };
 
+  const handleDeleteAbstract = async () => {
+    if (!deleteTarget) return;
+    try {
+      setIsDeleting(true);
+      const res = await adminApi.deleteAbstract(deleteTarget.id);
+      if (res.status) {
+        setNotification({
+          type: 'success',
+          message: `Abstract '${deleteTarget.abstract_code || ('#' + deleteTarget.id)}' deleted successfully.`
+        });
+        if (selectedAbs && selectedAbs.id === deleteTarget.id) {
+          setSelectedAbs(null);
+        }
+        setDeleteTarget(null);
+        await loadAbstracts();
+      } else {
+        setNotification({
+          type: 'danger',
+          message: res.message || 'Failed to delete abstract.'
+        });
+      }
+    } catch (err) {
+      console.error('Error deleting abstract:', err);
+      setNotification({
+        type: 'danger',
+        message: err.response?.data?.message || err.message || 'Failed to delete abstract.'
+      });
+    } finally {
+      setIsDeleting(false);
+      setTimeout(() => {
+        setNotification(null);
+      }, 5000);
+    }
+  };
+
   const filteredAbstracts = abstracts.filter((a) => {
     const s = search.toLowerCase();
     const matchSearch = !search || (
@@ -112,6 +154,16 @@ const AdminAbstractsPage = () => {
 
   return (
     <div className="dashboard-page-container w-100">
+      {/* Toast / Alert Notification */}
+      {notification && (
+        <div className={`alert alert-${notification.type} alert-dismissible fade show d-flex align-items-center justify-content-between shadow-sm rounded-3 mb-3`} role="alert">
+          <div className="d-flex align-items-center gap-2">
+            {notification.type === 'success' ? <LuCheck size={20} /> : <LuTriangleAlert size={20} />}
+            <span>{notification.message}</span>
+          </div>
+          <button type="button" className="btn-close shadow-none" onClick={() => setNotification(null)}></button>
+        </div>
+      )}
       {selectedAbs ? (
         /* Detailed Abstract In-Page View (Preserves Left Menu Bar & Top Header) */
         <div className="space-y-4">
@@ -173,6 +225,14 @@ const AdminAbstractsPage = () => {
               </div>
 
               <div className="d-flex align-items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setDeleteTarget(selectedAbs)}
+                  className="btn btn-outline-danger d-inline-flex align-items-center gap-1.5 px-3 py-2 rounded-3 shadow-none"
+                  title="Delete Abstract"
+                >
+                  <LuTrash2 size={16} /> <span>Delete</span>
+                </button>
                 <button
                   type="button"
                   onClick={() => {
@@ -572,7 +632,7 @@ const AdminAbstractsPage = () => {
                           </span>
                         </td>
                         <td className="py-3 px-3 align-middle text-center text-nowrap pe-4">
-                          <div className="d-inline-flex align-items-center" style={{ gap: '10px' }}>
+                          <div className="d-inline-flex align-items-center" style={{ gap: '8px' }}>
                             <button
                               onClick={() => setSelectedAbs(abs)}
                               className="btn btn-sm btn-light border d-inline-flex align-items-center gap-1.5 py-1.5 px-2.5 rounded-2 shadow-none"
@@ -593,6 +653,14 @@ const AdminAbstractsPage = () => {
                             >
                               <LuCheck size={13} /> <span>Review</span>
                             </button>
+                            <button
+                              onClick={() => setDeleteTarget(abs)}
+                              className="btn btn-sm btn-outline-danger d-inline-flex align-items-center gap-1.5 py-1.5 px-2.5 rounded-2 shadow-none"
+                              style={{ fontSize: '0.78rem', fontWeight: 600 }}
+                              title="Delete Abstract"
+                            >
+                              <LuTrash2 size={13} /> <span>Delete</span>
+                            </button>
                           </div>
                         </td>
                       </tr>
@@ -607,7 +675,7 @@ const AdminAbstractsPage = () => {
 
       {/* Review Modal */}
       {reviewModalAbs && (
-        <div className="modal fade show d-block" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
+        <div className="modal fade show d-block" style={{ backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 1040 }}>
           <div className="modal-dialog modal-dialog-centered">
             <div className="modal-content rounded-4 shadow-lg border-0">
               <div className="modal-header border-bottom">
@@ -664,6 +732,87 @@ const AdminAbstractsPage = () => {
                   className="btn btn-info text-white px-4"
                 >
                   {updating ? 'Saving...' : 'Save Decision'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Abstract Confirmation Modal */}
+      {deleteTarget && (
+        <div className="modal show d-block" style={{ backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 1050 }} tabIndex="-1">
+          <div className="modal-dialog modal-dialog-centered" style={{ maxWidth: '480px' }}>
+            <div className="modal-content border-0 shadow-lg rounded-4 overflow-hidden bg-white">
+              <div className="modal-header border-bottom py-3 px-4 d-flex justify-content-between align-items-center">
+                <h5 className="modal-title fw-bold text-dark mb-0 fs-6">Delete Abstract</h5>
+                <button
+                  type="button"
+                  className="btn-close shadow-none"
+                  onClick={() => setDeleteTarget(null)}
+                  disabled={isDeleting}
+                ></button>
+              </div>
+
+              <div className="modal-body p-4">
+                <p className="text-secondary mb-3">
+                  Are you sure you want to permanently delete this abstract submission?
+                </p>
+
+                <div className="bg-light p-3 rounded-3 border mb-3">
+                  <div className="d-flex align-items-center justify-content-between mb-2">
+                    <span className="badge bg-primary-subtle text-primary border font-monospace px-2.5 py-1" style={{ fontSize: '0.78rem' }}>
+                      {deleteTarget.abstract_code}
+                    </span>
+                    <span className="badge bg-secondary-subtle text-secondary border px-2 py-1 text-uppercase" style={{ fontSize: '0.72rem' }}>
+                      {deleteTarget.category || 'Poster'}
+                    </span>
+                  </div>
+                  <div className="fw-bold text-dark mb-1" style={{ fontSize: '0.9rem' }}>
+                    {deleteTarget.topic || deleteTarget.title}
+                  </div>
+                  <div className="text-muted small">
+                    Author: <span className="text-dark fw-medium">{deleteTarget.name || deleteTarget.authors || deleteTarget.submitter_name || '—'}</span>
+                  </div>
+                  <div className="text-muted small">
+                    Institute: <span className="text-dark fw-medium">{deleteTarget.institute_name || deleteTarget.affiliation || deleteTarget.submitter_org || '—'}</span>
+                  </div>
+                </div>
+
+                <div className="alert alert-warning border-warning-subtle small mb-0 rounded-3 d-flex align-items-center gap-2">
+                  <LuTriangleAlert size={20} className="text-warning flex-shrink-0" />
+                  <span>
+                    <strong>Warning:</strong> This abstract and its associated records will be permanently removed. This action cannot be undone.
+                  </span>
+                </div>
+              </div>
+
+              <div className="modal-footer bg-light border-0 py-3 px-4 d-flex justify-content-end gap-2">
+                <button
+                  type="button"
+                  className="btn btn-outline-secondary px-3 rounded-2 fw-medium shadow-none"
+                  onClick={() => setDeleteTarget(null)}
+                  disabled={isDeleting}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-danger px-4 rounded-2 fw-medium shadow-none d-flex align-items-center gap-2"
+                  onClick={handleDeleteAbstract}
+                  disabled={isDeleting}
+                >
+                  {isDeleting ? (
+                    <>
+                      <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                      <span>Deleting...</span>
+                    </>
+                  ) : (
+                    <>
+                      <LuTrash2 size={15} />
+                      <span>Delete Abstract</span>
+                    </>
+                  )}
                 </button>
               </div>
             </div>

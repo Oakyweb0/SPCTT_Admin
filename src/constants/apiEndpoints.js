@@ -55,6 +55,7 @@ export const API_ENDPOINTS = {
     SUBMIT: '/abstracts',
     MY_ABSTRACTS: '/abstracts/my',
     BY_ID: (id) => `/abstracts/${id}`,
+    DELETE: (id) => `/abstracts/${id}`,
   },
 
   // Admin Operations
@@ -64,6 +65,7 @@ export const API_ENDPOINTS = {
     UPDATE_REGISTRATION_STATUS: (id) => `/admin/registrations/${id}/status`,
     ABSTRACTS: '/admin/abstracts',
     UPDATE_ABSTRACT_STATUS: (id) => `/admin/abstracts/${id}/status`,
+    DELETE_ABSTRACT: (id) => `/admin/abstracts/${id}`,
     INVOICES: '/admin/invoices',
     USERS: '/admin/users',
     USER_BY_ID: (id) => `/admin/users/${id}`,

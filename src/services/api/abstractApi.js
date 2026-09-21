@@ -31,6 +31,14 @@ export const abstractApi = {
   getAbstractById: (id) => {
     return apiClient.get(API_ENDPOINTS.ABSTRACTS.BY_ID(id));
   },
+
+  /**
+   * Delete abstract by ID
+   * @param {string|number} id
+   */
+  deleteAbstract: (id) => {
+    return apiClient.delete(API_ENDPOINTS.ABSTRACTS.DELETE(id));
+  },
 };
 
 export default abstractApi;
