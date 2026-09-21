@@ -31,6 +31,32 @@ const AdminAbstractsPage = () => {
     return `${cleanBase}${url.startsWith('/') ? '' : '/'}${url}`;
   };
 
+  const getFiles = (abs) => {
+    if (!abs) return { pdfUrl: null, imageUrl: null };
+    let pdfUrl = abs.pdf_url || null;
+    let imageUrl = abs.image_url || null;
+
+    if (abs.file_url) {
+      if (typeof abs.file_url === 'string' && (abs.file_url.startsWith('{') || abs.file_url.startsWith('{"'))) {
+        try {
+          const parsed = JSON.parse(abs.file_url);
+          if (parsed.pdf) pdfUrl = parsed.pdf;
+          if (parsed.image) imageUrl = parsed.image;
+        } catch (e) {
+          pdfUrl = pdfUrl || abs.file_url;
+        }
+      } else if (typeof abs.file_url === 'string') {
+        const lower = abs.file_url.toLowerCase();
+        if (lower.endsWith('.jpg') || lower.endsWith('.jpeg') || lower.endsWith('.png') || lower.endsWith('.webp')) {
+          imageUrl = imageUrl || abs.file_url;
+        } else {
+          pdfUrl = pdfUrl || abs.file_url;
+        }
+      }
+    }
+    return { pdfUrl, imageUrl };
+  };
+
   const loadAbstracts = async () => {
     try {
       setLoading(true);
@@ -240,57 +266,62 @@ const AdminAbstractsPage = () => {
             <div className="col-lg-8 col-12">
               <div className="space-y-4">
                 {/* Attachments Card */}
-                <div className="dashboard-card-section mb-4 p-4 bg-white">
-                  <h6 className="fw-bold text-dark text-uppercase small tracking-wider mb-3 pb-2 border-bottom">
-                    Uploaded Documents & Media
-                  </h6>
-                  <div className="d-flex gap-3 flex-wrap mb-3">
-                    {(selectedAbs.pdf_url || selectedAbs.file_url) ? (
-                      <a
-                        href={getFullUrl(selectedAbs.pdf_url || selectedAbs.file_url)}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="btn btn-outline-danger d-inline-flex align-items-center gap-2 px-4 py-2.5 rounded-3 shadow-xs"
-                      >
-                        <LuFileText size={20} />
-                        <span className="fw-semibold">Open & Download PDF Document</span>
-                        <LuExternalLink size={15} />
-                      </a>
-                    ) : (
-                      <span className="badge bg-light text-muted border p-2.5 px-3">No PDF Uploaded</span>
-                    )}
+                {(() => {
+                  const { pdfUrl: absPdfUrl, imageUrl: absImageUrl } = getFiles(selectedAbs);
+                  return (
+                    <div className="dashboard-card-section mb-4 p-4 bg-white">
+                      <h6 className="fw-bold text-dark text-uppercase small tracking-wider mb-3 pb-2 border-bottom">
+                        Uploaded Documents & Media
+                      </h6>
+                      <div className="d-flex gap-3 flex-wrap mb-3">
+                        {absPdfUrl ? (
+                          <a
+                            href={getFullUrl(absPdfUrl)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="btn btn-outline-danger d-inline-flex align-items-center gap-2 px-4 py-2.5 rounded-3 shadow-xs"
+                          >
+                            <LuFileText size={20} />
+                            <span className="fw-semibold">Open & Download PDF Document</span>
+                            <LuExternalLink size={15} />
+                          </a>
+                        ) : (
+                          <span className="badge bg-light text-muted border p-2.5 px-3">No PDF Uploaded</span>
+                        )}
 
-                    {selectedAbs.image_url ? (
-                      <a
-                        href={getFullUrl(selectedAbs.image_url)}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="btn btn-outline-primary d-inline-flex align-items-center gap-2 px-4 py-2.5 rounded-3 shadow-xs"
-                      >
-                        <LuImage size={20} />
-                        <span className="fw-semibold">View Full-Resolution Image</span>
-                        <LuExternalLink size={15} />
-                      </a>
-                    ) : (
-                      <span className="badge bg-light text-muted border p-2.5 px-3">No Image Uploaded</span>
-                    )}
-                  </div>
+                        {absImageUrl ? (
+                          <a
+                            href={getFullUrl(absImageUrl)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="btn btn-outline-primary d-inline-flex align-items-center gap-2 px-4 py-2.5 rounded-3 shadow-xs"
+                          >
+                            <LuImage size={20} />
+                            <span className="fw-semibold">View Full-Resolution Image</span>
+                            <LuExternalLink size={15} />
+                          </a>
+                        ) : (
+                          <span className="badge bg-light text-muted border p-2.5 px-3">No Image Uploaded</span>
+                        )}
+                      </div>
 
-                  {/* Inline Image Preview */}
-                  {selectedAbs.image_url && (
-                    <div className="mt-3 p-3 bg-light rounded-3 border text-center">
-                      <p className="text-muted small mb-2 fw-semibold">Image Preview (Poster / Scientific Diagram):</p>
-                      <a href={getFullUrl(selectedAbs.image_url)} target="_blank" rel="noopener noreferrer">
-                        <img
-                          src={getFullUrl(selectedAbs.image_url)}
-                          alt="Uploaded Abstract Diagram/Poster"
-                          className="img-fluid rounded border shadow-xs"
-                          style={{ maxHeight: '420px', objectFit: 'contain', background: '#fff' }}
-                        />
-                      </a>
+                      {/* Inline Image Preview */}
+                      {absImageUrl && (
+                        <div className="mt-3 p-3 bg-light rounded-3 border text-center">
+                          <p className="text-muted small mb-2 fw-semibold">Image Preview (Poster / Scientific Diagram):</p>
+                          <a href={getFullUrl(absImageUrl)} target="_blank" rel="noopener noreferrer">
+                            <img
+                              src={getFullUrl(absImageUrl)}
+                              alt="Uploaded Abstract Diagram/Poster"
+                              className="img-fluid rounded border shadow-xs"
+                              style={{ maxHeight: '420px', objectFit: 'contain', background: '#fff' }}
+                            />
+                          </a>
+                        </div>
+                      )}
                     </div>
-                  )}
-                </div>
+                  );
+                })()}
 
                 {/* Abstract Text Card */}
                 <div className="dashboard-card-section p-4 bg-white">
@@ -425,8 +456,7 @@ const AdminAbstractsPage = () => {
                   </tr>
                 ) : (
                   filteredAbstracts.map((abs) => {
-                    const pdfUrl = abs.pdf_url || abs.file_url;
-                    const imageUrl = abs.image_url;
+                    const { pdfUrl, imageUrl } = getFiles(abs);
 
                     return (
                       <tr key={abs.id} style={{ borderBottom: '1px solid #eef2f6' }}>
