@@ -145,17 +145,17 @@ const AdminRegistrationsPage = () => {
 
         {/* Table */}
         <div className="activity-table-container">
-          <table className="spctt-table spctt-table-wide">
+          <table className="spctt-table w-100">
             <thead>
               <tr>
-                <th style={{ minWidth: '130px' }}>Reg Code</th>
-                <th style={{ minWidth: '190px' }}>Delegate Details</th>
-                <th style={{ minWidth: '150px' }}>Category</th>
-                <th style={{ minWidth: '160px' }}>Organization</th>
-                <th className="text-end" style={{ minWidth: '120px' }}>Grand Total</th>
-                <th className="text-center" style={{ minWidth: '100px' }}>Payment</th>
-                <th className="text-center" style={{ minWidth: '100px' }}>Status</th>
-                <th className="text-center" style={{ minWidth: '90px' }}>Action</th>
+                <th style={{ width: '12%' }}>Reg Code</th>
+                <th style={{ width: '22%' }}>Delegate Details</th>
+                <th style={{ width: '15%' }}>Category</th>
+                <th style={{ width: '18%' }}>Organization</th>
+                <th className="text-end" style={{ width: '11%' }}>Grand Total</th>
+                <th className="text-center" style={{ width: '8%' }}>Payment</th>
+                <th className="text-center" style={{ width: '8%' }}>Status</th>
+                <th className="text-center" style={{ width: '6%' }}>Action</th>
               </tr>
             </thead>
             <tbody>

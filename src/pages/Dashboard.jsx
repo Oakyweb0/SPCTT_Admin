@@ -160,7 +160,7 @@ const Dashboard = () => {
 
         {/* Card 4: Total Users / Delegates */}
         <div className="col-xl-3 col-md-6 col-12">
-          <div className="stat-card-wrapper" style={{ borderLeft: '4px solid #16a34a' }}>
+          <div className="stat-card-wrapper stat-theme-enquiries">
             <div className="stat-card-top">
               <div className="stat-card-info">
                 <span className="stat-card-label">Registered Users</span>
@@ -168,7 +168,7 @@ const Dashboard = () => {
                   {loading ? '...' : stats.totalUsers}
                 </span>
               </div>
-              <div className="stat-icon-box" style={{ background: 'rgba(22, 163, 74, 0.1)', color: '#16a34a' }}>
+              <div className="stat-icon-box">
                 <LuUsers size={24} />
               </div>
             </div>

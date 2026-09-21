@@ -321,16 +321,16 @@ const AdminUsersPage = () => {
 
         {/* Users Table */}
         <div className="activity-table-container">
-          <table className="spctt-table spctt-table-wide">
+          <table className="spctt-table w-100">
             <thead>
               <tr>
-                <th style={{ minWidth: '200px' }}>Delegate Profile</th>
-                <th style={{ minWidth: '200px' }}>Contact Details</th>
-                <th style={{ minWidth: '180px' }}>Institution / Organization</th>
-                <th className="text-center" style={{ minWidth: '100px' }}>Role</th>
-                <th className="text-center" style={{ minWidth: '100px' }}>Status</th>
-                <th style={{ minWidth: '140px' }}>Registered Date</th>
-                <th className="text-center" style={{ minWidth: '100px' }}>Action</th>
+                <th style={{ width: '22%' }}>Delegate Profile</th>
+                <th style={{ width: '23%' }}>Contact Details</th>
+                <th style={{ width: '20%' }}>Institution / Organization</th>
+                <th className="text-center" style={{ width: '9%' }}>Role</th>
+                <th className="text-center" style={{ width: '9%' }}>Status</th>
+                <th style={{ width: '10%' }}>Registered Date</th>
+                <th className="text-center" style={{ width: '7%' }}>Action</th>
               </tr>
             </thead>
             <tbody>
@@ -364,35 +364,37 @@ const AdminUsersPage = () => {
                 filteredUsers.map((u) => (
                   <tr key={u.id}>
                     <td>
-                      <div className="d-flex align-items-center gap-3">
+                      <div className="d-flex align-items-center gap-2.5">
                         <div className={`user-avatar-badge ${u.role || 'user'}`}>
                           {getInitials(u.name)}
                         </div>
-                        <div>
-                          <div className="fw-bold text-dark">{u.title ? `${u.title} ` : ''}{u.name}</div>
-                          <div className="text-muted small" style={{ fontSize: '0.75rem' }}>
+                        <div className="text-truncate">
+                          <div className="fw-bold text-dark text-truncate" title={`${u.title ? `${u.title} ` : ''}${u.name}`}>
+                            {u.title ? `${u.title} ` : ''}{u.name}
+                          </div>
+                          <div className="text-muted small" style={{ fontSize: '0.73rem' }}>
                             <span className="badge bg-light text-secondary border px-1.5 py-0.5">ID: #{u.id}</span>
                           </div>
                         </div>
                       </div>
                     </td>
                     <td>
-                      <div className="d-flex align-items-center gap-2 text-dark fw-semibold small">
-                        <LuMail size={14} className="text-primary flex-shrink-0" />
-                        <span>{u.email}</span>
+                      <div className="d-flex align-items-center gap-1.5 text-dark fw-semibold small text-truncate" title={u.email}>
+                        <LuMail size={13} className="text-primary flex-shrink-0" />
+                        <span className="text-truncate" style={{ fontSize: '0.82rem' }}>{u.email}</span>
                       </div>
                       {u.phone && (
-                        <div className="d-flex align-items-center gap-2 text-muted mt-1 small" style={{ fontSize: '0.78rem' }}>
-                          <LuPhone size={13} className="text-muted flex-shrink-0" />
+                        <div className="d-flex align-items-center gap-1.5 text-muted mt-1 small" style={{ fontSize: '0.76rem' }}>
+                          <LuPhone size={12} className="text-muted flex-shrink-0" />
                           <span>{u.phone}</span>
                         </div>
                       )}
                     </td>
                     <td>
-                      <div className="d-flex align-items-center gap-2 small">
-                        <LuBuilding2 size={15} className="text-muted flex-shrink-0" />
+                      <div className="d-flex align-items-center gap-1.5 small text-truncate" title={u.organization || 'Not specified'}>
+                        <LuBuilding2 size={14} className="text-muted flex-shrink-0" />
                         {u.organization ? (
-                          <span className="fw-medium text-dark">{u.organization}</span>
+                          <span className="fw-medium text-dark text-truncate">{u.organization}</span>
                         ) : (
                           <span className="text-muted fst-italic">Not specified</span>
                         )}
@@ -403,43 +405,43 @@ const AdminUsersPage = () => {
                         u.role === 'admin' ? 'bg-purple-subtle text-purple border border-purple' :
                         u.role === 'manager' ? 'bg-primary-subtle text-primary border border-primary' :
                         'bg-info-subtle text-info border border-info'
-                      } text-uppercase px-2.5 py-1 rounded-pill d-inline-flex align-items-center justify-content-center gap-1`} style={{ fontSize: '0.72rem', letterSpacing: '0.04em', fontWeight: 600, whiteSpace: 'nowrap' }}>
-                        {u.role === 'admin' && <LuShieldCheck size={13} className="flex-shrink-0" />}
+                      } text-uppercase px-2 py-1 rounded-pill d-inline-flex align-items-center justify-content-center gap-1`} style={{ fontSize: '0.7rem', letterSpacing: '0.04em', fontWeight: 600, whiteSpace: 'nowrap' }}>
+                        {u.role === 'admin' && <LuShieldCheck size={12} className="flex-shrink-0" />}
                         <span>{u.role || 'User'}</span>
                       </span>
                     </td>
                     <td className="text-center">
                       <span className={`badge ${
                         u.status === 'active' ? 'bg-success-subtle text-success border border-success' : 'bg-danger-subtle text-danger border border-danger'
-                      } text-uppercase px-2.5 py-1 rounded-pill d-inline-flex align-items-center justify-content-center gap-1.5`} style={{ fontSize: '0.72rem', letterSpacing: '0.04em', fontWeight: 600, whiteSpace: 'nowrap' }}>
+                      } text-uppercase px-2 py-1 rounded-pill d-inline-flex align-items-center justify-content-center gap-1.5`} style={{ fontSize: '0.7rem', letterSpacing: '0.04em', fontWeight: 600, whiteSpace: 'nowrap' }}>
                         <span className={`badge-status-dot ${u.status === 'active' ? 'active' : 'inactive'}`}></span>
                         <span>{u.status || 'active'}</span>
                       </span>
                     </td>
                     <td>
-                      <div className="d-flex align-items-center gap-2 text-muted small">
-                        <LuCalendar size={14} className="text-muted flex-shrink-0" />
+                      <div className="d-flex align-items-center gap-1.5 text-muted small text-nowrap" style={{ fontSize: '0.78rem' }}>
+                        <LuCalendar size={13} className="text-muted flex-shrink-0" />
                         <span>{new Date(u.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}</span>
                       </div>
                     </td>
                     <td className="text-center text-nowrap">
-                      <div className="d-inline-flex align-items-center" style={{ gap: '10px' }}>
+                      <div className="d-inline-flex align-items-center gap-1.5">
                         <button
                           onClick={() => handleOpenEdit(u)}
-                          className="btn btn-outline-primary btn-sm px-2.5 py-1.5 rounded-2 d-inline-flex align-items-center gap-1 transition-all shadow-none"
+                          className="btn btn-outline-primary btn-sm px-2 py-1 rounded-2 d-inline-flex align-items-center gap-1 transition-all shadow-none"
                           title={`Edit ${u.name}`}
-                          style={{ fontSize: '0.78rem', fontWeight: 500 }}
+                          style={{ fontSize: '0.74rem', fontWeight: 500 }}
                         >
-                          <LuPencil size={13} />
+                          <LuPencil size={12} />
                           <span>Edit</span>
                         </button>
                         <button
                           onClick={() => setDeleteTarget(u)}
-                          className="btn btn-outline-danger btn-sm px-2.5 py-1.5 rounded-2 d-inline-flex align-items-center gap-1 transition-all shadow-none"
+                          className="btn btn-outline-danger btn-sm px-2 py-1 rounded-2 d-inline-flex align-items-center gap-1 transition-all shadow-none"
                           title={`Delete ${u.name}`}
-                          style={{ fontSize: '0.78rem', fontWeight: 500 }}
+                          style={{ fontSize: '0.74rem', fontWeight: 500 }}
                         >
-                          <LuTrash2 size={13} />
+                          <LuTrash2 size={12} />
                           <span>Delete</span>
                         </button>
                       </div>

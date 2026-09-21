@@ -1882,20 +1882,20 @@ a:hover {
 .spctt-table thead th {
   background-color: #f8fafc;
   color: #475569;
-  font-size: 0.78rem;
+  font-size: 0.75rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  padding: 14px 18px;
+  letter-spacing: 0.04em;
+  padding: 10px 12px;
   border-bottom: 2px solid var(--spctt-border);
   white-space: nowrap;
 }
 
 .spctt-table tbody td {
-  padding: 14px 18px;
+  padding: 10px 12px;
   vertical-align: middle;
   border-bottom: 1px solid var(--spctt-border-subtle);
-  font-size: 0.875rem;
+  font-size: 0.84rem;
   color: var(--spctt-body);
   transition: background-color var(--spctt-transition-fast);
 }
@@ -1910,29 +1910,29 @@ a:hover {
 
 /* Avatar Badge */
 .user-avatar-badge {
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
   background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
   color: #ffffff;
   font-weight: 700;
-  font-size: 0.85rem;
+  font-size: 0.78rem;
   letter-spacing: 0.02em;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 6px rgba(59, 130, 246, 0.28);
+  box-shadow: 0 2px 5px rgba(59, 130, 246, 0.25);
   flex-shrink: 0;
 }
 
 .user-avatar-badge.admin {
   background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
-  box-shadow: 0 2px 6px rgba(139, 92, 246, 0.28);
+  box-shadow: 0 2px 5px rgba(139, 92, 246, 0.25);
 }
 
 .user-avatar-badge.manager {
   background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
-  box-shadow: 0 2px 6px rgba(14, 165, 233, 0.28);
+  box-shadow: 0 2px 5px rgba(14, 165, 233, 0.25);
 }
 
 /* Color Tokens & Badges */
