@@ -182,13 +182,10 @@ const AdminAbstractsPage = () => {
                     {selectedAbs.abstract_code}
                   </span>
                   <span
-                    className="badge px-2.5 py-1 rounded-pill text-uppercase"
+                    className="badge badge-category-teal px-2.5 py-1 rounded-pill text-uppercase"
                     style={{
                       fontSize: '0.72rem',
-                      fontWeight: 700,
-                      backgroundColor: (selectedAbs.category || '').toLowerCase() === 'oral' ? '#faf5ff' : '#f0fdfa',
-                      color: (selectedAbs.category || '').toLowerCase() === 'oral' ? '#7e22ce' : '#0f766e',
-                      border: `1px solid ${(selectedAbs.category || '').toLowerCase() === 'oral' ? '#d8b4fe' : '#99f6e4'}`
+                      fontWeight: 700
                     }}
                   >
                     {selectedAbs.category || 'Poster'}
@@ -601,13 +598,10 @@ const AdminAbstractsPage = () => {
                         </td>
                         <td className="py-3 px-2 align-middle text-center">
                           <span
-                            className="badge px-2.5 py-1 rounded-pill"
+                            className="badge badge-category-teal px-2.5 py-1 rounded-pill"
                             style={{
                               fontSize: '0.72rem',
-                              fontWeight: 700,
-                              backgroundColor: (abs.category || '').toLowerCase() === 'oral' ? '#faf5ff' : '#f0fdfa',
-                              color: (abs.category || '').toLowerCase() === 'oral' ? '#7e22ce' : '#0f766e',
-                              border: `1px solid ${(abs.category || '').toLowerCase() === 'oral' ? '#d8b4fe' : '#99f6e4'}`
+                              fontWeight: 700
                             }}
                           >
                             {abs.category || 'Poster'}

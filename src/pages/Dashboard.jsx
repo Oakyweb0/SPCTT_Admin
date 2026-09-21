@@ -331,8 +331,8 @@ const Dashboard = () => {
                             </div>
                           </td>
                           <td>
-                            <span className="badge bg-light text-dark border" style={{ fontSize: '0.72rem' }}>
-                              {abs.category}
+                            <span className="badge badge-category-teal px-2.5 py-1 rounded-pill" style={{ fontSize: '0.72rem', fontWeight: 700 }}>
+                              {abs.category || 'Poster'}
                             </span>
                           </td>
                           <td className="text-center">
