@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import { 
   LuClipboardList, 
   LuFileText, 
-  LuUsers, 
   LuIndianRupee, 
   LuCheck, 
   LuArrowUpRight, 
@@ -85,10 +84,10 @@ const Dashboard = () => {
         </div>
       )}
 
-      {/* 2. Stat Cards Grid (4 Columns) */}
+      {/* 2. Stat Cards Grid (3 Columns) */}
       <div className="row g-4 mb-4">
         {/* Card 1: Total Revenue */}
-        <div className="col-xl-3 col-md-6 col-12">
+        <div className="col-lg-4 col-md-6 col-12">
           <div className="stat-card-wrapper stat-theme-events">
             <div className="stat-card-top">
               <div className="stat-card-info">
@@ -113,7 +112,7 @@ const Dashboard = () => {
         </div>
 
         {/* Card 2: Total Registrations */}
-        <div className="col-xl-3 col-md-6 col-12">
+        <div className="col-lg-4 col-md-6 col-12">
           <div className="stat-card-wrapper stat-theme-members">
             <div className="stat-card-top">
               <div className="stat-card-info">
@@ -136,7 +135,7 @@ const Dashboard = () => {
         </div>
 
         {/* Card 3: Research Abstracts */}
-        <div className="col-xl-3 col-md-6 col-12">
+        <div className="col-lg-4 col-md-12 col-12">
           <div className="stat-card-wrapper stat-theme-blogs">
             <div className="stat-card-top">
               <div className="stat-card-info">
@@ -153,29 +152,6 @@ const Dashboard = () => {
               <span className="text-muted small">Papers for review</span>
               <Link to="/admin/abstract" className="text-decoration-none fw-bold text-info small d-flex align-items-center gap-1">
                 Review <LuArrowUpRight size={13} />
-              </Link>
-            </div>
-          </div>
-        </div>
-
-        {/* Card 4: Registered Users */}
-        <div className="col-xl-3 col-md-6 col-12">
-          <div className="stat-card-wrapper stat-theme-enquiries">
-            <div className="stat-card-top">
-              <div className="stat-card-info">
-                <span className="stat-card-label">User Accounts</span>
-                <span className="stat-card-value text-success">
-                  {loading ? '...' : stats.totalUsers}
-                </span>
-              </div>
-              <div className="stat-icon-box">
-                <LuUsers size={24} />
-              </div>
-            </div>
-            <div className="stat-card-bottom">
-              <span className="text-muted small">Active delegates</span>
-              <Link to="/admin/users" className="text-decoration-none fw-bold text-success small d-flex align-items-center gap-1">
-                Directory <LuArrowUpRight size={13} />
               </Link>
             </div>
           </div>

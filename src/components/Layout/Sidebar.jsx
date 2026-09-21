@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink, Link } from 'react-router-dom';
-import { LuLayoutDashboard, LuClipboardList, LuFileText, LuUsers } from 'react-icons/lu';
+import { LuLayoutDashboard, LuClipboardList, LuFileText } from 'react-icons/lu';
 import logoImg from '../../assets/images/logo.png';
 
 const Sidebar = ({ onNavigate }) => {
@@ -19,11 +19,6 @@ const Sidebar = ({ onNavigate }) => {
       name: 'Abstract',
       path: '/admin/abstract',
       icon: LuFileText
-    },
-    {
-      name: 'Users',
-      path: '/admin/users',
-      icon: LuUsers
     }
   ];
 

@@ -12,7 +12,6 @@ const AdminLayout = () => {
   const getPageTitle = (path) => {
     if (path.includes('/admin/registration')) return 'Registration';
     if (path.includes('/admin/abstract')) return 'Abstract';
-    if (path.includes('/admin/users')) return 'Users';
     return 'Dashboard';
   };
 
