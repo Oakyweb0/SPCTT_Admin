@@ -8,7 +8,8 @@ import {
   LuArrowUpRight, 
   LuRefreshCw,
   LuCalendar,
-  LuClock
+  LuClock,
+  LuUsers
 } from 'react-icons/lu';
 import { adminApi, getStoredAuth } from '../services/api';
 
@@ -84,10 +85,10 @@ const Dashboard = () => {
         </div>
       )}
 
-      {/* 2. Stat Cards Grid (3 Columns) */}
+      {/* 2. Stat Cards Grid (4 Columns) */}
       <div className="row g-4 mb-4">
         {/* Card 1: Total Revenue */}
-        <div className="col-lg-4 col-md-6 col-12">
+        <div className="col-xl-3 col-md-6 col-12">
           <div className="stat-card-wrapper stat-theme-events">
             <div className="stat-card-top">
               <div className="stat-card-info">
@@ -112,7 +113,7 @@ const Dashboard = () => {
         </div>
 
         {/* Card 2: Total Registrations */}
-        <div className="col-lg-4 col-md-6 col-12">
+        <div className="col-xl-3 col-md-6 col-12">
           <div className="stat-card-wrapper stat-theme-members">
             <div className="stat-card-top">
               <div className="stat-card-info">
@@ -135,7 +136,7 @@ const Dashboard = () => {
         </div>
 
         {/* Card 3: Research Abstracts */}
-        <div className="col-lg-4 col-md-12 col-12">
+        <div className="col-xl-3 col-md-6 col-12">
           <div className="stat-card-wrapper stat-theme-blogs">
             <div className="stat-card-top">
               <div className="stat-card-info">
@@ -152,6 +153,29 @@ const Dashboard = () => {
               <span className="text-muted small">Papers for review</span>
               <Link to="/admin/abstract" className="text-decoration-none fw-bold text-info small d-flex align-items-center gap-1">
                 Review <LuArrowUpRight size={13} />
+              </Link>
+            </div>
+          </div>
+        </div>
+
+        {/* Card 4: Total Users / Delegates */}
+        <div className="col-xl-3 col-md-6 col-12">
+          <div className="stat-card-wrapper" style={{ borderLeft: '4px solid #16a34a' }}>
+            <div className="stat-card-top">
+              <div className="stat-card-info">
+                <span className="stat-card-label">Registered Users</span>
+                <span className="stat-card-value text-success">
+                  {loading ? '...' : stats.totalUsers}
+                </span>
+              </div>
+              <div className="stat-icon-box" style={{ background: 'rgba(22, 163, 74, 0.1)', color: '#16a34a' }}>
+                <LuUsers size={24} />
+              </div>
+            </div>
+            <div className="stat-card-bottom">
+              <span className="text-muted small">Delegate accounts</span>
+              <Link to="/admin/users" className="text-decoration-none fw-bold text-success small d-flex align-items-center gap-1">
+                Manage <LuArrowUpRight size={13} />
               </Link>
             </div>
           </div>

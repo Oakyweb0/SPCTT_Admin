@@ -53,6 +53,10 @@ export const adminApi = {
     return apiClient.get(`${API_ENDPOINTS.ADMIN.USERS}${query}`);
   },
 
+  createUser: (userData) => {
+    return apiClient.post(API_ENDPOINTS.ADMIN.USERS, userData);
+  },
+
   getUserById: (id) => {
     return apiClient.get(API_ENDPOINTS.ADMIN.USER_BY_ID(id));
   },

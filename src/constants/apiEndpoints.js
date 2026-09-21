@@ -68,6 +68,7 @@ export const API_ENDPOINTS = {
     DELETE_ABSTRACT: (id) => `/admin/abstracts/${id}`,
     INVOICES: '/admin/invoices',
     USERS: '/admin/users',
+    CREATE_USER: '/admin/users',
     USER_BY_ID: (id) => `/admin/users/${id}`,
     UPDATE_USER: (id) => `/admin/users/${id}`,
     DELETE_USER: (id) => `/admin/users/${id}`,

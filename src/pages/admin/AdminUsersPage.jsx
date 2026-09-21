@@ -13,7 +13,11 @@ import {
   LuTriangleAlert,
   LuCircleAlert,
   LuCheck,
-  LuX
+  LuX,
+  LuUserPlus,
+  LuLock,
+  LuEye,
+  LuEyeOff
 } from 'react-icons/lu';
 import { adminApi } from '../../services/api';
 
@@ -23,10 +27,12 @@ const AdminUsersPage = () => {
   const [search, setSearch] = useState('');
   const [roleFilter, setRoleFilter] = useState('');
   
+  // Notification state
+  const [notification, setNotification] = useState(null);
+
   // Delete state
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [notification, setNotification] = useState(null);
 
   // Edit state
   const [editTarget, setEditTarget] = useState(null);
@@ -41,6 +47,22 @@ const AdminUsersPage = () => {
   });
   const [isUpdating, setIsUpdating] = useState(false);
   const [editError, setEditError] = useState(null);
+
+  // Add User state
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [showAddPassword, setShowAddPassword] = useState(false);
+  const [isCreating, setIsCreating] = useState(false);
+  const [addError, setAddError] = useState(null);
+  const [addForm, setAddForm] = useState({
+    title: 'Mr.',
+    name: '',
+    email: '',
+    password: '',
+    phone: '',
+    organization: '',
+    role: 'user',
+    status: 'active'
+  });
 
   const loadUsers = async () => {
     try {
@@ -59,6 +81,68 @@ const AdminUsersPage = () => {
   useEffect(() => {
     loadUsers();
   }, []);
+
+  const handleOpenAdd = () => {
+    setAddForm({
+      title: 'Mr.',
+      name: '',
+      email: '',
+      password: '',
+      phone: '',
+      organization: '',
+      role: 'user',
+      status: 'active'
+    });
+    setAddError(null);
+    setShowAddPassword(false);
+    setShowAddModal(true);
+  };
+
+  const handleCreateUser = async (e) => {
+    if (e) e.preventDefault();
+    try {
+      setIsCreating(true);
+      setAddError(null);
+
+      if (!addForm.name.trim()) {
+        setAddError('Full name is required.');
+        setIsCreating(false);
+        return;
+      }
+
+      if (!addForm.email.trim()) {
+        setAddError('Email address is required.');
+        setIsCreating(false);
+        return;
+      }
+
+      if (!addForm.password || addForm.password.length < 6) {
+        setAddError('Password must be at least 6 characters long.');
+        setIsCreating(false);
+        return;
+      }
+
+      const res = await adminApi.createUser(addForm);
+      if (res.status) {
+        setNotification({
+          type: 'success',
+          message: `User '${res.data?.name || addForm.name}' (ID: #${res.data?.id}) created successfully!`
+        });
+        setShowAddModal(false);
+        await loadUsers();
+      } else {
+        setAddError(res.message || 'Failed to create user.');
+      }
+    } catch (err) {
+      console.error('Error creating user:', err);
+      setAddError(err.response?.data?.message || err.message || 'Failed to create user.');
+    } finally {
+      setIsCreating(false);
+      setTimeout(() => {
+        setNotification(null);
+      }, 5000);
+    }
+  };
 
   const handleOpenEdit = (user) => {
     setEditTarget(user);
@@ -183,14 +267,23 @@ const AdminUsersPage = () => {
               <p className="text-muted small mb-0">Directory of all registered accounts, delegate institutional details, and system roles</p>
             </div>
           </div>
-          <button
-            onClick={loadUsers}
-            disabled={loading}
-            className="btn btn-outline-success btn-sm d-inline-flex align-items-center gap-2 px-3 py-2 rounded-3 shadow-none"
-          >
-            <LuRefreshCw className={loading ? 'fa-spin' : ''} />
-            <span>Refresh</span>
-          </button>
+          <div className="d-flex align-items-center gap-2">
+            <button
+              onClick={handleOpenAdd}
+              className="btn btn-success btn-sm d-inline-flex align-items-center gap-2 px-3 py-2 rounded-3 shadow-none fw-medium"
+            >
+              <LuUserPlus size={16} />
+              <span>Add New User</span>
+            </button>
+            <button
+              onClick={loadUsers}
+              disabled={loading}
+              className="btn btn-outline-success btn-sm d-inline-flex align-items-center gap-2 px-3 py-2 rounded-3 shadow-none"
+            >
+              <LuRefreshCw className={loading ? 'fa-spin' : ''} />
+              <span>Refresh</span>
+            </button>
+          </div>
         </div>
 
         {/* Search Toolbar */}
@@ -518,6 +611,201 @@ const AdminUsersPage = () => {
                       <>
                         <LuCheck size={16} />
                         <span>Save Changes</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Add User Modal */}
+      {showAddModal && (
+        <div className="modal show d-block" style={{ backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 1050 }} tabIndex="-1">
+          <div className="modal-dialog modal-dialog-centered modal-lg" style={{ maxWidth: '640px' }}>
+            <div className="modal-content border-0 shadow-lg rounded-4 overflow-hidden bg-white">
+              <div className="modal-header border-bottom py-3 px-4 d-flex justify-content-between align-items-center bg-light">
+                <div className="d-flex align-items-center gap-2">
+                  <div className="bg-success-subtle text-success p-2 rounded-circle">
+                    <LuUserPlus size={18} />
+                  </div>
+                  <div>
+                    <h5 className="modal-title fw-bold text-dark mb-0 fs-6">Add New User / Delegate</h5>
+                    <small className="text-muted">Create a new delegate account directly in the system</small>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  className="btn-close shadow-none"
+                  onClick={() => setShowAddModal(false)}
+                  disabled={isCreating}
+                ></button>
+              </div>
+
+              <form onSubmit={handleCreateUser}>
+                <div className="modal-body p-4">
+                  {addError && (
+                    <div className="alert alert-danger py-2 px-3 small rounded-3 mb-3 d-flex align-items-center gap-2">
+                      <LuCircleAlert size={16} className="flex-shrink-0" />
+                      <span>{addError}</span>
+                    </div>
+                  )}
+
+                  <div className="row g-3">
+                    {/* Title */}
+                    <div className="col-md-3">
+                      <label className="form-label small fw-semibold text-muted text-uppercase">Title</label>
+                      <select
+                        className="form-select shadow-none"
+                        value={addForm.title}
+                        onChange={(e) => setAddForm({ ...addForm, title: e.target.value })}
+                        disabled={isCreating}
+                      >
+                        <option value="Mr.">Mr.</option>
+                        <option value="Ms.">Ms.</option>
+                        <option value="Mrs.">Mrs.</option>
+                        <option value="Dr.">Dr.</option>
+                        <option value="Prof.">Prof.</option>
+                      </select>
+                    </div>
+
+                    {/* Full Name */}
+                    <div className="col-md-9">
+                      <label className="form-label small fw-semibold text-muted text-uppercase">Full Name *</label>
+                      <input
+                        type="text"
+                        className="form-control shadow-none"
+                        required
+                        value={addForm.name}
+                        onChange={(e) => setAddForm({ ...addForm, name: e.target.value })}
+                        disabled={isCreating}
+                        placeholder="e.g. Dr. Ramesh Kumar"
+                      />
+                    </div>
+
+                    {/* Email */}
+                    <div className="col-md-6">
+                      <label className="form-label small fw-semibold text-muted text-uppercase">Email Address *</label>
+                      <input
+                        type="email"
+                        className="form-control shadow-none"
+                        required
+                        value={addForm.email}
+                        onChange={(e) => setAddForm({ ...addForm, email: e.target.value })}
+                        disabled={isCreating}
+                        placeholder="delegate@example.com"
+                      />
+                    </div>
+
+                    {/* Password */}
+                    <div className="col-md-6">
+                      <label className="form-label small fw-semibold text-muted text-uppercase">Password *</label>
+                      <div className="input-group">
+                        <input
+                          type={showAddPassword ? 'text' : 'password'}
+                          className="form-control shadow-none"
+                          required
+                          minLength={6}
+                          value={addForm.password}
+                          onChange={(e) => setAddForm({ ...addForm, password: e.target.value })}
+                          disabled={isCreating}
+                          placeholder="Min. 6 characters"
+                        />
+                        <button
+                          type="button"
+                          className="btn btn-outline-secondary border shadow-none"
+                          onClick={() => setShowAddPassword(!showAddPassword)}
+                          title={showAddPassword ? 'Hide password' : 'Show password'}
+                          tabIndex="-1"
+                        >
+                          {showAddPassword ? <LuEyeOff size={16} /> : <LuEye size={16} />}
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Phone */}
+                    <div className="col-md-6">
+                      <label className="form-label small fw-semibold text-muted text-uppercase">Phone / Mobile</label>
+                      <input
+                        type="tel"
+                        className="form-control shadow-none"
+                        value={addForm.phone}
+                        onChange={(e) => setAddForm({ ...addForm, phone: e.target.value })}
+                        disabled={isCreating}
+                        placeholder="+91 98765 43210"
+                      />
+                    </div>
+
+                    {/* Organization */}
+                    <div className="col-md-6">
+                      <label className="form-label small fw-semibold text-muted text-uppercase">Institution / Organization</label>
+                      <input
+                        type="text"
+                        className="form-control shadow-none"
+                        value={addForm.organization}
+                        onChange={(e) => setAddForm({ ...addForm, organization: e.target.value })}
+                        disabled={isCreating}
+                        placeholder="Hospital, University, AIIMS, etc."
+                      />
+                    </div>
+
+                    {/* Role */}
+                    <div className="col-md-6">
+                      <label className="form-label small fw-semibold text-muted text-uppercase">System Role</label>
+                      <select
+                        className="form-select shadow-none"
+                        value={addForm.role}
+                        onChange={(e) => setAddForm({ ...addForm, role: e.target.value })}
+                        disabled={isCreating}
+                      >
+                        <option value="user">User (Delegate)</option>
+                        <option value="manager">Manager</option>
+                        <option value="admin">Administrator</option>
+                      </select>
+                    </div>
+
+                    {/* Status */}
+                    <div className="col-md-6">
+                      <label className="form-label small fw-semibold text-muted text-uppercase">Account Status</label>
+                      <select
+                        className="form-select shadow-none"
+                        value={addForm.status}
+                        onChange={(e) => setAddForm({ ...addForm, status: e.target.value })}
+                        disabled={isCreating}
+                      >
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
+                        <option value="banned">Banned (Suspended)</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="modal-footer bg-light border-top py-3 px-4 d-flex justify-content-end gap-2">
+                  <button
+                    type="button"
+                    className="btn btn-outline-secondary px-3 rounded-2 fw-medium shadow-none"
+                    onClick={() => setShowAddModal(false)}
+                    disabled={isCreating}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="btn btn-success px-4 rounded-2 fw-medium shadow-none d-inline-flex align-items-center gap-1.5"
+                    disabled={isCreating}
+                  >
+                    {isCreating ? (
+                      <>
+                        <span className="spinner-border spinner-border-sm" role="status"></span>
+                        <span>Creating User...</span>
+                      </>
+                    ) : (
+                      <>
+                        <LuUserPlus size={16} />
+                        <span>Create User</span>
                       </>
                     )}
                   </button>

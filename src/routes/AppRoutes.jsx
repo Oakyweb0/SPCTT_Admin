@@ -7,6 +7,7 @@ import LoginPage from '../pages/LoginPage';
 // Admin Pages
 import AdminRegistrationsPage from '../pages/admin/AdminRegistrationsPage';
 import AdminAbstractsPage from '../pages/admin/AdminAbstractsPage';
+import AdminUsersPage from '../pages/admin/AdminUsersPage';
 
 // Protection helper for Admin
 const AdminAuthGuard = ({ children }) => {
@@ -51,6 +52,7 @@ const AppRoutes = () => {
         <Route path="dashboard" element={<Dashboard />} />
         <Route path="registration" element={<AdminRegistrationsPage />} />
         <Route path="abstract" element={<AdminAbstractsPage />} />
+        <Route path="users" element={<AdminUsersPage />} />
 
         {/* Fallback within admin */}
         <Route path="*" element={<Navigate to="/admin/dashboard" replace />} />
