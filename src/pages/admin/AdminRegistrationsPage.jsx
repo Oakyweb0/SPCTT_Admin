@@ -217,7 +217,7 @@ const AdminRegistrationsPage = () => {
                         reg.payment_status === 'paid'
                           ? 'bg-success-subtle text-success border border-success'
                           : 'bg-warning-subtle text-warning border border-warning'
-                      } text-uppercase px-2.5 py-1 rounded-pill`} style={{ fontSize: '0.68rem', letterSpacing: '0.04em' }}>
+                      } text-uppercase px-2.5 py-1 rounded-pill`} style={{ fontSize: '0.68rem', letterSpacing: '0.04em', fontWeight: 700 }}>
                         {reg.payment_status}
                       </span>
                     </td>
@@ -226,7 +226,7 @@ const AdminRegistrationsPage = () => {
                         reg.status === 'confirmed' ? 'bg-primary-subtle text-primary border border-primary' :
                         reg.status === 'draft' ? 'bg-light text-muted border' :
                         'bg-info-subtle text-info border border-info'
-                      } text-uppercase px-2.5 py-1 rounded-pill`} style={{ fontSize: '0.68rem', letterSpacing: '0.04em' }}>
+                      } text-uppercase px-2.5 py-1 rounded-pill`} style={{ fontSize: '0.68rem', letterSpacing: '0.04em', fontWeight: 700 }}>
                         {reg.status}
                       </span>
                     </td>

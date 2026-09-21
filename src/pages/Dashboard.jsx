@@ -256,7 +256,7 @@ const Dashboard = () => {
                                 : reg.payment_status === 'failed'
                                 ? 'bg-danger-subtle text-danger border border-danger'
                                 : 'bg-warning-subtle text-warning border border-warning'
-                            } text-uppercase px-2 py-0.5 rounded-pill`} style={{ fontSize: '0.65rem', letterSpacing: '0.03em' }}>
+                            } text-uppercase px-2.5 py-1 rounded-pill`} style={{ fontSize: '0.68rem', letterSpacing: '0.04em', fontWeight: 700 }}>
                               {reg.payment_status || 'pending'}
                             </span>
                           </td>
@@ -341,7 +341,7 @@ const Dashboard = () => {
                               abs.status === 'rejected' ? 'bg-danger-subtle text-danger border border-danger' :
                               abs.status === 'under_review' ? 'bg-info-subtle text-info border border-info' :
                               'bg-warning-subtle text-warning border border-warning'
-                            } text-uppercase px-2 py-0.5 rounded-pill`} style={{ fontSize: '0.65rem', letterSpacing: '0.03em' }}>
+                            } text-uppercase px-2.5 py-1 rounded-pill`} style={{ fontSize: '0.68rem', letterSpacing: '0.04em', fontWeight: 700 }}>
                               {abs.status ? abs.status.replace('_', ' ') : 'submitted'}
                             </span>
                           </td>

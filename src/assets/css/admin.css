@@ -1165,8 +1165,8 @@ a:hover {
 
 .status-badge-custom.status-new {
   background-color: #fef3c7;
-  color: #b45309;
-  border: 1px solid #fde68a;
+  color: #92400e;
+  border: 1px solid #fde047;
 }
 
 .status-badge-custom.status-updated {
@@ -1174,6 +1174,80 @@ a:hover {
   color: #7e22ce;
   border: 1px solid #e9d5ff;
 }
+
+/* Global Admin Pill & Status Badges Enhancements */
+.badge.bg-warning-subtle,
+.badge.text-warning,
+.badge.border-warning,
+.badge-status-warning {
+  background-color: #fef3c7 !important;
+  color: #92400e !important;
+  border: 1px solid #fde047 !important;
+  font-weight: 700 !important;
+}
+
+.badge.bg-success-subtle,
+.badge.text-success,
+.badge.border-success,
+.badge-status-success {
+  background-color: #dcfce7 !important;
+  color: #166534 !important;
+  border: 1px solid #86efac !important;
+  font-weight: 700 !important;
+}
+
+.badge.bg-danger-subtle,
+.badge.text-danger,
+.badge.border-danger,
+.badge-status-danger {
+  background-color: #fee2e2 !important;
+  color: #991b1b !important;
+  border: 1px solid #fca5a5 !important;
+  font-weight: 700 !important;
+}
+
+.badge.bg-info-subtle,
+.badge.text-info,
+.badge.border-info,
+.badge-status-info {
+  background-color: #e0f2fe !important;
+  color: #075985 !important;
+  border: 1px solid #7dd3fc !important;
+  font-weight: 700 !important;
+}
+
+[data-theme="dark"] .badge.bg-warning-subtle,
+[data-theme="dark"] .badge.text-warning,
+[data-theme="dark"] .badge.border-warning {
+  background-color: rgba(245, 158, 11, 0.16) !important;
+  color: #fcd34d !important;
+  border: 1px solid rgba(245, 158, 11, 0.4) !important;
+}
+
+[data-theme="dark"] .badge.bg-success-subtle,
+[data-theme="dark"] .badge.text-success,
+[data-theme="dark"] .badge.border-success {
+  background-color: rgba(34, 197, 94, 0.16) !important;
+  color: #86efac !important;
+  border: 1px solid rgba(34, 197, 94, 0.4) !important;
+}
+
+[data-theme="dark"] .badge.bg-danger-subtle,
+[data-theme="dark"] .badge.text-danger,
+[data-theme="dark"] .badge.border-danger {
+  background-color: rgba(239, 68, 68, 0.16) !important;
+  color: #fca5a5 !important;
+  border: 1px solid rgba(239, 68, 68, 0.4) !important;
+}
+
+[data-theme="dark"] .badge.bg-info-subtle,
+[data-theme="dark"] .badge.text-info,
+[data-theme="dark"] .badge.border-info {
+  background-color: rgba(14, 165, 233, 0.16) !important;
+  color: #7dd3fc !important;
+  border: 1px solid rgba(14, 165, 233, 0.4) !important;
+}
+
 
 /* --------------------------------------------------------------------------
    10. Medical Society Information Widget Card
