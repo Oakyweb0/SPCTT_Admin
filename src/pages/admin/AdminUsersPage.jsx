@@ -403,17 +403,17 @@ const AdminUsersPage = () => {
                         u.role === 'admin' ? 'bg-purple-subtle text-purple border border-purple' :
                         u.role === 'manager' ? 'bg-primary-subtle text-primary border border-primary' :
                         'bg-info-subtle text-info border border-info'
-                      } text-uppercase px-2.5 py-1 rounded-pill`} style={{ fontSize: '0.72rem', letterSpacing: '0.04em', fontWeight: 600 }}>
-                        {u.role === 'admin' && <LuShieldCheck size={12} className="me-1" />}
-                        {u.role || 'User'}
+                      } text-uppercase px-2.5 py-1 rounded-pill d-inline-flex align-items-center justify-content-center gap-1`} style={{ fontSize: '0.72rem', letterSpacing: '0.04em', fontWeight: 600, whiteSpace: 'nowrap' }}>
+                        {u.role === 'admin' && <LuShieldCheck size={13} className="flex-shrink-0" />}
+                        <span>{u.role || 'User'}</span>
                       </span>
                     </td>
                     <td className="text-center">
                       <span className={`badge ${
                         u.status === 'active' ? 'bg-success-subtle text-success border border-success' : 'bg-danger-subtle text-danger border border-danger'
-                      } text-uppercase px-2.5 py-1 rounded-pill`} style={{ fontSize: '0.72rem', letterSpacing: '0.04em', fontWeight: 600 }}>
+                      } text-uppercase px-2.5 py-1 rounded-pill d-inline-flex align-items-center justify-content-center gap-1.5`} style={{ fontSize: '0.72rem', letterSpacing: '0.04em', fontWeight: 600, whiteSpace: 'nowrap' }}>
                         <span className={`badge-status-dot ${u.status === 'active' ? 'active' : 'inactive'}`}></span>
-                        {u.status || 'active'}
+                        <span>{u.status || 'active'}</span>
                       </span>
                     </td>
                     <td>
@@ -848,7 +848,14 @@ const AdminUsersPage = () => {
                   </div>
                   <div className="d-flex gap-2 mt-2">
                     <span className="badge bg-secondary-subtle text-secondary border px-2 py-1">ID: #{deleteTarget.id}</span>
-                    <span className="badge bg-primary-subtle text-primary border px-2 py-1 text-uppercase">{deleteTarget.role || 'user'}</span>
+                    <span className={`badge ${
+                      deleteTarget.role === 'admin' ? 'bg-purple-subtle text-purple border border-purple' :
+                      deleteTarget.role === 'manager' ? 'bg-primary-subtle text-primary border border-primary' :
+                      'bg-info-subtle text-info border border-info'
+                    } px-2 py-1 text-uppercase d-inline-flex align-items-center gap-1`}>
+                      {deleteTarget.role === 'admin' && <LuShieldCheck size={12} />}
+                      <span>{deleteTarget.role || 'user'}</span>
+                    </span>
                   </div>
                 </div>
 

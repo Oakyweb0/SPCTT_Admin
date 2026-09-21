@@ -1972,6 +1972,20 @@ a:hover {
   box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.2);
 }
 
+.spctt-table .badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+.spctt-table .badge svg {
+  display: inline-block;
+  flex-shrink: 0;
+}
+
 /* ==========================================================================
    Card Section & Toolbar System
    ========================================================================== */
