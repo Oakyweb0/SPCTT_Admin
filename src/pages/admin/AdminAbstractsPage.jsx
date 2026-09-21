@@ -321,13 +321,16 @@ const AdminAbstractsPage = () => {
                         {/* PDF Card */}
                         <div className="col-md-6 col-12">
                           <div className="p-3 rounded-3 border bg-light h-100 d-flex flex-column justify-content-between">
-                            <div className="d-flex align-items-center gap-2.5 mb-3">
-                              <div className="p-2.5 rounded-3 bg-danger-subtle text-danger">
-                                <LuFileText size={24} />
+                            <div className="d-flex align-items-center gap-3 mb-3">
+                              <div
+                                className="rounded-3 bg-danger-subtle text-danger d-flex align-items-center justify-content-center flex-shrink-0"
+                                style={{ width: '42px', height: '42px' }}
+                              >
+                                <LuFileText size={22} />
                               </div>
                               <div>
-                                <h6 className="fw-bold text-dark mb-0 fs-6">PDF Document</h6>
-                                <span className="text-muted small" style={{ fontSize: '0.75rem' }}>
+                                <h6 className="fw-bold text-dark mb-0.5 fs-6">PDF Document</h6>
+                                <span className="text-muted small" style={{ fontSize: '0.78rem' }}>
                                   {absPdfUrl ? 'Full Research Paper / Abstract PDF' : 'No document attached'}
                                 </span>
                               </div>
@@ -354,13 +357,16 @@ const AdminAbstractsPage = () => {
                         {/* Image Card */}
                         <div className="col-md-6 col-12">
                           <div className="p-3 rounded-3 border bg-light h-100 d-flex flex-column justify-content-between">
-                            <div className="d-flex align-items-center gap-2.5 mb-3">
-                              <div className="p-2.5 rounded-3 bg-primary-subtle text-primary">
-                                <LuImage size={24} />
+                            <div className="d-flex align-items-center gap-3 mb-3">
+                              <div
+                                className="rounded-3 bg-primary-subtle text-primary d-flex align-items-center justify-content-center flex-shrink-0"
+                                style={{ width: '42px', height: '42px' }}
+                              >
+                                <LuImage size={22} />
                               </div>
                               <div>
-                                <h6 className="fw-bold text-dark mb-0 fs-6">Scientific Poster / Image</h6>
-                                <span className="text-muted small" style={{ fontSize: '0.75rem' }}>
+                                <h6 className="fw-bold text-dark mb-0.5 fs-6">Scientific Poster / Image</h6>
+                                <span className="text-muted small" style={{ fontSize: '0.78rem' }}>
                                   {absImageUrl ? 'Poster Graphic / Diagram / Photo' : 'No image attached'}
                                 </span>
                               </div>
