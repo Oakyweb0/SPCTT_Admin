@@ -3,10 +3,17 @@ import { API_ENDPOINTS } from '../../constants/apiEndpoints';
 
 export const abstractApi = {
   /**
-   * Submit a new abstract
-   * @param {Object} abstractData
+   * Submit a new abstract (supports JSON or FormData with PDF & Image files)
+   * @param {Object|FormData} abstractData
    */
   submitAbstract: (abstractData) => {
+    if (abstractData instanceof FormData) {
+      return apiClient.post(API_ENDPOINTS.ABSTRACTS.SUBMIT, abstractData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+    }
     return apiClient.post(API_ENDPOINTS.ABSTRACTS.SUBMIT, abstractData);
   },
 

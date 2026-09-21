@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import UserHeader from '../../components/Layout/UserHeader';
 import { getUserAuth, abstractApi } from '../../services/api';
+import { LuFileText, LuImage, LuCloudUpload, LuCheck, LuX, LuExternalLink } from 'react-icons/lu';
 
 const AbstractSubmissionPage = () => {
   const navigate = useNavigate();
@@ -15,11 +16,20 @@ const AbstractSubmissionPage = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
+  const [pdfFile, setPdfFile] = useState(null);
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
+
+  const pdfInputRef = useRef(null);
+  const imageInputRef = useRef(null);
+
   const [formData, setFormData] = useState({
-    title: '',
-    authors: '',
-    affiliation: '',
-    category: 'Pediatric Cardiac Surgery',
+    name: '',
+    instituteName: '',
+    category: 'Poster',
+    email: '',
+    phone: '',
+    topic: '',
     abstractText: ''
   });
 
@@ -28,6 +38,16 @@ const AbstractSubmissionPage = () => {
     if (!auth || !auth.token) {
       navigate('/user/login');
       return;
+    }
+
+    if (auth.user) {
+      setFormData(prev => ({
+        ...prev,
+        name: prev.name || auth.user.name || '',
+        email: prev.email || auth.user.email || '',
+        phone: prev.phone || auth.user.phone || '',
+        instituteName: prev.instituteName || auth.user.organization || ''
+      }));
     }
 
     loadAbstracts();
@@ -52,28 +72,107 @@ const AbstractSubmissionPage = () => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
+  const handlePdfChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (file.type !== 'application/pdf' && !file.name.toLowerCase().endsWith('.pdf')) {
+        setError('Please select a valid PDF file.');
+        return;
+      }
+      setPdfFile(file);
+      setError('');
+    }
+  };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (!file.type.startsWith('image/')) {
+        setError('Please select a valid image file (JPG, PNG, WEBP).');
+        return;
+      }
+      setImageFile(file);
+      setImagePreview(URL.createObjectURL(file));
+      setError('');
+    }
+  };
+
+  const removePdf = () => {
+    setPdfFile(null);
+    if (pdfInputRef.current) pdfInputRef.current.value = '';
+  };
+
+  const removeImage = () => {
+    setImageFile(null);
+    setImagePreview(null);
+    if (imageInputRef.current) imageInputRef.current.value = '';
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setSuccess('');
 
-    if (!formData.title.trim() || !formData.authors.trim() || !formData.affiliation.trim() || !formData.abstractText.trim()) {
-      setError('Please fill in all mandatory abstract submission fields.');
+    if (!formData.name.trim()) {
+      setError('Please enter author/presenter name.');
+      return;
+    }
+    if (!formData.instituteName.trim()) {
+      setError('Please enter institute name.');
+      return;
+    }
+    if (!formData.category) {
+      setError('Please select a presentation category (Poster or Oral).');
+      return;
+    }
+    if (!formData.email.trim()) {
+      setError('Please enter email address.');
+      return;
+    }
+    if (!formData.phone.trim()) {
+      setError('Please enter phone number.');
+      return;
+    }
+    if (!formData.topic.trim()) {
+      setError('Please enter the topic / title of the abstract.');
       return;
     }
 
     try {
       setSaving(true);
-      const res = await abstractApi.submitAbstract(formData);
+      const submissionData = new FormData();
+      submissionData.append('name', formData.name.trim());
+      submissionData.append('instituteName', formData.instituteName.trim());
+      submissionData.append('category', formData.category);
+      submissionData.append('email', formData.email.trim());
+      submissionData.append('phone', formData.phone.trim());
+      submissionData.append('topic', formData.topic.trim());
+      submissionData.append('title', formData.topic.trim());
+      submissionData.append('authors', formData.name.trim());
+      submissionData.append('affiliation', formData.instituteName.trim());
+      submissionData.append('abstractText', formData.abstractText ? formData.abstractText.trim() : '');
+
+      if (pdfFile) {
+        submissionData.append('pdf', pdfFile);
+      }
+      if (imageFile) {
+        submissionData.append('image', imageFile);
+      }
+
+      const res = await abstractApi.submitAbstract(submissionData);
       if (res.status) {
         setSuccess('Your abstract has been submitted successfully for review!');
         setFormData({
-          title: '',
-          authors: '',
-          affiliation: '',
-          category: 'Pediatric Cardiac Surgery',
+          name: '',
+          instituteName: '',
+          category: 'Poster',
+          email: '',
+          phone: '',
+          topic: '',
           abstractText: ''
         });
+        removePdf();
+        removeImage();
         setIsSubmitting(false);
         await loadAbstracts();
       } else {
@@ -86,30 +185,38 @@ const AbstractSubmissionPage = () => {
     }
   };
 
+  const getFullUrl = (url) => {
+    if (!url) return null;
+    if (url.startsWith('http://') || url.startsWith('https://')) return url;
+    const backendBase = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+    const cleanBase = backendBase.replace(/\/api$/, '');
+    return `${cleanBase}${url.startsWith('/') ? '' : '/'}${url}`;
+  };
+
   return (
-    <div className="min-h-screen bg-white flex flex-col font-sans">
+    <div className="min-h-screen bg-[#f8fafc] flex flex-col font-sans">
       <UserHeader pageTitle="Abstract Submission" />
 
-      <main className="flex-1 max-w-5xl w-full mx-auto px-4 py-10 md:py-14">
+      <main className="flex-1 max-w-5xl w-full mx-auto px-4 py-8 md:py-12">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-gray-200 pb-4 mb-8 gap-4">
           <div>
-            <h2 className="text-xl font-bold text-gray-900">Abstract Management</h2>
-            <p className="text-sm text-gray-500">Submit and track research abstracts for SPCTT 2026</p>
+            <h2 className="text-2xl font-bold text-gray-900 tracking-tight">Abstract Management</h2>
+            <p className="text-sm text-gray-500 mt-1">Submit and track research abstracts for SPCTT 2026</p>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
             <button
               onClick={() => {
                 setIsSubmitting(!isSubmitting);
                 setError('');
                 setSuccess('');
               }}
-              className="bg-[#9e1c2b] hover:bg-[#831422] text-white px-5 py-2 rounded text-sm font-medium transition-colors cursor-pointer"
+              className="bg-[#9e1c2b] hover:bg-[#831422] text-white px-5 py-2.5 rounded-lg text-sm font-semibold transition-all shadow-sm cursor-pointer flex items-center gap-2"
             >
               {isSubmitting ? 'View My Abstracts' : '+ Submit New Abstract'}
             </button>
             <Link
               to="/user/dashboard"
-              className="text-sm text-[#004b63] hover:underline font-medium"
+              className="text-sm text-[#004b63] hover:underline font-medium px-2 py-1"
             >
               Dashboard
             </Link>
@@ -117,118 +224,271 @@ const AbstractSubmissionPage = () => {
         </div>
 
         {success && (
-          <div className="mb-6 p-4 rounded bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm font-medium">
-            {success}
+          <div className="mb-6 p-4 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm font-medium flex items-center gap-2">
+            <span className="w-5 h-5 rounded-full bg-emerald-600 text-white flex items-center justify-center text-xs flex-shrink-0">
+              <LuCheck size={14} />
+            </span>
+            <span>{success}</span>
           </div>
         )}
 
         {error && (
-          <div className="mb-6 p-4 rounded bg-red-50 border border-red-200 text-red-700 text-sm">
-            {error}
+          <div className="mb-6 p-4 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm flex items-center justify-between">
+            <span>{error}</span>
+            <button onClick={() => setError('')} className="text-red-500 hover:text-red-700">
+              <LuX size={16} />
+            </button>
           </div>
         )}
 
         {/* Submit Abstract Form */}
         {isSubmitting ? (
-          <form onSubmit={handleSubmit} className="bg-gray-50 border border-gray-200 p-6 sm:p-8 rounded-lg space-y-6">
-            <h3 className="text-lg font-bold text-[#831422] border-b border-[#831422]/20 pb-2">
-              Submit Research Abstract
-            </h3>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                Abstract Title <span className="text-red-600">*</span>
-              </label>
-              <input
-                type="text"
-                name="title"
-                value={formData.title}
-                onChange={handleChange}
-                placeholder="e.g. Advancements in Pediatric Cardiopulmonary Techniques"
-                className="w-full h-11 px-3 border border-gray-300 rounded bg-white text-gray-800 focus:outline-none focus:border-[#004b63] focus:ring-1 focus:ring-[#004b63]"
-                required
-              />
+          <form onSubmit={handleSubmit} className="bg-white border border-gray-200 p-6 sm:p-8 rounded-xl shadow-sm space-y-6">
+            <div className="border-b border-gray-100 pb-4">
+              <h3 className="text-lg font-bold text-[#831422]">
+                Submit Research Abstract
+              </h3>
+              <p className="text-xs text-gray-500 mt-1">Please provide accurate details for Poster or Oral presentation evaluation.</p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Row 1: Name & Institute Name */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                  Author(s) <span className="text-red-600">*</span>
+                  Presenter / Author Name <span className="text-red-600">*</span>
                 </label>
                 <input
                   type="text"
-                  name="authors"
-                  value={formData.authors}
+                  name="name"
+                  value={formData.name}
                   onChange={handleChange}
-                  placeholder="e.g. Dr. Vivek Tiwari, Dr. Ratan Singh"
-                  className="w-full h-11 px-3 border border-gray-300 rounded bg-white text-gray-800 focus:outline-none focus:border-[#004b63] focus:ring-1 focus:ring-[#004b63]"
+                  placeholder="e.g. Dr. Vivek Tiwari"
+                  className="w-full h-11 px-3.5 border border-gray-300 rounded-lg bg-white text-gray-800 focus:outline-none focus:border-[#004b63] focus:ring-2 focus:ring-[#004b63]/10"
                   required
                 />
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                  Category / Topic <span className="text-red-600">*</span>
+                  Institute Name <span className="text-red-600">*</span>
+                </label>
+                <input
+                  type="text"
+                  name="instituteName"
+                  value={formData.instituteName}
+                  onChange={handleChange}
+                  placeholder="e.g. All India Institute of Medical Sciences"
+                  className="w-full h-11 px-3.5 border border-gray-300 rounded-lg bg-white text-gray-800 focus:outline-none focus:border-[#004b63] focus:ring-2 focus:ring-[#004b63]/10"
+                  required
+                />
+              </div>
+            </div>
+
+            {/* Row 2: Category & Topic */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                  Category (Poster / Oral) <span className="text-red-600">*</span>
                 </label>
                 <select
                   name="category"
                   value={formData.category}
                   onChange={handleChange}
-                  className="w-full h-11 px-3 border border-gray-300 rounded bg-white text-gray-800 focus:outline-none focus:border-[#004b63] focus:ring-1 focus:ring-[#004b63]"
+                  className="w-full h-11 px-3.5 border border-gray-300 rounded-lg bg-white text-gray-800 focus:outline-none focus:border-[#004b63] focus:ring-2 focus:ring-[#004b63]/10 font-medium"
                   required
                 >
-                  <option value="Pediatric Cardiac Surgery">Pediatric Cardiac Surgery</option>
-                  <option value="Cardiopulmonary Perfusion">Cardiopulmonary Perfusion</option>
-                  <option value="Critical Care & ECMO">Critical Care & ECMO</option>
-                  <option value="Congenital Heart Diseases">Congenital Heart Diseases</option>
-                  <option value="Nursing & Allied Sciences">Nursing & Allied Sciences</option>
+                  <option value="Poster">Poster Presentation</option>
+                  <option value="Oral">Oral Presentation</option>
                 </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                  Topic / Abstract Title <span className="text-red-600">*</span>
+                </label>
+                <input
+                  type="text"
+                  name="topic"
+                  value={formData.topic}
+                  onChange={handleChange}
+                  placeholder="e.g. Clinical Outcomes in Complex Pediatric Perfusion"
+                  className="w-full h-11 px-3.5 border border-gray-300 rounded-lg bg-white text-gray-800 focus:outline-none focus:border-[#004b63] focus:ring-2 focus:ring-[#004b63]/10"
+                  required
+                />
               </div>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                Affiliation / Institution <span className="text-red-600">*</span>
-              </label>
-              <input
-                type="text"
-                name="affiliation"
-                value={formData.affiliation}
-                onChange={handleChange}
-                placeholder="e.g. Department of Cardiothoracic Surgery, SPCTT Institute"
-                className="w-full h-11 px-3 border border-gray-300 rounded bg-white text-gray-800 focus:outline-none focus:border-[#004b63] focus:ring-1 focus:ring-[#004b63]"
-                required
-              />
+            {/* Row 3: Email & Phone Number */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                  Email Address <span className="text-red-600">*</span>
+                </label>
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  placeholder="e.g. presenter@example.com"
+                  className="w-full h-11 px-3.5 border border-gray-300 rounded-lg bg-white text-gray-800 focus:outline-none focus:border-[#004b63] focus:ring-2 focus:ring-[#004b63]/10"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                  Phone Number <span className="text-red-600">*</span>
+                </label>
+                <input
+                  type="tel"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleChange}
+                  placeholder="e.g. +91 9876543210"
+                  className="w-full h-11 px-3.5 border border-gray-300 rounded-lg bg-white text-gray-800 focus:outline-none focus:border-[#004b63] focus:ring-2 focus:ring-[#004b63]/10"
+                  required
+                />
+              </div>
             </div>
 
+            {/* Row 4: File Uploads (PDF & Image dono) */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 bg-gray-50/80 p-5 rounded-xl border border-gray-200/80">
+              {/* PDF Upload */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-800 mb-1.5 flex items-center gap-2">
+                  <LuFileText className="text-red-600" size={18} />
+                  <span>Upload PDF Document</span>
+                </label>
+                <p className="text-xs text-gray-500 mb-2">Upload research paper / abstract PDF file</p>
+                
+                <input
+                  ref={pdfInputRef}
+                  type="file"
+                  accept="application/pdf,.pdf"
+                  onChange={handlePdfChange}
+                  className="hidden"
+                  id="pdf-upload-input"
+                />
+
+                {!pdfFile ? (
+                  <label
+                    htmlFor="pdf-upload-input"
+                    className="flex flex-col items-center justify-center p-4 border-2 border-dashed border-gray-300 rounded-lg bg-white hover:bg-red-50/40 hover:border-red-300 transition-colors cursor-pointer text-center"
+                  >
+                    <LuCloudUpload className="text-red-500 mb-1" size={26} />
+                    <span className="text-xs font-semibold text-gray-700">Click to Select PDF</span>
+                    <span className="text-[11px] text-gray-400 mt-0.5">Maximum size: 25MB (.pdf)</span>
+                  </label>
+                ) : (
+                  <div className="flex items-center justify-between p-3 bg-white border border-red-200 rounded-lg shadow-2xs">
+                    <div className="flex items-center gap-2 overflow-hidden">
+                      <LuFileText className="text-red-600 flex-shrink-0" size={22} />
+                      <div className="truncate">
+                        <p className="text-xs font-semibold text-gray-800 truncate">{pdfFile.name}</p>
+                        <p className="text-[11px] text-gray-500">{(pdfFile.size / 1024 / 1024).toFixed(2)} MB</p>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={removePdf}
+                      className="text-gray-400 hover:text-red-600 p-1 rounded transition-colors"
+                      title="Remove PDF"
+                    >
+                      <LuX size={18} />
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* Image Upload */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-800 mb-1.5 flex items-center gap-2">
+                  <LuImage className="text-blue-600" size={18} />
+                  <span>Upload Image (Poster / Diagram / Figure)</span>
+                </label>
+                <p className="text-xs text-gray-500 mb-2">Upload visual poster or diagram image</p>
+
+                <input
+                  ref={imageInputRef}
+                  type="file"
+                  accept="image/*,.jpg,.jpeg,.png,.webp"
+                  onChange={handleImageChange}
+                  className="hidden"
+                  id="image-upload-input"
+                />
+
+                {!imageFile ? (
+                  <label
+                    htmlFor="image-upload-input"
+                    className="flex flex-col items-center justify-center p-4 border-2 border-dashed border-gray-300 rounded-lg bg-white hover:bg-blue-50/40 hover:border-blue-300 transition-colors cursor-pointer text-center"
+                  >
+                    <LuCloudUpload className="text-blue-500 mb-1" size={26} />
+                    <span className="text-xs font-semibold text-gray-700">Click to Select Image</span>
+                    <span className="text-[11px] text-gray-400 mt-0.5">JPG, PNG, WEBP formats</span>
+                  </label>
+                ) : (
+                  <div className="flex items-center justify-between p-3 bg-white border border-blue-200 rounded-lg shadow-2xs">
+                    <div className="flex items-center gap-2 overflow-hidden">
+                      {imagePreview && (
+                        <img
+                          src={imagePreview}
+                          alt="Preview"
+                          className="w-10 h-10 object-cover rounded border border-gray-200 flex-shrink-0"
+                        />
+                      )}
+                      <div className="truncate">
+                        <p className="text-xs font-semibold text-gray-800 truncate">{imageFile.name}</p>
+                        <p className="text-[11px] text-gray-500">{(imageFile.size / 1024 / 1024).toFixed(2)} MB</p>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={removeImage}
+                      className="text-gray-400 hover:text-red-600 p-1 rounded transition-colors"
+                      title="Remove Image"
+                    >
+                      <LuX size={18} />
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Row 5: Abstract Text (Optional / Summary) */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                Abstract Text (Structured: Background, Methods, Results, Conclusion) <span className="text-red-600">*</span>
+                Abstract Summary / Text (Optional)
               </label>
               <textarea
-                rows={8}
+                rows={5}
                 name="abstractText"
                 value={formData.abstractText}
                 onChange={handleChange}
-                placeholder="Enter your detailed abstract text here..."
-                className="w-full p-3 border border-gray-300 rounded bg-white text-gray-800 focus:outline-none focus:border-[#004b63] focus:ring-1 focus:ring-[#004b63]"
-                required
+                placeholder="Enter background, methods, results, or conclusion summary if applicable..."
+                className="w-full p-3.5 border border-gray-300 rounded-lg bg-white text-gray-800 focus:outline-none focus:border-[#004b63] focus:ring-2 focus:ring-[#004b63]/10 text-sm leading-relaxed"
               />
             </div>
 
-            <div className="pt-2 flex items-center gap-4">
+            <div className="pt-3 border-t border-gray-100 flex items-center gap-4">
               <button
                 type="submit"
                 disabled={saving}
-                className="bg-[#9e1c2b] hover:bg-[#831422] text-white font-medium px-8 py-2.5 rounded text-sm transition-all shadow-sm focus:outline-none cursor-pointer disabled:opacity-50"
+                className="bg-[#9e1c2b] hover:bg-[#831422] text-white font-semibold px-8 py-3 rounded-lg text-sm transition-all shadow-sm focus:outline-none cursor-pointer disabled:opacity-50 flex items-center gap-2"
               >
-                {saving ? 'Submitting...' : 'Submit Abstract'}
+                {saving ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    <span>Submitting Abstract...</span>
+                  </>
+                ) : (
+                  <span>Submit Abstract</span>
+                )}
               </button>
 
               <button
                 type="button"
                 onClick={() => setIsSubmitting(false)}
-                className="text-gray-600 hover:text-gray-900 px-4 py-2.5 text-sm font-medium"
+                className="text-gray-600 hover:text-gray-900 px-4 py-3 text-sm font-medium rounded-lg hover:bg-gray-100 transition-colors"
               >
                 Cancel
               </button>
@@ -238,62 +498,124 @@ const AbstractSubmissionPage = () => {
           <div>
             {loading ? (
               <div className="py-20 text-center text-gray-500">
-                <div className="w-8 h-8 border-4 border-[#004b63] border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
-                Loading abstracts...
+                <div className="w-8 h-8 border-4 border-[#004b63] border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
+                <p className="text-sm font-medium">Loading your submitted abstracts...</p>
               </div>
             ) : abstracts.length === 0 ? (
-              <div className="text-center py-16 bg-gray-50 rounded-lg border border-dashed border-gray-300">
-                <p className="text-gray-600 mb-4">No abstracts submitted yet.</p>
+              <div className="text-center py-16 bg-white rounded-xl border border-dashed border-gray-300 shadow-2xs">
+                <div className="w-14 h-14 bg-red-50 text-red-600 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <LuFileText size={28} />
+                </div>
+                <h4 className="text-base font-bold text-gray-900 mb-1">No Abstracts Submitted Yet</h4>
+                <p className="text-sm text-gray-500 mb-5 max-w-md mx-auto">
+                  Submit your research papers or presentations for SPCTT 2026 Poster or Oral category evaluation.
+                </p>
                 <button
                   onClick={() => setIsSubmitting(true)}
-                  className="bg-[#9e1c2b] text-white px-6 py-2.5 rounded text-sm font-medium hover:bg-[#831422] transition-colors inline-block"
+                  className="bg-[#9e1c2b] text-white px-6 py-2.5 rounded-lg text-sm font-semibold hover:bg-[#831422] transition-colors shadow-sm inline-flex items-center gap-2 cursor-pointer"
                 >
-                  Submit Your First Abstract
+                  <span>+ Submit Your First Abstract</span>
                 </button>
               </div>
             ) : (
-              <div className="space-y-4">
-                {abstracts.map((abs) => (
-                  <div key={abs.id} className="border border-gray-200 rounded-lg p-6 hover:shadow-sm transition-shadow bg-white">
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-gray-100 pb-3 mb-3">
-                      <div>
-                        <span className="text-xs font-bold text-[#004b63] tracking-wide uppercase mr-2">
-                          {abs.abstract_code}
-                        </span>
-                        <span className="text-xs px-2.5 py-0.5 rounded bg-gray-100 text-gray-700 font-medium">
-                          {abs.category}
-                        </span>
+              <div className="space-y-5">
+                {abstracts.map((abs) => {
+                  const pdfUrl = abs.pdf_url || abs.file_url;
+                  const imageUrl = abs.image_url;
+
+                  return (
+                    <div key={abs.id} className="border border-gray-200 rounded-xl p-6 hover:shadow-md transition-all bg-white">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-gray-100 pb-3 mb-4">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="text-xs font-mono font-bold text-[#004b63] bg-blue-50 px-2.5 py-1 rounded border border-blue-100">
+                            {abs.abstract_code}
+                          </span>
+                          <span className={`text-xs px-2.5 py-1 rounded-full font-bold uppercase tracking-wider ${
+                            (abs.category || '').toLowerCase() === 'oral'
+                              ? 'bg-purple-100 text-purple-800'
+                              : 'bg-teal-100 text-teal-800'
+                          }`}>
+                            {abs.category || 'Poster'}
+                          </span>
+                        </div>
+                        <div>
+                          <span className={`text-xs px-3 py-1 rounded-full font-bold uppercase tracking-wider ${
+                            abs.status === 'accepted' ? 'bg-emerald-100 text-emerald-800' :
+                            abs.status === 'rejected' ? 'bg-red-100 text-red-800' :
+                            abs.status === 'under_review' ? 'bg-blue-100 text-blue-800' :
+                            'bg-amber-100 text-amber-800'
+                          }`}>
+                            {abs.status ? abs.status.replace('_', ' ') : 'Submitted'}
+                          </span>
+                        </div>
                       </div>
-                      <div>
-                        <span className={`text-xs px-2.5 py-1 rounded-full font-semibold uppercase ${
-                          abs.status === 'accepted' ? 'bg-emerald-100 text-emerald-800' :
-                          abs.status === 'rejected' ? 'bg-red-100 text-red-800' :
-                          abs.status === 'under_review' ? 'bg-blue-100 text-blue-800' :
-                          'bg-amber-100 text-amber-800'
-                        }`}>
-                          {abs.status.replace('_', ' ')}
-                        </span>
+
+                      <h4 className="text-lg font-bold text-gray-900 mb-2">
+                        {abs.topic || abs.title}
+                      </h4>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-gray-600 mb-4 bg-gray-50/70 p-3 rounded-lg">
+                        <div>
+                          <span className="font-semibold text-gray-700">Author / Name:</span> {abs.name || abs.authors || '—'}
+                        </div>
+                        <div>
+                          <span className="font-semibold text-gray-700">Institute Name:</span> {abs.institute_name || abs.affiliation || '—'}
+                        </div>
+                        <div>
+                          <span className="font-semibold text-gray-700">Email:</span> {abs.email || '—'}
+                        </div>
+                        <div>
+                          <span className="font-semibold text-gray-700">Phone:</span> {abs.phone || '—'}
+                        </div>
                       </div>
+
+                      {abs.abstract_text && (
+                        <p className="text-sm text-gray-700 bg-white border border-gray-100 p-3 rounded-lg text-justify mb-4">
+                          {abs.abstract_text}
+                        </p>
+                      )}
+
+                      {/* Attachments (PDF & Image) */}
+                      <div className="flex flex-wrap items-center gap-3 pt-2 border-t border-gray-100">
+                        {pdfUrl && (
+                          <a
+                            href={getFullUrl(pdfUrl)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-50 border border-red-200 text-red-700 hover:bg-red-100 text-xs font-semibold transition-colors"
+                          >
+                            <LuFileText size={15} />
+                            <span>View / Download PDF</span>
+                            <LuExternalLink size={12} />
+                          </a>
+                        )}
+
+                        {imageUrl && (
+                          <a
+                            href={getFullUrl(imageUrl)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-50 border border-blue-200 text-blue-700 hover:bg-blue-100 text-xs font-semibold transition-colors"
+                          >
+                            <LuImage size={15} />
+                            <span>View Uploaded Image</span>
+                            <LuExternalLink size={12} />
+                          </a>
+                        )}
+
+                        {!pdfUrl && !imageUrl && (
+                          <span className="text-xs text-gray-400 italic">No attachments uploaded</span>
+                        )}
+                      </div>
+
+                      {abs.review_comments && (
+                        <div className="mt-4 p-3 bg-blue-50/80 border border-blue-100 rounded-lg text-xs text-blue-900">
+                          <strong>Reviewer Feedback:</strong> {abs.review_comments}
+                        </div>
+                      )}
                     </div>
-
-                    <h4 className="text-base font-bold text-gray-900 mb-1">
-                      {abs.title}
-                    </h4>
-                    <p className="text-xs text-gray-600 mb-3">
-                      <strong>Authors:</strong> {abs.authors} | <strong>Affiliation:</strong> {abs.affiliation}
-                    </p>
-
-                    <p className="text-sm text-gray-700 line-clamp-3 bg-gray-50 p-3 rounded text-justify">
-                      {abs.abstract_text}
-                    </p>
-
-                    {abs.review_comments && (
-                      <div className="mt-3 p-3 bg-blue-50/70 border border-blue-100 rounded text-xs text-blue-900">
-                        <strong>Review Comments:</strong> {abs.review_comments}
-                      </div>
-                    )}
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </div>
