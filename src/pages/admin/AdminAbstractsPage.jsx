@@ -595,6 +595,7 @@ const AdminAbstractsPage = () => {
 
             </div>
           </div>
+        </div>
       )}
 
       {/* Review Modal */}
