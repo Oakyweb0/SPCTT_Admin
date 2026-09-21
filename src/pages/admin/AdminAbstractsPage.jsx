@@ -9,7 +9,11 @@ import {
   LuX,
   LuExternalLink,
   LuTrash2,
-  LuTriangleAlert
+  LuTriangleAlert,
+  LuArrowLeft,
+  LuUser,
+  LuMail,
+  LuPhone
 } from 'react-icons/lu';
 import { adminApi } from '../../services/api';
 
@@ -165,40 +169,312 @@ const AdminAbstractsPage = () => {
         </div>
       )}
       {selectedAbs ? (
-        /* Detailed Abstract In-Page View (Preserves Left Menu Bar & Top Header) */
-        <div className="space-y-4">
-          {/* Header Banner with Back & Quick Actions */}
-          <div className="dashboard-card-section mb-4">
-            <div className="dashboard-card-header bg-white py-3 px-4 d-flex align-items-center justify-content-between flex-wrap gap-3">
+        /* Detailed Abstract In-Page View */
+        <div className="abstract-detail-view-container">
+          {/* Top Action & Navigation Bar */}
+          <div className="dashboard-card-section mb-4 bg-white p-3 p-md-4 rounded-3 border shadow-xs">
+            <div className="d-flex align-items-center justify-content-between flex-wrap gap-3">
               <div className="d-flex align-items-center gap-3">
                 <button
                   onClick={() => setSelectedAbs(null)}
-                  className="btn btn-outline-secondary btn-sm d-inline-flex align-items-center gap-1.5 px-3 py-2 rounded-3 shadow-none"
+                  className="btn btn-outline-secondary d-inline-flex align-items-center gap-2 px-3 py-2 rounded-3 shadow-none fw-medium"
                 >
-                  <span>← Back to Abstracts</span>
+                  <LuArrowLeft size={18} />
+                  <span>Back to Submissions</span>
                 </button>
                 <div className="vr d-none d-sm-block my-1 text-muted"></div>
-                <div>
-                  <div className="d-flex align-items-center gap-2 flex-wrap mb-1">
-                    <span className="badge bg-primary-subtle text-primary border font-monospace px-2.5 py-1" style={{ fontSize: '0.8rem' }}>
-                      {selectedAbs.abstract_code}
+                <div className="d-flex align-items-center gap-2 flex-wrap">
+                  <span className="badge bg-primary-subtle text-primary border font-monospace px-2.5 py-1.5" style={{ fontSize: '0.82rem', fontWeight: 600 }}>
+                    {selectedAbs.abstract_code}
+                  </span>
+                  <span
+                    className="badge px-3 py-1.5 rounded-pill text-uppercase"
+                    style={{
+                      fontSize: '0.75rem',
+                      fontWeight: 700,
+                      backgroundColor: (selectedAbs.category || '').toLowerCase() === 'oral' ? '#faf5ff' : '#f0fdfa',
+                      color: (selectedAbs.category || '').toLowerCase() === 'oral' ? '#7e22ce' : '#0f766e',
+                      border: `1px solid ${(selectedAbs.category || '').toLowerCase() === 'oral' ? '#d8b4fe' : '#99f6e4'}`
+                    }}
+                  >
+                    {selectedAbs.category || 'Poster'}
+                  </span>
+                  <span
+                    className="badge text-uppercase px-3 py-1.5 rounded-pill"
+                    style={{
+                      fontSize: '0.75rem',
+                      fontWeight: 700,
+                      backgroundColor:
+                        selectedAbs.status === 'accepted' ? '#dcfce7' :
+                        selectedAbs.status === 'rejected' ? '#fee2e2' :
+                        selectedAbs.status === 'under_review' ? '#e0f2fe' : '#fef3c7',
+                      color:
+                        selectedAbs.status === 'accepted' ? '#166534' :
+                        selectedAbs.status === 'rejected' ? '#991b1b' :
+                        selectedAbs.status === 'under_review' ? '#075985' : '#92400e',
+                      border: `1px solid ${
+                        selectedAbs.status === 'accepted' ? '#86efac' :
+                        selectedAbs.status === 'rejected' ? '#fca5a5' :
+                        selectedAbs.status === 'under_review' ? '#7dd3fc' : '#fde047'
+                      }`
+                    }}
+                  >
+                    {selectedAbs.status ? selectedAbs.status.replace('_', ' ') : 'submitted'}
+                  </span>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="d-flex align-items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setDeleteTarget(selectedAbs)}
+                  className="btn btn-outline-danger d-inline-flex align-items-center gap-1.5 px-3 py-2 rounded-3 shadow-none fw-medium"
+                  title="Delete Abstract"
+                >
+                  <LuTrash2 size={16} /> <span>Delete</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setReviewModalAbs(selectedAbs);
+                    setReviewStatus(selectedAbs.status || 'accepted');
+                    setReviewComments(selectedAbs.review_comments || '');
+                  }}
+                  className="btn btn-info text-white d-inline-flex align-items-center gap-1.5 px-3.5 py-2 rounded-3 shadow-xs fw-semibold"
+                >
+                  <LuCheck size={16} /> <span>Update Review Decision</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Main 2-Column Grid */}
+          <div className="row g-4">
+            {/* Left / Main Section (8 cols) */}
+            <div className="col-lg-8 col-12">
+              <div className="d-flex flex-column gap-4">
+                {/* 1. Abstract Overview & Text Card */}
+                <div className="dashboard-card-section bg-white p-4 rounded-3 border shadow-xs">
+                  <div className="mb-3">
+                    <span className="text-muted small text-uppercase fw-bold tracking-wider d-block mb-1">
+                      Abstract Topic / Title
                     </span>
-                    <span
-                      className="badge px-2.5 py-1 rounded-pill"
-                      style={{
-                        fontSize: '0.75rem',
-                        fontWeight: 700,
-                        backgroundColor: (selectedAbs.category || '').toLowerCase() === 'oral' ? '#faf5ff' : '#f0fdfa',
-                        color: (selectedAbs.category || '').toLowerCase() === 'oral' ? '#7e22ce' : '#0f766e',
-                        border: `1px solid ${(selectedAbs.category || '').toLowerCase() === 'oral' ? '#d8b4fe' : '#99f6e4'}`
+                    <h2 className="text-dark fw-bold m-0" style={{ fontSize: '1.30rem', lineHeight: '1.4' }}>
+                      {selectedAbs.topic || selectedAbs.title}
+                    </h2>
+                  </div>
+
+                  <div className="p-3 bg-light rounded-3 border mb-4">
+                    <div className="row g-3">
+                      <div className="col-sm-6">
+                        <span className="text-muted small d-block">Presentation Type</span>
+                        <strong className="text-dark">{selectedAbs.category || 'Poster Presentation'}</strong>
+                      </div>
+                      <div className="col-sm-6">
+                        <span className="text-muted small d-block">Submission Date</span>
+                        <strong className="text-dark">
+                          {selectedAbs.created_at ? new Date(selectedAbs.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : '—'}
+                        </strong>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <h6 className="fw-bold text-dark text-uppercase small tracking-wider mb-2 pb-2 border-bottom">
+                      Abstract Content / Summary
+                    </h6>
+                    {selectedAbs.abstract_text ? (
+                      <div
+                        className="p-3.5 bg-light rounded-3 border text-dark"
+                        style={{
+                          whiteSpace: 'pre-wrap',
+                          lineHeight: '1.8',
+                          textAlign: 'justify',
+                          fontSize: '0.92rem'
+                        }}
+                      >
+                        {selectedAbs.abstract_text}
+                      </div>
+                    ) : (
+                      <div className="alert alert-light border text-muted small mb-0">
+                        No text summary provided. Please refer to the attached PDF document below.
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* 2. Attachments & Media Card */}
+                {(() => {
+                  const { pdfUrl: absPdfUrl, imageUrl: absImageUrl } = getFiles(selectedAbs);
+                  return (
+                    <div className="dashboard-card-section bg-white p-4 rounded-3 border shadow-xs">
+                      <h6 className="fw-bold text-dark text-uppercase small tracking-wider mb-3 pb-2 border-bottom">
+                        Attached Documents & Media
+                      </h6>
+
+                      <div className="row g-3 mb-3">
+                        {/* PDF Card */}
+                        <div className="col-md-6 col-12">
+                          <div className="p-3 rounded-3 border bg-light h-100 d-flex flex-column justify-content-between">
+                            <div className="d-flex align-items-center gap-2.5 mb-3">
+                              <div className="p-2.5 rounded-3 bg-danger-subtle text-danger">
+                                <LuFileText size={24} />
+                              </div>
+                              <div>
+                                <h6 className="fw-bold text-dark mb-0 fs-6">PDF Document</h6>
+                                <span className="text-muted small" style={{ fontSize: '0.75rem' }}>
+                                  {absPdfUrl ? 'Full Research Paper / Abstract PDF' : 'No document attached'}
+                                </span>
+                              </div>
+                            </div>
+                            {absPdfUrl ? (
+                              <a
+                                href={getFullUrl(absPdfUrl)}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="btn btn-outline-danger w-100 d-inline-flex align-items-center justify-content-center gap-2 py-2 rounded-2 fw-medium shadow-none"
+                              >
+                                <LuFileText size={16} />
+                                <span>Open & Download PDF</span>
+                                <LuExternalLink size={14} />
+                              </a>
+                            ) : (
+                              <button disabled className="btn btn-light text-muted w-100 border py-2 rounded-2 small">
+                                Not Provided
+                              </button>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Image Card */}
+                        <div className="col-md-6 col-12">
+                          <div className="p-3 rounded-3 border bg-light h-100 d-flex flex-column justify-content-between">
+                            <div className="d-flex align-items-center gap-2.5 mb-3">
+                              <div className="p-2.5 rounded-3 bg-primary-subtle text-primary">
+                                <LuImage size={24} />
+                              </div>
+                              <div>
+                                <h6 className="fw-bold text-dark mb-0 fs-6">Scientific Poster / Image</h6>
+                                <span className="text-muted small" style={{ fontSize: '0.75rem' }}>
+                                  {absImageUrl ? 'Poster Graphic / Diagram / Photo' : 'No image attached'}
+                                </span>
+                              </div>
+                            </div>
+                            {absImageUrl ? (
+                              <a
+                                href={getFullUrl(absImageUrl)}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="btn btn-outline-primary w-100 d-inline-flex align-items-center justify-content-center gap-2 py-2 rounded-2 fw-medium shadow-none"
+                              >
+                                <LuImage size={16} />
+                                <span>View Full-Resolution Image</span>
+                                <LuExternalLink size={14} />
+                              </a>
+                            ) : (
+                              <button disabled className="btn btn-light text-muted w-100 border py-2 rounded-2 small">
+                                Not Provided
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Clean Image Preview */}
+                      {absImageUrl && (
+                        <div className="p-3 bg-light rounded-3 border text-center mt-3">
+                          <p className="text-muted small mb-2 fw-semibold">Image Preview (Click to open full view):</p>
+                          <a href={getFullUrl(absImageUrl)} target="_blank" rel="noopener noreferrer" className="d-inline-block">
+                            <img
+                              src={getFullUrl(absImageUrl)}
+                              alt="Uploaded Abstract Diagram/Poster"
+                              className="img-fluid rounded border shadow-xs bg-white"
+                              style={{ maxHeight: '280px', maxWidth: '100%', objectFit: 'contain' }}
+                            />
+                          </a>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })()}
+              </div>
+            </div>
+
+            {/* Right / Sidebar Column (4 cols) */}
+            <div className="col-lg-4 col-12">
+              <div className="d-flex flex-column gap-4">
+                {/* 1. Presenter & Author Card */}
+                <div className="dashboard-card-section bg-white p-4 rounded-3 border shadow-xs">
+                  <h6 className="fw-bold text-dark text-uppercase small tracking-wider mb-3 pb-2 border-bottom d-flex align-items-center gap-2">
+                    <LuUser size={16} className="text-primary" />
+                    <span>Presenter & Author</span>
+                  </h6>
+
+                  <div className="mb-3">
+                    <label className="text-muted small d-block">Presenter Name</label>
+                    <div className="fw-bold text-dark fs-6 mt-0.5">
+                      {selectedAbs.name || selectedAbs.authors || selectedAbs.submitter_name || '—'}
+                    </div>
+                  </div>
+
+                  <div className="mb-3">
+                    <label className="text-muted small d-block">Institution / Affiliation</label>
+                    <div className="fw-medium text-dark mt-0.5" style={{ fontSize: '0.88rem' }}>
+                      {selectedAbs.institute_name || selectedAbs.affiliation || selectedAbs.submitter_org || '—'}
+                    </div>
+                  </div>
+
+                  <div className="mb-3">
+                    <label className="text-muted small d-block">Email Address</label>
+                    <div className="mt-0.5">
+                      <a
+                        href={`mailto:${selectedAbs.email || selectedAbs.submitter_email}`}
+                        className="text-primary fw-medium text-decoration-none d-inline-flex align-items-center gap-1"
+                        style={{ fontSize: '0.88rem', wordBreak: 'break-all' }}
+                      >
+                        <LuMail size={14} />
+                        <span>{selectedAbs.email || selectedAbs.submitter_email || '—'}</span>
+                      </a>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="text-muted small d-block">Phone Number</label>
+                    <div className="fw-medium text-dark mt-0.5 d-flex align-items-center gap-1" style={{ fontSize: '0.88rem' }}>
+                      <LuPhone size={14} className="text-muted" />
+                      <span>{selectedAbs.phone || selectedAbs.submitter_phone || '—'}</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 2. Review Decision Card */}
+                <div className="dashboard-card-section bg-white p-4 rounded-3 border shadow-xs">
+                  <div className="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom">
+                    <h6 className="fw-bold text-dark text-uppercase small tracking-wider m-0 d-flex align-items-center gap-2">
+                      <LuCheck size={16} className="text-info" />
+                      <span>Review Status</span>
+                    </h6>
+                    <button
+                      onClick={() => {
+                        setReviewModalAbs(selectedAbs);
+                        setReviewStatus(selectedAbs.status || 'accepted');
+                        setReviewComments(selectedAbs.review_comments || '');
                       }}
+                      className="btn btn-sm btn-outline-info py-0.5 px-2.5 rounded-2 shadow-none"
+                      style={{ fontSize: '0.75rem', fontWeight: 600 }}
                     >
-                      {selectedAbs.category || 'Poster'}
-                    </span>
+                      Edit Decision
+                    </button>
+                  </div>
+
+                  <div className="mb-3">
+                    <label className="text-muted small d-block mb-1">Decision Status</label>
                     <span
-                      className="badge text-uppercase px-2.5 py-1 rounded-pill"
+                      className="badge text-uppercase px-3 py-2 rounded-pill d-inline-block"
                       style={{
-                        fontSize: '0.72rem',
+                        fontSize: '0.78rem',
+                        letterSpacing: '0.04em',
                         fontWeight: 700,
                         backgroundColor:
                           selectedAbs.status === 'accepted' ? '#dcfce7' :
@@ -215,189 +491,21 @@ const AdminAbstractsPage = () => {
                         }`
                       }}
                     >
-                      {selectedAbs.status ? selectedAbs.status.replace('_', ' ') : 'submitted'}
-                    </span>
-                  </div>
-                  <h3 className="fw-bold text-dark m-0 fs-5">
-                    {selectedAbs.topic || selectedAbs.title}
-                  </h3>
-                </div>
-              </div>
-
-              <div className="d-flex align-items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => setDeleteTarget(selectedAbs)}
-                  className="btn btn-outline-danger d-inline-flex align-items-center gap-1.5 px-3 py-2 rounded-3 shadow-none"
-                  title="Delete Abstract"
-                >
-                  <LuTrash2 size={16} /> <span>Delete</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    const absToReview = selectedAbs;
-                    setReviewModalAbs(absToReview);
-                    setReviewStatus(absToReview.status || 'accepted');
-                    setReviewComments(absToReview.review_comments || '');
-                  }}
-                  className="btn btn-info text-white d-inline-flex align-items-center gap-1.5 px-4 py-2 rounded-3 shadow-sm"
-                >
-                  <LuCheck size={16} /> <span className="fw-semibold">Update Review Decision</span>
-                </button>
-              </div>
-            </div>
-          </div>
-
-          {/* Details Content Layout */}
-          <div className="row g-4">
-            {/* Left Column: Author & Review Meta (4 cols) */}
-            <div className="col-lg-4 col-12">
-              <div className="space-y-4">
-                {/* Presenter Card */}
-                <div className="dashboard-card-section mb-4 p-4 bg-white">
-                  <h6 className="fw-bold text-dark text-uppercase small tracking-wider mb-3 pb-2 border-bottom">
-                    Presenter & Author
-                  </h6>
-                  <div className="mb-3">
-                    <label className="text-muted small d-block">Full Name</label>
-                    <div className="fw-bold text-dark fs-6">
-                      {selectedAbs.name || selectedAbs.authors || selectedAbs.submitter_name || '—'}
-                    </div>
-                  </div>
-                  <div className="mb-3">
-                    <label className="text-muted small d-block">Institute / Affiliation</label>
-                    <div className="fw-semibold text-dark">
-                      {selectedAbs.institute_name || selectedAbs.affiliation || selectedAbs.submitter_org || '—'}
-                    </div>
-                  </div>
-                  <div className="mb-3">
-                    <label className="text-muted small d-block">Email Address</label>
-                    <div className="text-primary fw-medium">
-                      <a href={`mailto:${selectedAbs.email || selectedAbs.submitter_email}`} className="text-decoration-none">
-                        {selectedAbs.email || selectedAbs.submitter_email || '—'}
-                      </a>
-                    </div>
-                  </div>
-                  <div>
-                    <label className="text-muted small d-block">Phone Number</label>
-                    <div className="fw-medium text-dark">
-                      {selectedAbs.phone || selectedAbs.submitter_phone || '—'}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Review Decision Status Card */}
-                <div className="dashboard-card-section p-4 bg-white">
-                  <div className="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom">
-                    <h6 className="fw-bold text-dark text-uppercase small tracking-wider m-0">
-                      Review Status
-                    </h6>
-                    <button
-                      onClick={() => {
-                        const absToReview = selectedAbs;
-                        setReviewModalAbs(absToReview);
-                        setReviewStatus(absToReview.status || 'accepted');
-                        setReviewComments(absToReview.review_comments || '');
-                      }}
-                      className="btn btn-sm btn-outline-info py-0.5 px-2 rounded-2"
-                      style={{ fontSize: '0.72rem' }}
-                    >
-                      Edit
-                    </button>
-                  </div>
-                  <div className="mb-3">
-                    <label className="text-muted small d-block">Current Status</label>
-                    <span className="badge bg-light text-dark border px-3 py-1.5 text-uppercase fw-bold mt-1">
                       {selectedAbs.status ? selectedAbs.status.replace('_', ' ') : 'SUBMITTED'}
                     </span>
                   </div>
+
                   <div>
-                    <label className="text-muted small d-block">Reviewer Feedback</label>
-                    <p className="text-dark small bg-light p-3 rounded-3 border mt-1 mb-0">
-                      {selectedAbs.review_comments || 'No feedback comments recorded yet.'}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Right Column: Uploads & Abstract Text (8 cols) */}
-            <div className="col-lg-8 col-12">
-              <div className="space-y-4">
-                {/* Attachments Card */}
-                {(() => {
-                  const { pdfUrl: absPdfUrl, imageUrl: absImageUrl } = getFiles(selectedAbs);
-                  return (
-                    <div className="dashboard-card-section mb-4 p-4 bg-white">
-                      <h6 className="fw-bold text-dark text-uppercase small tracking-wider mb-3 pb-2 border-bottom">
-                        Uploaded Documents & Media
-                      </h6>
-                      <div className="d-flex gap-3 flex-wrap mb-3">
-                        {absPdfUrl ? (
-                          <a
-                            href={getFullUrl(absPdfUrl)}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="btn btn-outline-danger d-inline-flex align-items-center gap-2 px-4 py-2.5 rounded-3 shadow-xs"
-                          >
-                            <LuFileText size={20} />
-                            <span className="fw-semibold">Open & Download PDF Document</span>
-                            <LuExternalLink size={15} />
-                          </a>
-                        ) : (
-                          <span className="badge bg-light text-muted border p-2.5 px-3">No PDF Uploaded</span>
-                        )}
-
-                        {absImageUrl ? (
-                          <a
-                            href={getFullUrl(absImageUrl)}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="btn btn-outline-primary d-inline-flex align-items-center gap-2 px-4 py-2.5 rounded-3 shadow-xs"
-                          >
-                            <LuImage size={20} />
-                            <span className="fw-semibold">View Full-Resolution Image</span>
-                            <LuExternalLink size={15} />
-                          </a>
-                        ) : (
-                          <span className="badge bg-light text-muted border p-2.5 px-3">No Image Uploaded</span>
-                        )}
-                      </div>
-
-                      {/* Inline Image Preview */}
-                      {absImageUrl && (
-                        <div className="mt-3 p-3 bg-light rounded-3 border text-center">
-                          <p className="text-muted small mb-2 fw-semibold">Image Preview (Poster / Scientific Diagram):</p>
-                          <a href={getFullUrl(absImageUrl)} target="_blank" rel="noopener noreferrer">
-                            <img
-                              src={getFullUrl(absImageUrl)}
-                              alt="Uploaded Abstract Diagram/Poster"
-                              className="img-fluid rounded border shadow-xs"
-                              style={{ maxHeight: '420px', objectFit: 'contain', background: '#fff' }}
-                            />
-                          </a>
-                        </div>
+                    <label className="text-muted small d-block mb-1">Reviewer Feedback / Comments</label>
+                    <div
+                      className="p-3 bg-light rounded-3 border text-dark"
+                      style={{ fontSize: '0.85rem', lineHeight: '1.5' }}
+                    >
+                      {selectedAbs.review_comments || (
+                        <span className="text-muted fst-italic">No feedback comments recorded yet.</span>
                       )}
                     </div>
-                  );
-                })()}
-
-                {/* Abstract Text Card */}
-                <div className="dashboard-card-section p-4 bg-white">
-                  <h6 className="fw-bold text-dark text-uppercase small tracking-wider mb-3 pb-2 border-bottom">
-                    Abstract Content / Summary
-                  </h6>
-                  {selectedAbs.abstract_text ? (
-                    <div
-                      className="p-4 bg-light rounded-3 border text-dark fs-6"
-                      style={{ whiteSpace: 'pre-wrap', lineHeight: '1.8', textAlign: 'justify' }}
-                    >
-                      {selectedAbs.abstract_text}
-                    </div>
-                  ) : (
-                    <p className="text-muted italic mb-0">No text summary provided. Refer to the attached PDF file above.</p>
-                  )}
+                  </div>
                 </div>
               </div>
             </div>
