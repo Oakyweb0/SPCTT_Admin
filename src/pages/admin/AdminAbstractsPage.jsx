@@ -554,9 +554,6 @@ const AdminAbstractsPage = () => {
                         <LuMail size={15} />
                         <span>{resendingEmail ? 'Sending Email...' : 'Resend Decision Email'}</span>
                       </button>
-                      <div className="text-muted text-center mt-1.5" style={{ fontSize: '0.72rem' }}>
-                        From: spctt2027@spctt.org | CC: tvivek2021@gmail.com
-                      </div>
                     </div>
                   )}
                 </div>
@@ -634,7 +631,6 @@ const AdminAbstractsPage = () => {
                   <option value="under_review">Under Review</option>
                   <option value="accepted">Accepted</option>
                   <option value="rejected">Rejected</option>
-                  <option value="submitted">Submitted</option>
                 </select>
               </div>
             </div>
@@ -861,7 +857,7 @@ const AdminAbstractsPage = () => {
                   >
                     <option value="pending">Pending</option>
                     <option value="under_review">Under Review</option>
-                    <option value="accepted">Accepted (Oral / Poster)</option>
+                    <option value="accepted">Accepted</option>
                     <option value="rejected">Rejected</option>
                   </select>
                 </div>

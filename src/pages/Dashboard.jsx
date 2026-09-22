@@ -3,8 +3,6 @@ import { Link } from 'react-router-dom';
 import { 
   LuClipboardList, 
   LuFileText, 
-  LuIndianRupee, 
-  LuCheck, 
   LuArrowUpRight, 
   LuRefreshCw,
   LuCalendar,
@@ -48,11 +46,6 @@ const Dashboard = () => {
     loadStats();
   }, []);
 
-  const formatCurrency = (amount) => {
-    const num = parseFloat(amount || 0);
-    return `₹${num.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-  };
-
   return (
     <div className="dashboard-page-container w-100">
       {/* 1. Welcome Banner */}
@@ -61,7 +54,7 @@ const Dashboard = () => {
           <div className="banner-title-area">
             <h1>Welcome back, {adminName}</h1>
             <p className="banner-subtitle">
-              Real-time summary of conference delegate registrations, revenue collection, and scientific abstract submissions.
+              Real-time summary of conference delegate registrations and scientific abstract submissions.
             </p>
           </div>
 
@@ -85,35 +78,10 @@ const Dashboard = () => {
         </div>
       )}
 
-      {/* 2. Stat Cards Grid (4 Columns) */}
+      {/* 2. Stat Cards Grid (3 Columns) */}
       <div className="row g-4 mb-4">
-        {/* Card 1: Total Revenue */}
-        <div className="col-xl-3 col-md-6 col-12">
-          <div className="stat-card-wrapper stat-theme-events">
-            <div className="stat-card-top">
-              <div className="stat-card-info">
-                <span className="stat-card-label">Total Revenue</span>
-                <span className="stat-card-value text-danger">
-                  {loading ? '...' : formatCurrency(stats.totalRevenue)}
-                </span>
-              </div>
-              <div className="stat-icon-box">
-                <LuIndianRupee size={24} />
-              </div>
-            </div>
-            <div className="stat-card-bottom">
-              <span className="text-muted small">
-                {stats.paidRegistrations} Confirmed Paid
-              </span>
-              <span className="stat-trend-badge positive">
-                <LuCheck size={12} className="me-1" /> Paid
-              </span>
-            </div>
-          </div>
-        </div>
-
-        {/* Card 2: Total Registrations */}
-        <div className="col-xl-3 col-md-6 col-12">
+        {/* Card 1: Total Registrations */}
+        <div className="col-md-4 col-12">
           <div className="stat-card-wrapper stat-theme-members">
             <div className="stat-card-top">
               <div className="stat-card-info">
@@ -135,8 +103,8 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* Card 3: Research Abstracts */}
-        <div className="col-xl-3 col-md-6 col-12">
+        {/* Card 2: Research Abstracts */}
+        <div className="col-md-4 col-12">
           <div className="stat-card-wrapper stat-theme-blogs">
             <div className="stat-card-top">
               <div className="stat-card-info">
@@ -158,8 +126,8 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* Card 4: Total Users / Delegates */}
-        <div className="col-xl-3 col-md-6 col-12">
+        {/* Card 3: Total Users / Delegates */}
+        <div className="col-md-4 col-12">
           <div className="stat-card-wrapper stat-theme-enquiries">
             <div className="stat-card-top">
               <div className="stat-card-info">
