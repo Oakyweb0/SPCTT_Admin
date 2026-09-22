@@ -226,8 +226,8 @@ const AdminAbstractsPage = () => {
       {/* Compact Floating Toast Notification */}
       {notification && (
         <div 
-          className="position-fixed top-0 end-0 p-3" 
-          style={{ zIndex: 9999, maxWidth: '380px', pointerEvents: 'none' }}
+          className="position-fixed top-0 start-50 translate-middle-x p-3" 
+          style={{ zIndex: 9999, minWidth: '320px', maxWidth: '480px', pointerEvents: 'none' }}
         >
           <div 
             className={`alert alert-${notification.type} shadow-lg rounded-3 mb-0 d-flex align-items-center justify-content-between py-2 px-3 border`}
