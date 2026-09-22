@@ -3,7 +3,7 @@ import { API_ENDPOINTS } from '../../constants/apiEndpoints';
 
 export const abstractApi = {
   /**
-   * Submit a new abstract (supports JSON or FormData with PDF & Image files)
+   * Submit a new abstract (supports JSON or FormData with PDF file)
    * @param {Object|FormData} abstractData
    */
   submitAbstract: (abstractData) => {
