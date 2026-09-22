@@ -5,14 +5,17 @@ import {
   LuCheck, 
   LuClipboardList,
   LuSlidersHorizontal,
-  LuX
+  LuX,
+  LuDownload
 } from 'react-icons/lu';
 import { adminApi } from '../../services/api';
+import { downloadBlobFile } from '../../services/api/adminApi';
 import Pagination from '../../components/Common/Pagination';
 
 const AdminRegistrationsPage = () => {
   const [registrations, setRegistrations] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [exporting, setExporting] = useState(false);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [paymentFilter, setPaymentFilter] = useState('');
@@ -43,6 +46,25 @@ const AdminRegistrationsPage = () => {
       console.error('Error loading registrations:', err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleExportExcel = async () => {
+    try {
+      setExporting(true);
+      const params = {};
+      if (search) params.search = search;
+      if (statusFilter) params.status = statusFilter;
+      if (paymentFilter) params.payment_status = paymentFilter;
+
+      const blobData = await adminApi.exportRegistrations(params);
+      const dateStr = new Date().toISOString().split('T')[0];
+      downloadBlobFile(blobData, `SPCTT_Registrations_${dateStr}.xlsx`);
+    } catch (err) {
+      console.error('Error exporting registrations:', err);
+      alert('Failed to export registrations to Excel.');
+    } finally {
+      setExporting(false);
     }
   };
 
@@ -95,14 +117,26 @@ const AdminRegistrationsPage = () => {
               <p className="text-muted small mb-0">Manage delegate registrations, payments, and order statuses</p>
             </div>
           </div>
-          <button
-            onClick={loadRegistrations}
-            disabled={loading}
-            className="btn btn-outline-primary btn-sm d-inline-flex align-items-center gap-2 px-3 py-2 rounded-3 shadow-none"
-          >
-            <LuRefreshCw className={loading ? 'fa-spin' : ''} />
-            <span>Refresh</span>
-          </button>
+          <div className="d-flex align-items-center gap-2">
+            <button
+              onClick={handleExportExcel}
+              disabled={exporting || loading}
+              className="btn btn-success btn-sm d-inline-flex align-items-center gap-2 px-3 py-2 rounded-3 shadow-none text-white fw-medium"
+              style={{ backgroundColor: '#10b981', borderColor: '#10b981' }}
+              title="Export Registrations to Excel (.xlsx)"
+            >
+              <LuDownload className={exporting ? 'fa-spin' : ''} size={15} />
+              <span>{exporting ? 'Exporting...' : 'Export Excel'}</span>
+            </button>
+            <button
+              onClick={loadRegistrations}
+              disabled={loading}
+              className="btn btn-outline-primary btn-sm d-inline-flex align-items-center gap-2 px-3 py-2 rounded-3 shadow-none"
+            >
+              <LuRefreshCw className={loading ? 'fa-spin' : ''} />
+              <span>Refresh</span>
+            </button>
+          </div>
         </div>
 
         {/* Search & Filter Toolbar */}

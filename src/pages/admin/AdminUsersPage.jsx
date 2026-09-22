@@ -17,14 +17,17 @@ import {
   LuUserPlus,
   LuLock,
   LuEye,
-  LuEyeOff
+  LuEyeOff,
+  LuDownload
 } from 'react-icons/lu';
 import { adminApi } from '../../services/api';
+import { downloadBlobFile } from '../../services/api/adminApi';
 import Pagination from '../../components/Common/Pagination';
 
 const AdminUsersPage = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [exporting, setExporting] = useState(false);
   const [search, setSearch] = useState('');
   const [roleFilter, setRoleFilter] = useState('');
 
@@ -80,6 +83,31 @@ const AdminUsersPage = () => {
       console.error('Error loading users:', err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleExportExcel = async () => {
+    try {
+      setExporting(true);
+      const params = {};
+      if (search) params.search = search;
+      if (roleFilter) params.role = roleFilter;
+
+      const blobData = await adminApi.exportUsers(params);
+      const dateStr = new Date().toISOString().split('T')[0];
+      downloadBlobFile(blobData, `SPCTT_Users_${dateStr}.xlsx`);
+      setNotification({
+        type: 'success',
+        message: 'Users list exported to Excel (.xlsx) successfully!'
+      });
+    } catch (err) {
+      console.error('Error exporting users:', err);
+      setNotification({
+        type: 'danger',
+        message: 'Failed to export users to Excel.'
+      });
+    } finally {
+      setExporting(false);
     }
   };
 
@@ -279,6 +307,15 @@ const AdminUsersPage = () => {
           </div>
           <div className="d-flex align-items-center gap-2">
             <button
+              onClick={handleExportExcel}
+              disabled={exporting || loading}
+              className="btn btn-outline-success btn-sm d-inline-flex align-items-center gap-2 px-3 py-2 rounded-3 shadow-none fw-medium"
+              title="Export Users to Excel (.xlsx)"
+            >
+              <LuDownload className={exporting ? 'fa-spin' : ''} size={16} />
+              <span>{exporting ? 'Exporting...' : 'Export Excel'}</span>
+            </button>
+            <button
               onClick={handleOpenAdd}
               className="btn btn-success btn-sm d-inline-flex align-items-center gap-2 px-3 py-2 rounded-3 shadow-none fw-medium"
             >
@@ -288,7 +325,7 @@ const AdminUsersPage = () => {
             <button
               onClick={loadUsers}
               disabled={loading}
-              className="btn btn-outline-success btn-sm d-inline-flex align-items-center gap-2 px-3 py-2 rounded-3 shadow-none"
+              className="btn btn-outline-secondary btn-sm d-inline-flex align-items-center gap-2 px-3 py-2 rounded-3 shadow-none"
             >
               <LuRefreshCw className={loading ? 'fa-spin' : ''} />
               <span>Refresh</span>

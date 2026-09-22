@@ -12,14 +12,17 @@ import {
   LuArrowLeft,
   LuUser,
   LuMail,
-  LuPhone
+  LuPhone,
+  LuDownload
 } from 'react-icons/lu';
 import { adminApi } from '../../services/api';
+import { downloadBlobFile } from '../../services/api/adminApi';
 import Pagination from '../../components/Common/Pagination';
 
 const AdminAbstractsPage = () => {
   const [abstracts, setAbstracts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [exporting, setExporting] = useState(false);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('');
@@ -78,6 +81,32 @@ const AdminAbstractsPage = () => {
       console.error('Error fetching admin abstracts:', err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleExportExcel = async () => {
+    try {
+      setExporting(true);
+      const params = {};
+      if (search) params.search = search;
+      if (statusFilter) params.status = statusFilter;
+      if (categoryFilter) params.category = categoryFilter;
+
+      const blobData = await adminApi.exportAbstracts(params);
+      const dateStr = new Date().toISOString().split('T')[0];
+      downloadBlobFile(blobData, `SPCTT_Abstracts_${dateStr}.xlsx`);
+      setNotification({
+        type: 'success',
+        message: 'Abstracts exported to Excel (.xlsx) successfully!'
+      });
+    } catch (err) {
+      console.error('Error exporting abstracts:', err);
+      setNotification({
+        type: 'danger',
+        message: 'Failed to export abstracts to Excel. Please try again.'
+      });
+    } finally {
+      setExporting(false);
     }
   };
 
@@ -574,14 +603,26 @@ const AdminAbstractsPage = () => {
                 <p className="text-muted small mb-0">Review research papers (Poster / Oral), examine attached PDF documents, and record review decisions</p>
               </div>
             </div>
-            <button
-              onClick={loadAbstracts}
-              disabled={loading}
-              className="btn btn-outline-info btn-sm d-inline-flex align-items-center gap-2 px-3 py-2 rounded-3 shadow-none"
-            >
-              <LuRefreshCw className={loading ? 'fa-spin' : ''} />
-              <span>Refresh</span>
-            </button>
+            <div className="d-flex align-items-center gap-2">
+              <button
+                onClick={handleExportExcel}
+                disabled={exporting || loading}
+                className="btn btn-success btn-sm d-inline-flex align-items-center gap-2 px-3 py-2 rounded-3 shadow-none text-white fw-medium"
+                style={{ backgroundColor: '#10b981', borderColor: '#10b981' }}
+                title="Export all/filtered abstracts to Excel (.xlsx)"
+              >
+                <LuDownload className={exporting ? 'fa-spin' : ''} size={15} />
+                <span>{exporting ? 'Exporting...' : 'Export Excel'}</span>
+              </button>
+              <button
+                onClick={loadAbstracts}
+                disabled={loading}
+                className="btn btn-outline-info btn-sm d-inline-flex align-items-center gap-2 px-3 py-2 rounded-3 shadow-none"
+              >
+                <LuRefreshCw className={loading ? 'fa-spin' : ''} />
+                <span>Refresh</span>
+              </button>
+            </div>
           </div>
 
           {/* Search & Filter Toolbar */}

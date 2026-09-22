@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { LuCheck, LuTriangleAlert } from 'react-icons/lu';
 import bannerImg from '../assets/images/banner1.jpeg';
 import logoImg from '../assets/images/logo.png';
 import { authApi, saveAuthSession } from '../services/api';
@@ -95,7 +96,32 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="login-page-wrapper">
+    <div className="login-page-wrapper position-relative">
+      {/* Small Compact Floating Toast Notification */}
+      {successMsg && (
+        <div 
+          className="position-fixed top-0 start-50 translate-middle-x p-3" 
+          style={{ zIndex: 99999, pointerEvents: 'none' }}
+        >
+          <div 
+            className="alert alert-success shadow-lg rounded-pill mb-0 d-flex align-items-center gap-2 py-2 px-3.5 border border-success-subtle bg-white text-success fw-semibold"
+            role="alert"
+            style={{ 
+              pointerEvents: 'auto', 
+              animation: 'fadeIn 0.25s ease-in-out',
+              backdropFilter: 'blur(10px)',
+              fontSize: '0.84rem',
+              boxShadow: '0 8px 24px rgba(16, 185, 129, 0.22), 0 2px 6px rgba(0,0,0,0.08)'
+            }}
+          >
+            <div className="d-flex align-items-center justify-content-center bg-success text-white rounded-circle" style={{ width: '20px', height: '20px' }}>
+              <LuCheck size={13} strokeWidth={3} />
+            </div>
+            <span style={{ letterSpacing: '0.01em' }}>{successMsg}</span>
+          </div>
+        </div>
+      )}
+
       {/* Full-screen Background Banner with Top Alignment & Overlay */}
       <div 
         className="login-bg-banner"
@@ -130,18 +156,11 @@ const LoginPage = () => {
                 </p>
               </div>
 
-              {/* Alert Feedback Messages */}
+              {/* Error Feedback Message */}
               {errorMsg && (
-                <div className="alert alert-danger login-alert d-flex align-items-center gap-2 mb-3" role="alert">
-                  <i className="fa-solid fa-circle-exclamation flex-shrink-0"></i>
-                  <div className="small">{errorMsg}</div>
-                </div>
-              )}
-
-              {successMsg && (
-                <div className="alert alert-success login-alert d-flex align-items-center gap-2 mb-3" role="alert">
-                  <i className="fa-solid fa-circle-check flex-shrink-0"></i>
-                  <div className="small">{successMsg}</div>
+                <div className="alert alert-danger login-alert d-flex align-items-center gap-2 mb-3 py-2 px-3 rounded-3" role="alert">
+                  <LuTriangleAlert size={16} className="text-danger flex-shrink-0" />
+                  <div className="small fw-medium">{errorMsg}</div>
                 </div>
               )}
 

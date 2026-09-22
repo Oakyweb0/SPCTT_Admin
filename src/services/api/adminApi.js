@@ -2,6 +2,25 @@ import apiClient from './axios';
 import { API_ENDPOINTS } from '../../constants/apiEndpoints';
 import { buildQueryString } from '../../utils/helpers';
 
+/**
+ * Helper to trigger browser download of a blob file (e.g. Excel spreadsheet)
+ */
+export const downloadBlobFile = (blobData, defaultFilename = 'export.xlsx') => {
+  const blob = blobData instanceof Blob 
+    ? blobData 
+    : new Blob([blobData], { 
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' 
+      });
+  const url = window.URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.setAttribute('download', defaultFilename);
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  window.URL.revokeObjectURL(url);
+};
+
 export const adminApi = {
   /**
    * 1. Dashboard Statistics
@@ -19,6 +38,14 @@ export const adminApi = {
     return apiClient.get(`${API_ENDPOINTS.ADMIN.REGISTRATIONS}${query}`);
   },
 
+  exportRegistrations: async (params = {}) => {
+    const query = buildQueryString(params);
+    const response = await apiClient.get(`${API_ENDPOINTS.ADMIN.EXPORT_REGISTRATIONS}${query}`, {
+      responseType: 'blob'
+    });
+    return response;
+  },
+
   updateRegistrationStatus: (id, statusData) => {
     return apiClient.put(API_ENDPOINTS.ADMIN.UPDATE_REGISTRATION_STATUS(id), statusData);
   },
@@ -26,8 +53,17 @@ export const adminApi = {
   /**
    * 3. Abstracts Management
    */
-  getAbstracts: () => {
-    return apiClient.get(API_ENDPOINTS.ADMIN.ABSTRACTS);
+  getAbstracts: (params = {}) => {
+    const query = buildQueryString(params);
+    return apiClient.get(`${API_ENDPOINTS.ADMIN.ABSTRACTS}${query}`);
+  },
+
+  exportAbstracts: async (params = {}) => {
+    const query = buildQueryString(params);
+    const response = await apiClient.get(`${API_ENDPOINTS.ADMIN.EXPORT_ABSTRACTS}${query}`, {
+      responseType: 'blob'
+    });
+    return response;
   },
 
   updateAbstractStatus: (id, statusData) => {
@@ -59,6 +95,14 @@ export const adminApi = {
   getUsers: (params = {}) => {
     const query = buildQueryString(params);
     return apiClient.get(`${API_ENDPOINTS.ADMIN.USERS}${query}`);
+  },
+
+  exportUsers: async (params = {}) => {
+    const query = buildQueryString(params);
+    const response = await apiClient.get(`${API_ENDPOINTS.ADMIN.EXPORT_USERS}${query}`, {
+      responseType: 'blob'
+    });
+    return response;
   },
 
   createUser: (userData) => {
