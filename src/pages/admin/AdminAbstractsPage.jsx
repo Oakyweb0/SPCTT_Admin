@@ -28,6 +28,7 @@ const AdminAbstractsPage = () => {
   const [reviewStatus, setReviewStatus] = useState('pending');
   const [reviewComments, setReviewComments] = useState('');
   const [updating, setUpdating] = useState(false);
+  const [resendingEmail, setResendingEmail] = useState(false);
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
@@ -90,13 +91,23 @@ const AdminAbstractsPage = () => {
       setUpdating(true);
       const res = await adminApi.updateAbstractStatus(reviewModalAbs.id, {
         status: reviewStatus,
-        reviewComments
+        reviewComments,
+        sendEmail: true
       });
       if (res && res.status) {
-        setNotification({
-          type: 'success',
-          message: `Abstract '${reviewModalAbs.abstract_code || reviewModalAbs.id}' review updated to '${reviewStatus.replace('_', ' ').toUpperCase()}'.`
-        });
+        const emailInfo = res.data?.email_delivery;
+        if (emailInfo && emailInfo.status === 'failed') {
+          setNotification({
+            type: 'warning',
+            message: 'Status updated, but email could not be sent.'
+          });
+        } else {
+          setNotification({
+            type: 'success',
+            message: 'Email sent successfully!'
+          });
+        }
+
         if (selectedAbs && selectedAbs.id === reviewModalAbs.id) {
           setSelectedAbs({
             ...selectedAbs,
@@ -117,7 +128,38 @@ const AdminAbstractsPage = () => {
       setUpdating(false);
       setTimeout(() => {
         setNotification(null);
-      }, 5000);
+      }, 4000);
+    }
+  };
+
+  const handleResendEmail = async (abstractItem) => {
+    const target = abstractItem || selectedAbs;
+    if (!target) return;
+    try {
+      setResendingEmail(true);
+      const res = await adminApi.sendAbstractEmail(target.id);
+      if (res && res.status) {
+        setNotification({
+          type: 'success',
+          message: 'Email sent successfully!'
+        });
+      } else {
+        setNotification({
+          type: 'danger',
+          message: res.message || 'Failed to send email.'
+        });
+      }
+    } catch (err) {
+      console.error('Failed to resend email:', err);
+      setNotification({
+        type: 'danger',
+        message: err.response?.data?.message || err.message || 'Failed to send email.'
+      });
+    } finally {
+      setResendingEmail(false);
+      setTimeout(() => {
+        setNotification(null);
+      }, 4000);
     }
   };
 
@@ -181,14 +223,38 @@ const AdminAbstractsPage = () => {
 
   return (
     <div className="dashboard-page-container w-100">
-      {/* Toast / Alert Notification */}
+      {/* Compact Floating Toast Notification */}
       {notification && (
-        <div className={`alert alert-${notification.type} alert-dismissible fade show d-flex align-items-center justify-content-between shadow-sm rounded-3 mb-3`} role="alert">
-          <div className="d-flex align-items-center gap-2">
-            {notification.type === 'success' ? <LuCheck size={20} /> : <LuTriangleAlert size={20} />}
-            <span>{notification.message}</span>
+        <div 
+          className="position-fixed top-0 end-0 p-3" 
+          style={{ zIndex: 9999, maxWidth: '380px', pointerEvents: 'none' }}
+        >
+          <div 
+            className={`alert alert-${notification.type} shadow-lg rounded-3 mb-0 d-flex align-items-center justify-content-between py-2 px-3 border`}
+            role="alert"
+            style={{ 
+              pointerEvents: 'auto', 
+              animation: 'fadeIn 0.25s ease-in-out',
+              backdropFilter: 'blur(8px)',
+              fontSize: '0.85rem'
+            }}
+          >
+            <div className="d-flex align-items-center gap-2">
+              {notification.type === 'success' ? (
+                <LuCheck size={16} className="text-success flex-shrink-0" />
+              ) : (
+                <LuTriangleAlert size={16} className="text-danger flex-shrink-0" />
+              )}
+              <span className="fw-semibold">{notification.message}</span>
+            </div>
+            <button 
+              type="button" 
+              className="btn-close btn-sm shadow-none ms-2" 
+              style={{ fontSize: '0.65rem' }} 
+              onClick={() => setNotification(null)}
+              aria-label="Close"
+            ></button>
           </div>
-          <button type="button" className="btn-close shadow-none" onClick={() => setNotification(null)}></button>
         </div>
       )}
       {selectedAbs ? (
@@ -475,6 +541,24 @@ const AdminAbstractsPage = () => {
                       )}
                     </div>
                   </div>
+
+                  {(selectedAbs.status === 'accepted' || selectedAbs.status === 'rejected') && (
+                    <div className="mt-3 pt-3 border-top">
+                      <button
+                        type="button"
+                        onClick={() => handleResendEmail(selectedAbs)}
+                        disabled={resendingEmail}
+                        className="btn btn-sm btn-outline-primary w-100 d-inline-flex align-items-center justify-content-center gap-2 py-2 rounded-2 shadow-none fw-semibold"
+                        style={{ fontSize: '0.80rem' }}
+                      >
+                        <LuMail size={15} />
+                        <span>{resendingEmail ? 'Sending Email...' : 'Resend Decision Email'}</span>
+                      </button>
+                      <div className="text-muted text-center mt-1.5" style={{ fontSize: '0.72rem' }}>
+                        From: spctt2027@spctt.org | CC: tvivek2021@gmail.com
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

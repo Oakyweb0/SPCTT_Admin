@@ -429,8 +429,7 @@ const AdminUsersPage = () => {
                     <td className="text-center">
                       <span className={`badge ${
                         u.status === 'active' ? 'bg-success-subtle text-success border border-success' : 'bg-danger-subtle text-danger border border-danger'
-                      } text-uppercase px-2 py-1 rounded-pill d-inline-flex align-items-center justify-content-center gap-1.5`} style={{ fontSize: '0.7rem', letterSpacing: '0.04em', fontWeight: 600, whiteSpace: 'nowrap' }}>
-                        <span className={`badge-status-dot ${u.status === 'active' ? 'active' : 'inactive'}`}></span>
+                      } text-uppercase px-2 py-1 rounded-pill d-inline-flex align-items-center justify-content-center`} style={{ fontSize: '0.7rem', letterSpacing: '0.04em', fontWeight: 600, whiteSpace: 'nowrap' }}>
                         <span>{u.status || 'active'}</span>
                       </span>
                     </td>

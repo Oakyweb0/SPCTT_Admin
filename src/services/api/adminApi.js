@@ -34,6 +34,14 @@ export const adminApi = {
     return apiClient.put(API_ENDPOINTS.ADMIN.UPDATE_ABSTRACT_STATUS(id), statusData);
   },
 
+  sendAbstractEmail: (id, emailData = {}) => {
+    return apiClient.post(API_ENDPOINTS.ADMIN.SEND_ABSTRACT_EMAIL(id), emailData);
+  },
+
+  getAbstractEmailLogs: (id) => {
+    return apiClient.get(API_ENDPOINTS.ADMIN.GET_ABSTRACT_EMAIL_LOGS(id));
+  },
+
   deleteAbstract: (id) => {
     return apiClient.delete(API_ENDPOINTS.ADMIN.DELETE_ABSTRACT(id));
   },
