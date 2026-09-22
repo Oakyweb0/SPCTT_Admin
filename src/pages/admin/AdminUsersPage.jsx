@@ -20,12 +20,17 @@ import {
   LuEyeOff
 } from 'react-icons/lu';
 import { adminApi } from '../../services/api';
+import Pagination from '../../components/Common/Pagination';
 
 const AdminUsersPage = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [roleFilter, setRoleFilter] = useState('');
+
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
   
   // Notification state
   const [notification, setNotification] = useState(null);
@@ -233,6 +238,11 @@ const AdminUsersPage = () => {
     return matchSearch && matchRole;
   });
 
+  const paginatedUsers = filteredUsers.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
+  );
+
   const getInitials = (name) => {
     if (!name) return 'U';
     const parts = name.trim().split(' ');
@@ -297,7 +307,10 @@ const AdminUsersPage = () => {
                 <input
                   type="text"
                   value={search}
-                  onChange={(e) => setSearch(e.target.value)}
+                  onChange={(e) => {
+                    setSearch(e.target.value);
+                    setCurrentPage(1);
+                  }}
                   placeholder="Search delegates by name, email address, institution, phone..."
                   className="form-control shadow-none"
                 />
@@ -307,7 +320,10 @@ const AdminUsersPage = () => {
             <div className="col-md-4 col-12 d-flex justify-content-md-end">
               <select
                 value={roleFilter}
-                onChange={(e) => setRoleFilter(e.target.value)}
+                onChange={(e) => {
+                  setRoleFilter(e.target.value);
+                  setCurrentPage(1);
+                }}
                 className="form-select form-select-sm w-auto shadow-none"
               >
                 <option value="">All Roles</option>
@@ -361,7 +377,7 @@ const AdminUsersPage = () => {
                   </td>
                 </tr>
               ) : (
-                filteredUsers.map((u) => (
+                paginatedUsers.map((u) => (
                   <tr key={u.id}>
                     <td>
                       <div className="d-flex align-items-center gap-2.5">
@@ -452,6 +468,19 @@ const AdminUsersPage = () => {
             </tbody>
           </table>
         </div>
+
+        {/* Pagination Controls */}
+        <Pagination
+          currentPage={currentPage}
+          totalItems={filteredUsers.length}
+          pageSize={pageSize}
+          onPageChange={setCurrentPage}
+          onPageSizeChange={(newSize) => {
+            setPageSize(newSize);
+            setCurrentPage(1);
+          }}
+          itemLabel="users"
+        />
       </div>
 
       {/* Edit User Modal */}

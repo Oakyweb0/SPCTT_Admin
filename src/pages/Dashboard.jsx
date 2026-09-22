@@ -342,7 +342,7 @@ const Dashboard = () => {
                               abs.status === 'under_review' ? 'bg-info-subtle text-info border border-info' :
                               'bg-warning-subtle text-warning border border-warning'
                             } text-uppercase px-2.5 py-1 rounded-pill`} style={{ fontSize: '0.68rem', letterSpacing: '0.04em', fontWeight: 700 }}>
-                              {abs.status ? abs.status.replace('_', ' ') : 'submitted'}
+                              {abs.status ? abs.status.replace('_', ' ') : 'pending'}
                             </span>
                           </td>
                         </tr>

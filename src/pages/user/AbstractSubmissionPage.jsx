@@ -470,7 +470,7 @@ const AbstractSubmissionPage = () => {
                             abs.status === 'under_review' ? 'bg-blue-100 text-blue-800' :
                             'bg-amber-100 text-amber-800'
                           }`}>
-                            {abs.status ? abs.status.replace('_', ' ') : 'Submitted'}
+                            {abs.status ? abs.status.replace('_', ' ') : 'Pending'}
                           </span>
                         </div>
                       </div>

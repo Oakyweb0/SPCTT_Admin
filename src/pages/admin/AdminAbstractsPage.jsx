@@ -15,6 +15,7 @@ import {
   LuPhone
 } from 'react-icons/lu';
 import { adminApi } from '../../services/api';
+import Pagination from '../../components/Common/Pagination';
 
 const AdminAbstractsPage = () => {
   const [abstracts, setAbstracts] = useState([]);
@@ -24,9 +25,13 @@ const AdminAbstractsPage = () => {
   const [categoryFilter, setCategoryFilter] = useState('');
   const [selectedAbs, setSelectedAbs] = useState(null);
   const [reviewModalAbs, setReviewModalAbs] = useState(null);
-  const [reviewStatus, setReviewStatus] = useState('accepted');
+  const [reviewStatus, setReviewStatus] = useState('pending');
   const [reviewComments, setReviewComments] = useState('');
   const [updating, setUpdating] = useState(false);
+
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
 
   // Delete state
   const [deleteTarget, setDeleteTarget] = useState(null);
@@ -83,16 +88,36 @@ const AdminAbstractsPage = () => {
     if (!reviewModalAbs) return;
     try {
       setUpdating(true);
-      await adminApi.updateAbstractStatus(reviewModalAbs.id, {
+      const res = await adminApi.updateAbstractStatus(reviewModalAbs.id, {
         status: reviewStatus,
         reviewComments
       });
+      if (res && res.status) {
+        setNotification({
+          type: 'success',
+          message: `Abstract '${reviewModalAbs.abstract_code || reviewModalAbs.id}' review updated to '${reviewStatus.replace('_', ' ').toUpperCase()}'.`
+        });
+        if (selectedAbs && selectedAbs.id === reviewModalAbs.id) {
+          setSelectedAbs({
+            ...selectedAbs,
+            status: reviewStatus,
+            review_comments: reviewComments
+          });
+        }
+      }
       setReviewModalAbs(null);
       await loadAbstracts();
     } catch (err) {
-      alert(err.message || 'Failed to update abstract status');
+      console.error('Failed to update abstract status:', err);
+      setNotification({
+        type: 'danger',
+        message: err.response?.data?.message || err.message || 'Failed to update abstract status'
+      });
     } finally {
       setUpdating(false);
+      setTimeout(() => {
+        setNotification(null);
+      }, 5000);
     }
   };
 
@@ -148,6 +173,11 @@ const AdminAbstractsPage = () => {
     const matchCategory = !categoryFilter || (a.category && a.category.toLowerCase() === categoryFilter.toLowerCase());
     return matchSearch && matchStatus && matchCategory;
   });
+
+  const paginatedAbstracts = filteredAbstracts.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
+  );
 
   return (
     <div className="dashboard-page-container w-100">
@@ -210,7 +240,7 @@ const AdminAbstractsPage = () => {
                       }`
                     }}
                   >
-                    {selectedAbs.status ? selectedAbs.status.replace('_', ' ') : 'submitted'}
+                    {selectedAbs.status ? selectedAbs.status.replace('_', ' ') : 'pending'}
                   </span>
                 </div>
               </div>
@@ -230,7 +260,7 @@ const AdminAbstractsPage = () => {
                   type="button"
                   onClick={() => {
                     setReviewModalAbs(selectedAbs);
-                    setReviewStatus(selectedAbs.status || 'accepted');
+                    setReviewStatus((selectedAbs.status === 'submitted' || !selectedAbs.status) ? 'pending' : selectedAbs.status);
                     setReviewComments(selectedAbs.review_comments || '');
                   }}
                   className="btn btn-sm btn-primary d-inline-flex align-items-center justify-content-center px-3 rounded-2 shadow-none fw-semibold"
@@ -397,7 +427,7 @@ const AdminAbstractsPage = () => {
                     <button
                       onClick={() => {
                         setReviewModalAbs(selectedAbs);
-                        setReviewStatus(selectedAbs.status || 'accepted');
+                        setReviewStatus(selectedAbs.status || 'pending');
                         setReviewComments(selectedAbs.review_comments || '');
                       }}
                       className="btn btn-sm btn-outline-primary py-0.5 px-2.5 rounded-2 shadow-none"
@@ -430,7 +460,7 @@ const AdminAbstractsPage = () => {
                         }`
                       }}
                     >
-                      {selectedAbs.status ? selectedAbs.status.replace('_', ' ') : 'SUBMITTED'}
+                      {selectedAbs.status ? selectedAbs.status.replace('_', ' ') : 'PENDING'}
                     </span>
                   </div>
 
@@ -494,7 +524,10 @@ const AdminAbstractsPage = () => {
               <div className="col-md-3 col-6">
                 <select
                   value={categoryFilter}
-                  onChange={(e) => setCategoryFilter(e.target.value)}
+                  onChange={(e) => {
+                    setCategoryFilter(e.target.value);
+                    setCurrentPage(1);
+                  }}
                   className="form-select form-select-sm shadow-none"
                 >
                   <option value="">All Categories (Poster / Oral)</option>
@@ -506,14 +539,18 @@ const AdminAbstractsPage = () => {
               <div className="col-md-3 col-6 d-flex justify-content-md-end">
                 <select
                   value={statusFilter}
-                  onChange={(e) => setStatusFilter(e.target.value)}
+                  onChange={(e) => {
+                    setStatusFilter(e.target.value);
+                    setCurrentPage(1);
+                  }}
                   className="form-select form-select-sm shadow-none"
                 >
                   <option value="">All Statuses</option>
-                  <option value="submitted">Submitted</option>
+                  <option value="pending">Pending</option>
                   <option value="under_review">Under Review</option>
                   <option value="accepted">Accepted</option>
                   <option value="rejected">Rejected</option>
+                  <option value="submitted">Submitted</option>
                 </select>
               </div>
             </div>
@@ -562,7 +599,7 @@ const AdminAbstractsPage = () => {
                     </td>
                   </tr>
                 ) : (
-                  filteredAbstracts.map((abs) => {
+                  paginatedAbstracts.map((abs) => {
                     const pdfUrl = getPdfUrl(abs);
 
                     return (
@@ -655,7 +692,7 @@ const AdminAbstractsPage = () => {
                               }`
                             }}
                           >
-                            {abs.status ? abs.status.replace('_', ' ') : 'submitted'}
+                            {abs.status ? abs.status.replace('_', ' ') : 'pending'}
                           </span>
                         </td>
                         <td className="py-3 px-3 align-middle text-center">
@@ -671,7 +708,7 @@ const AdminAbstractsPage = () => {
                             <button
                               onClick={() => {
                                 setReviewModalAbs(abs);
-                                setReviewStatus(abs.status || 'accepted');
+                                setReviewStatus((abs.status === 'submitted' || !abs.status) ? 'pending' : abs.status);
                                 setReviewComments(abs.review_comments || '');
                               }}
                               className="btn btn-sm btn-primary d-inline-flex align-items-center justify-content-center px-2.5 rounded-2 shadow-none"
@@ -697,6 +734,19 @@ const AdminAbstractsPage = () => {
               </tbody>
             </table>
           </div>
+
+          {/* Pagination Controls */}
+          <Pagination
+            currentPage={currentPage}
+            totalItems={filteredAbstracts.length}
+            pageSize={pageSize}
+            onPageChange={setCurrentPage}
+            onPageSizeChange={(newSize) => {
+              setPageSize(newSize);
+              setCurrentPage(1);
+            }}
+            itemLabel="abstracts"
+          />
         </div>
       )}
 
@@ -723,9 +773,9 @@ const AdminAbstractsPage = () => {
                   <select
                     value={reviewStatus}
                     onChange={(e) => setReviewStatus(e.target.value)}
-                    className="form-select"
+                    className="form-select shadow-none"
                   >
-                    <option value="submitted">Submitted</option>
+                    <option value="pending">Pending</option>
                     <option value="under_review">Under Review</option>
                     <option value="accepted">Accepted (Oral / Poster)</option>
                     <option value="rejected">Rejected</option>

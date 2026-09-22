@@ -8,6 +8,7 @@ import {
   LuX
 } from 'react-icons/lu';
 import { adminApi } from '../../services/api';
+import Pagination from '../../components/Common/Pagination';
 
 const AdminRegistrationsPage = () => {
   const [registrations, setRegistrations] = useState([]);
@@ -21,6 +22,10 @@ const AdminRegistrationsPage = () => {
     status: '',
     paymentStatus: ''
   });
+
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
 
   const loadRegistrations = async () => {
     try {
@@ -42,11 +47,13 @@ const AdminRegistrationsPage = () => {
   };
 
   useEffect(() => {
+    setCurrentPage(1);
     loadRegistrations();
   }, [statusFilter, paymentFilter]);
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
+    setCurrentPage(1);
     loadRegistrations();
   };
 
@@ -68,6 +75,11 @@ const AdminRegistrationsPage = () => {
     const num = parseFloat(amount || 0);
     return `₹${num.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
   };
+
+  const paginatedRegistrations = registrations.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
+  );
 
   return (
     <div className="dashboard-page-container w-100">
@@ -186,7 +198,7 @@ const AdminRegistrationsPage = () => {
                   </td>
                 </tr>
               ) : (
-                registrations.map((reg) => (
+                paginatedRegistrations.map((reg) => (
                   <tr key={reg.id}>
                     <td>
                       <span className="badge bg-light text-primary border font-monospace px-2 py-1">
@@ -251,6 +263,19 @@ const AdminRegistrationsPage = () => {
             </tbody>
           </table>
         </div>
+
+        {/* Pagination Controls */}
+        <Pagination
+          currentPage={currentPage}
+          totalItems={registrations.length}
+          pageSize={pageSize}
+          onPageChange={setCurrentPage}
+          onPageSizeChange={(newSize) => {
+            setPageSize(newSize);
+            setCurrentPage(1);
+          }}
+          itemLabel="registrations"
+        />
       </div>
 
       {/* Edit Status Modal */}
