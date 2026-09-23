@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import UserHeader from '../../components/Layout/UserHeader';
 import { getUserAuth, abstractApi } from '../../services/api';
-import { LuFileText, LuCloudUpload, LuCheck, LuX, LuExternalLink } from 'react-icons/lu';
+import { LuFileText, LuImage, LuCloudUpload, LuCheck, LuX, LuExternalLink } from 'react-icons/lu';
 
 const AbstractSubmissionPage = () => {
   const navigate = useNavigate();
@@ -17,6 +17,8 @@ const AbstractSubmissionPage = () => {
   const [success, setSuccess] = useState('');
 
   const [pdfFile, setPdfFile] = useState(null);
+  const [filePreview, setFilePreview] = useState(null);
+  const [isImageFile, setIsImageFile] = useState(false);
   const pdfInputRef = useRef(null);
 
   const [formData, setFormData] = useState({
@@ -73,22 +75,38 @@ const AbstractSubmissionPage = () => {
   const handlePdfChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      if (file.type !== 'application/pdf' && !file.name.toLowerCase().endsWith('.pdf')) {
-        setError('Please select a valid PDF file (.pdf only).');
+      const isPdf = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
+      const isImg = file.type.startsWith('image/') || /\.(jpg|jpeg|png|webp|gif)$/i.test(file.name);
+
+      if (!isPdf && !isImg) {
+        setError('Please select a valid PDF document (.pdf) or Image file (.jpg, .jpeg, .png, .webp).');
         return;
       }
       if (file.size > MAX_FILE_SIZE_BYTES) {
-        setError(`PDF size (${(file.size / (1024 * 1024)).toFixed(2)} MB) exceeds the 20 MB limit. Please upload a smaller PDF.`);
+        setError(`File size (${(file.size / (1024 * 1024)).toFixed(2)} MB) exceeds the 20 MB limit. Please upload a smaller file.`);
         if (pdfInputRef.current) pdfInputRef.current.value = '';
         return;
       }
+
       setPdfFile(file);
+      setIsImageFile(isImg);
+      if (isImg) {
+        const objectUrl = URL.createObjectURL(file);
+        setFilePreview(objectUrl);
+      } else {
+        setFilePreview(null);
+      }
       setError('');
     }
   };
 
   const removePdf = () => {
     setPdfFile(null);
+    if (filePreview) {
+      URL.revokeObjectURL(filePreview);
+      setFilePreview(null);
+    }
+    setIsImageFile(false);
     if (pdfInputRef.current) pdfInputRef.current.value = '';
   };
 
@@ -331,19 +349,19 @@ const AbstractSubmissionPage = () => {
               </div>
             </div>
 
-            {/* Row 4: PDF Document Upload */}
+            {/* Row 4: Document / Image Upload */}
             <div className="bg-gray-50/80 p-5 rounded-xl border border-gray-200/80">
               <div>
                 <label className="block text-sm font-semibold text-gray-800 mb-1.5 flex items-center gap-2">
-                  <LuFileText className="text-red-600" size={18} />
-                  <span>Upload Abstract PDF Document (Optional / Recommended)</span>
+                  <LuCloudUpload className="text-[#004b63]" size={18} />
+                  <span>Upload Abstract Document / Image (PDF, JPG, PNG, WEBP - Max 20 MB)</span>
                 </label>
-                <p className="text-xs text-gray-500 mb-3">Upload research paper / abstract PDF file (Maximum size: 20 MB, .pdf only)</p>
+                <p className="text-xs text-gray-500 mb-3">Upload research paper, presentation abstract PDF, or scientific poster image (Files are securely saved to Cloudflare)</p>
                 
                 <input
                   ref={pdfInputRef}
                   type="file"
-                  accept="application/pdf,.pdf"
+                  accept="application/pdf,image/png,image/jpeg,image/webp,.pdf,.jpg,.jpeg,.png,.webp"
                   onChange={handlePdfChange}
                   className="hidden"
                   id="pdf-upload-input"
@@ -352,26 +370,38 @@ const AbstractSubmissionPage = () => {
                 {!pdfFile ? (
                   <label
                     htmlFor="pdf-upload-input"
-                    className="flex flex-col items-center justify-center p-6 border-2 border-dashed border-gray-300 rounded-lg bg-white hover:bg-red-50/40 hover:border-red-300 transition-colors cursor-pointer text-center"
+                    className="flex flex-col items-center justify-center p-6 border-2 border-dashed border-gray-300 rounded-lg bg-white hover:bg-blue-50/40 hover:border-[#004b63]/40 transition-colors cursor-pointer text-center"
                   >
-                    <LuCloudUpload className="text-red-500 mb-1.5" size={28} />
-                    <span className="text-xs font-semibold text-gray-700">Click to Select PDF</span>
-                    <span className="text-[11px] text-gray-500 mt-0.5">Maximum size: 20 MB (.pdf only)</span>
+                    <div className="flex items-center gap-2 text-[#004b63] mb-1.5">
+                      <LuFileText size={26} />
+                      <span className="text-gray-400 font-light">/</span>
+                      <LuImage size={26} />
+                    </div>
+                    <span className="text-xs font-semibold text-gray-700">Click to Select PDF or Image</span>
+                    <span className="text-[11px] text-gray-500 mt-0.5">PDF (.pdf) or Images (.jpg, .png, .webp) up to 20 MB</span>
                   </label>
                 ) : (
-                  <div className="flex items-center justify-between p-3.5 bg-white border border-red-200 rounded-lg shadow-2xs">
+                  <div className="flex items-center justify-between p-3.5 bg-white border border-[#004b63]/20 rounded-lg shadow-2xs">
                     <div className="flex items-center gap-3 overflow-hidden">
-                      <LuFileText className="text-red-600 flex-shrink-0" size={24} />
+                      {isImageFile && filePreview ? (
+                        <img 
+                          src={filePreview} 
+                          alt="Upload preview" 
+                          className="w-12 h-12 object-cover rounded border border-gray-200 flex-shrink-0"
+                        />
+                      ) : (
+                        <LuFileText className="text-red-600 flex-shrink-0" size={28} />
+                      )}
                       <div className="truncate">
                         <p className="text-xs font-semibold text-gray-800 truncate">{pdfFile.name}</p>
-                        <p className="text-[11px] text-gray-500">{(pdfFile.size / 1024 / 1024).toFixed(2)} MB</p>
+                        <p className="text-[11px] text-gray-500">{(pdfFile.size / 1024 / 1024).toFixed(2)} MB {isImageFile ? '• Image' : '• PDF Document'}</p>
                       </div>
                     </div>
                     <button
                       type="button"
                       onClick={removePdf}
                       className="text-gray-400 hover:text-red-600 p-1.5 rounded transition-colors"
-                      title="Remove PDF"
+                      title="Remove File"
                     >
                       <LuX size={18} />
                     </button>
@@ -404,7 +434,7 @@ const AbstractSubmissionPage = () => {
                 {saving ? (
                   <>
                     <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                    <span>Submitting Abstract...</span>
+                    <span>{pdfFile ? 'Uploading to Cloudflare...' : 'Submitting Abstract...'}</span>
                   </>
                 ) : (
                   <span>Submit Abstract</span>
@@ -500,21 +530,28 @@ const AbstractSubmissionPage = () => {
                         </p>
                       )}
 
-                      {/* Attached PDF Document */}
+                      {/* Attached Document / Image */}
                       <div className="flex flex-wrap items-center gap-3 pt-2 border-t border-gray-100">
-                        {pdfUrl ? (
-                          <a
-                            href={getFullUrl(pdfUrl)}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-50 border border-red-200 text-red-700 hover:bg-red-100 text-xs font-semibold transition-colors"
-                          >
-                            <LuFileText size={15} />
-                            <span>View / Download PDF</span>
-                            <LuExternalLink size={12} />
-                          </a>
-                        ) : (
-                          <span className="text-xs text-gray-400 italic">No PDF document attached</span>
+                        {pdfUrl ? (() => {
+                          const isImg = /\.(jpg|jpeg|png|webp|gif|svg)$/i.test(pdfUrl);
+                          return (
+                            <a
+                              href={getFullUrl(pdfUrl)}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
+                                isImg 
+                                  ? 'bg-blue-50 border border-blue-200 text-blue-700 hover:bg-blue-100'
+                                  : 'bg-red-50 border border-red-200 text-red-700 hover:bg-red-100'
+                              }`}
+                            >
+                              {isImg ? <LuImage size={15} /> : <LuFileText size={15} />}
+                              <span>{isImg ? 'View / Download Image' : 'View / Download PDF'}</span>
+                              <LuExternalLink size={12} />
+                            </a>
+                          );
+                        })() : (
+                          <span className="text-xs text-gray-400 italic">No document or image attached</span>
                         )}
                       </div>
 

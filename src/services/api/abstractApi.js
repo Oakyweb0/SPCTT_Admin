@@ -11,7 +11,8 @@ export const abstractApi = {
       return apiClient.post(API_ENDPOINTS.ABSTRACTS.SUBMIT, abstractData, {
         headers: {
           'Content-Type': 'multipart/form-data'
-        }
+        },
+        timeout: 180000 // 3 minutes for large 20MB uploads directly to Cloudflare
       });
     }
     return apiClient.post(API_ENDPOINTS.ABSTRACTS.SUBMIT, abstractData);

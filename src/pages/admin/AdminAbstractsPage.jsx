@@ -3,6 +3,7 @@ import {
   LuSearch,
   LuRefreshCw,
   LuFileText,
+  LuImage,
   LuEye,
   LuCheck,
   LuX,
@@ -423,44 +424,55 @@ const AdminAbstractsPage = () => {
                   </div>
                 </div>
 
-                {/* 2. Attached PDF Document Card */}
+                {/* 2. Attached Document / Image Card */}
                 <div className="dashboard-card-section bg-white p-4 rounded-3 border shadow-xs">
                   <h6 className="fw-bold text-dark text-uppercase small tracking-wider mb-3 pb-2 border-bottom">
-                    Attached Research Document
+                    Attached Document / Image
                   </h6>
 
-                  <div className="p-3 rounded-3 border bg-light d-flex flex-column justify-content-between">
-                    <div className="d-flex align-items-center gap-3 mb-3">
-                      <div
-                        className="rounded-3 bg-danger-subtle text-danger d-flex align-items-center justify-content-center flex-shrink-0"
-                        style={{ width: '42px', height: '42px' }}
-                      >
-                        <LuFileText size={22} />
+                  {(() => {
+                    const fileUrl = getPdfUrl(selectedAbs);
+                    const isImg = fileUrl && /\.(jpg|jpeg|png|webp|gif|svg)$/i.test(fileUrl);
+
+                    return (
+                      <div className="p-3 rounded-3 border bg-light d-flex flex-column justify-content-between">
+                        <div className="d-flex align-items-center gap-3 mb-3">
+                          <div
+                            className={`rounded-3 d-flex align-items-center justify-content-center flex-shrink-0 ${
+                              isImg ? 'bg-primary-subtle text-primary' : 'bg-danger-subtle text-danger'
+                            }`}
+                            style={{ width: '42px', height: '42px' }}
+                          >
+                            {isImg ? <LuImage size={22} /> : <LuFileText size={22} />}
+                          </div>
+                          <div>
+                            <h6 className="fw-bold text-dark mb-0.5 fs-6">{isImg ? 'Image File' : 'PDF Document'}</h6>
+                            <span className="text-muted small" style={{ fontSize: '0.78rem' }}>
+                              {fileUrl ? (isImg ? 'Scientific Poster / Image' : 'Full Research Paper / Abstract PDF') : 'No file attached'}
+                            </span>
+                          </div>
+                        </div>
+                        {fileUrl ? (
+                          <a
+                            href={getFullUrl(fileUrl)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className={`btn w-100 d-inline-flex align-items-center justify-content-center gap-2 py-2 rounded-2 fw-medium shadow-none ${
+                              isImg ? 'btn-outline-primary' : 'btn-outline-danger'
+                            }`}
+                          >
+                            {isImg ? <LuImage size={16} /> : <LuFileText size={16} />}
+                            <span>{isImg ? 'Open & View Image' : 'Open & Download PDF'}</span>
+                            <LuExternalLink size={14} />
+                          </a>
+                        ) : (
+                          <button disabled className="btn btn-light text-muted w-100 border py-2 rounded-2 small">
+                            Not Provided
+                          </button>
+                        )}
                       </div>
-                      <div>
-                        <h6 className="fw-bold text-dark mb-0.5 fs-6">PDF Document</h6>
-                        <span className="text-muted small" style={{ fontSize: '0.78rem' }}>
-                          {getPdfUrl(selectedAbs) ? 'Full Research Paper / Abstract PDF' : 'No document attached'}
-                        </span>
-                      </div>
-                    </div>
-                    {getPdfUrl(selectedAbs) ? (
-                      <a
-                        href={getFullUrl(getPdfUrl(selectedAbs))}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="btn btn-outline-danger w-100 d-inline-flex align-items-center justify-content-center gap-2 py-2 rounded-2 fw-medium shadow-none"
-                      >
-                        <LuFileText size={16} />
-                        <span>Open & Download PDF</span>
-                        <LuExternalLink size={14} />
-                      </a>
-                    ) : (
-                      <button disabled className="btn btn-light text-muted w-100 border py-2 rounded-2 small">
-                        Not Provided
-                      </button>
-                    )}
-                  </div>
+                    );
+                  })()}
                 </div>
               </div>
             </div>
@@ -775,18 +787,24 @@ const AdminAbstractsPage = () => {
                         </td>
                         <td className="py-3 px-2 align-middle text-center">
                           <div className="d-flex align-items-center justify-content-center">
-                            {pdfUrl ? (
-                              <a
-                                href={getFullUrl(pdfUrl)}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="btn btn-sm btn-outline-danger d-inline-flex align-items-center gap-1 rounded shadow-none"
-                                style={{ fontSize: '0.70rem', fontWeight: 700, padding: '3px 7px' }}
-                                title="Open PDF Document"
-                              >
-                                <LuFileText size={13} /> <span>PDF</span>
-                              </a>
-                            ) : (
+                            {pdfUrl ? (() => {
+                              const isImg = /\.(jpg|jpeg|png|webp|gif|svg)$/i.test(pdfUrl);
+                              return (
+                                <a
+                                  href={getFullUrl(pdfUrl)}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className={`btn btn-sm d-inline-flex align-items-center gap-1 rounded shadow-none ${
+                                    isImg ? 'btn-outline-primary' : 'btn-outline-danger'
+                                  }`}
+                                  style={{ fontSize: '0.70rem', fontWeight: 700, padding: '3px 7px' }}
+                                  title={isImg ? 'Open Image File' : 'Open PDF Document'}
+                                >
+                                  {isImg ? <LuImage size={13} /> : <LuFileText size={13} />} 
+                                  <span>{isImg ? 'IMG' : 'PDF'}</span>
+                                </a>
+                              );
+                            })() : (
                               <span className="text-muted" style={{ fontSize: '0.70rem' }}>—</span>
                             )}
                           </div>
