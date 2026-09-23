@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import UserHeader from '../../components/Layout/UserHeader';
 import { authApi, saveUserAuth } from '../../services/api';
+import { COUNTRIES, INDIAN_STATES, CITIES_BY_STATE } from '../../data/locations';
 
 const UserRegisterPage = () => {
   const navigate = useNavigate();
@@ -12,8 +13,13 @@ const UserRegisterPage = () => {
     organization: '',
     countryCode: '+91',
     phone: '',
-    password: '',
-    repeatPassword: ''
+    country: 'India',
+    customCountry: '',
+    state: '',
+    customState: '',
+    city: '',
+    customCity: '',
+    password: ''
   });
 
   const [loading, setLoading] = useState(false);
@@ -21,28 +27,46 @@ const UserRegisterPage = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    setFormData(prev => {
+      const updated = { ...prev, [name]: value };
+      
+      // Reset state and city if country changes
+      if (name === 'country' && value !== 'India') {
+        updated.state = '';
+        updated.city = '';
+      }
+      // Reset city if state changes
+      if (name === 'state') {
+        updated.city = '';
+      }
+      return updated;
+    });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
 
+    const resolvedCountry = formData.country === 'Other' ? formData.customCountry.trim() : formData.country.trim();
+    const resolvedState = (formData.country === 'India' && formData.state !== 'Other')
+      ? formData.state.trim()
+      : (formData.customState.trim() || formData.state.trim());
+    const resolvedCity = formData.city === 'Other'
+      ? formData.customCity.trim()
+      : (formData.customCity.trim() || formData.city.trim());
+
     if (!formData.title || !formData.fullName.trim() || !formData.email.trim() || !formData.organization.trim() || !formData.password) {
       setError('Please fill in all mandatory fields.');
       return;
     }
 
-    if (formData.password.length < 6) {
-      setError('Password must be at least 6 characters.');
+    if (!resolvedCountry || !resolvedState || !resolvedCity) {
+      setError('Please select/enter your Country, State, and City.');
       return;
     }
 
-    if (formData.password !== formData.repeatPassword) {
-      setError('Set Password and Repeat Password do not match.');
+    if (formData.password.length < 6) {
+      setError('Password must be at least 6 characters.');
       return;
     }
 
@@ -55,8 +79,10 @@ const UserRegisterPage = () => {
         email: formData.email.trim(),
         organization: formData.organization.trim(),
         phone: fullPhone,
-        password: formData.password,
-        repeatPassword: formData.repeatPassword
+        country: resolvedCountry,
+        state: resolvedState,
+        city: resolvedCity,
+        password: formData.password
       };
 
       const res = await authApi.userRegister(payload);
@@ -74,6 +100,11 @@ const UserRegisterPage = () => {
       setLoading(false);
     }
   };
+
+  // Get available cities for selected Indian state
+  const availableCities = formData.country === 'India' && formData.state && CITIES_BY_STATE[formData.state]
+    ? CITIES_BY_STATE[formData.state]
+    : null;
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col font-sans">
@@ -195,11 +226,137 @@ const UserRegisterPage = () => {
               </div>
             </div>
 
-            {/* Row 3: Set Password & Repeat Password */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 items-start">
+            {/* Row 3: Country, State, City Dropdowns */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-5 items-start">
+              {/* Country */}
               <div>
                 <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-2">
-                  Set Password <span className="text-red-600">*</span>
+                  Country <span className="text-red-600">*</span>
+                </label>
+                <select
+                  name="country"
+                  value={formData.country}
+                  onChange={handleChange}
+                  className="w-full h-11 px-3.5 border border-gray-300 rounded-lg bg-white text-gray-800 text-sm focus:outline-none focus:border-[#476EAC] focus:ring-2 focus:ring-[#476EAC]/20 transition-all cursor-pointer"
+                  required
+                >
+                  {COUNTRIES.map((c) => (
+                    <option key={c} value={c}>
+                      {c}
+                    </option>
+                  ))}
+                </select>
+                {formData.country === 'Other' && (
+                  <input
+                    type="text"
+                    name="customCountry"
+                    value={formData.customCountry}
+                    onChange={handleChange}
+                    placeholder="Enter country name"
+                    className="w-full h-11 mt-2 px-3.5 border border-gray-300 rounded-lg text-gray-800 text-sm focus:outline-none focus:border-[#476EAC] focus:ring-2 focus:ring-[#476EAC]/20 transition-all"
+                    required
+                  />
+                )}
+              </div>
+
+              {/* State / Province */}
+              <div>
+                <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-2">
+                  State / Province <span className="text-red-600">*</span>
+                </label>
+                {formData.country === 'India' ? (
+                  <>
+                    <select
+                      name="state"
+                      value={formData.state}
+                      onChange={handleChange}
+                      className="w-full h-11 px-3.5 border border-gray-300 rounded-lg bg-white text-gray-800 text-sm focus:outline-none focus:border-[#476EAC] focus:ring-2 focus:ring-[#476EAC]/20 transition-all cursor-pointer"
+                      required
+                    >
+                      <option value="">-- Select State --</option>
+                      {INDIAN_STATES.map((s) => (
+                        <option key={s} value={s}>
+                          {s}
+                        </option>
+                      ))}
+                    </select>
+                    {formData.state === 'Other' && (
+                      <input
+                        type="text"
+                        name="customState"
+                        value={formData.customState}
+                        onChange={handleChange}
+                        placeholder="Enter state name"
+                        className="w-full h-11 mt-2 px-3.5 border border-gray-300 rounded-lg text-gray-800 text-sm focus:outline-none focus:border-[#476EAC] focus:ring-2 focus:ring-[#476EAC]/20 transition-all"
+                        required
+                      />
+                    )}
+                  </>
+                ) : (
+                  <input
+                    type="text"
+                    name="customState"
+                    value={formData.customState}
+                    onChange={handleChange}
+                    placeholder="e.g. California / London"
+                    className="w-full h-11 px-3.5 border border-gray-300 rounded-lg text-gray-800 text-sm focus:outline-none focus:border-[#476EAC] focus:ring-2 focus:ring-[#476EAC]/20 transition-all"
+                    required
+                  />
+                )}
+              </div>
+
+              {/* City */}
+              <div>
+                <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-2">
+                  City <span className="text-red-600">*</span>
+                </label>
+                {formData.country === 'India' && availableCities ? (
+                  <>
+                    <select
+                      name="city"
+                      value={formData.city}
+                      onChange={handleChange}
+                      className="w-full h-11 px-3.5 border border-gray-300 rounded-lg bg-white text-gray-800 text-sm focus:outline-none focus:border-[#476EAC] focus:ring-2 focus:ring-[#476EAC]/20 transition-all cursor-pointer"
+                      required
+                    >
+                      <option value="">-- Select City --</option>
+                      {availableCities.map((ct) => (
+                        <option key={ct} value={ct}>
+                          {ct}
+                        </option>
+                      ))}
+                    </select>
+                    {formData.city === 'Other' && (
+                      <input
+                        type="text"
+                        name="customCity"
+                        value={formData.customCity}
+                        onChange={handleChange}
+                        placeholder="Enter city name"
+                        className="w-full h-11 mt-2 px-3.5 border border-gray-300 rounded-lg text-gray-800 text-sm focus:outline-none focus:border-[#476EAC] focus:ring-2 focus:ring-[#476EAC]/20 transition-all"
+                        required
+                      />
+                    )}
+                  </>
+                ) : (
+                  <input
+                    type="text"
+                    name="customCity"
+                    value={formData.customCity}
+                    onChange={handleChange}
+                    placeholder="e.g. Los Angeles / Manchester"
+                    className="w-full h-11 px-3.5 border border-gray-300 rounded-lg text-gray-800 text-sm focus:outline-none focus:border-[#476EAC] focus:ring-2 focus:ring-[#476EAC]/20 transition-all"
+                    required
+                  />
+                )}
+              </div>
+            </div>
+
+            {/* Row 4: Password */}
+            <div className="grid grid-cols-1 md:grid-cols-1 gap-5 items-start">
+              <div>
+                <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-2">
+                  Password <span className="text-red-600">*</span>
                 </label>
                 <input
                   type="password"
@@ -207,21 +364,6 @@ const UserRegisterPage = () => {
                   value={formData.password}
                   onChange={handleChange}
                   placeholder="Minimum 6 characters"
-                  className="w-full h-11 px-3.5 border border-gray-300 rounded-lg text-gray-800 text-sm focus:outline-none focus:border-[#476EAC] focus:ring-2 focus:ring-[#476EAC]/20 transition-all placeholder:text-gray-400"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-2">
-                  Repeat Password <span className="text-red-600">*</span>
-                </label>
-                <input
-                  type="password"
-                  name="repeatPassword"
-                  value={formData.repeatPassword}
-                  onChange={handleChange}
-                  placeholder="Re-enter your password"
                   className="w-full h-11 px-3.5 border border-gray-300 rounded-lg text-gray-800 text-sm focus:outline-none focus:border-[#476EAC] focus:ring-2 focus:ring-[#476EAC]/20 transition-all placeholder:text-gray-400"
                   required
                 />

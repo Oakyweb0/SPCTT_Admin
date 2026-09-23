@@ -13,6 +13,7 @@ export const API_ENDPOINTS = {
     FORGOT_PASSWORD: '/auth/forgot-password',
     VERIFY_RESET_TOKEN: '/auth/verify-reset-token',
     RESET_PASSWORD: '/auth/reset-password',
+    CHANGE_PASSWORD: '/auth/change-password',
   },
 
   // User Profile

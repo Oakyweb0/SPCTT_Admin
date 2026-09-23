@@ -63,6 +63,14 @@ export const authApi = {
   resetPassword: (payload) => {
     return apiClient.post(API_ENDPOINTS.AUTH.RESET_PASSWORD, payload);
   },
+
+  /**
+   * Change Password (for logged in user)
+   * @param {Object} data - { currentPassword, newPassword, confirmPassword }
+   */
+  changePassword: (data) => {
+    return apiClient.post(API_ENDPOINTS.AUTH.CHANGE_PASSWORD, data);
+  },
 };
 
 export default authApi;

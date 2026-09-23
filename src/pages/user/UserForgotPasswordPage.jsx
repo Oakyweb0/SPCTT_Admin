@@ -1,50 +1,37 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import UserHeader from '../../components/Layout/UserHeader';
-import { authApi, saveUserAuth } from '../../services/api';
+import { authApi } from '../../services/api';
 
-const UserLoginPage = () => {
-  const navigate = useNavigate();
-  const [formData, setFormData] = useState({
-    email: '',
-    password: ''
-  });
+const UserForgotPasswordPage = () => {
+  const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
+  const [success, setSuccess] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setSuccess('');
 
-    if (!formData.email.trim() || !formData.password) {
-      setError('Please enter your email and password.');
+    if (!email.trim()) {
+      setError('Please enter your email address.');
       return;
     }
 
     try {
       setLoading(true);
-      const res = await authApi.userLogin({
-        email: formData.email.trim(),
-        password: formData.password
-      });
-
-      if (res.status && res.data?.token) {
-        saveUserAuth(res.data);
-        navigate('/user/dashboard');
+      const res = await authApi.forgotPassword(email.trim());
+      if (res.status) {
+        setSuccess(
+          res.message || 'Password reset token generated successfully. Please check your email or use the reset link.'
+        );
       } else {
-        setError(res.message || 'Login failed.');
+        setError(res.message || 'Failed to process forgot password request.');
       }
     } catch (err) {
       console.error(err);
-      setError(err.message || 'Invalid email or password.');
+      setError(err.message || 'Error requesting password reset.');
     } finally {
       setLoading(false);
     }
@@ -52,16 +39,19 @@ const UserLoginPage = () => {
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col font-sans">
-      <UserHeader pageTitle="Delegate Login" subtitle="Access your registration, abstract status & receipts" />
+      <UserHeader pageTitle="Forgot Password" subtitle="Reset your SPCTT conference account password" />
 
       <main className="flex-1 max-w-md w-full mx-auto px-4 py-12 md:py-16">
         <div className="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6 md:p-8">
           <div className="border-b border-gray-100 pb-4 mb-6 text-center">
+            <div className="w-12 h-12 bg-red-50 text-[#C0192B] rounded-full flex items-center justify-center mx-auto mb-3 text-xl">
+              <i className="fa-solid fa-key"></i>
+            </div>
             <h2 className="text-xl font-bold text-gray-800 tracking-tight">
-              Sign In to Your Account
+              Forgot Your Password?
             </h2>
             <p className="text-xs text-gray-500 mt-1">
-              Enter your registered email and password
+              Enter your registered email address and we will generate a password reset request for you.
             </p>
           </div>
 
@@ -69,6 +59,24 @@ const UserLoginPage = () => {
             <div className="mb-6 p-4 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm flex items-center gap-3">
               <i className="fa-solid fa-circle-exclamation text-base"></i>
               <span>{error}</span>
+            </div>
+          )}
+
+          {success && (
+            <div className="mb-6 p-4 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm space-y-2">
+              <div className="flex items-center gap-2 font-bold">
+                <i className="fa-solid fa-circle-check text-base"></i>
+                <span>Reset Request Created</span>
+              </div>
+              <p className="text-xs leading-relaxed">{success}</p>
+              <div className="pt-2">
+                <Link
+                  to="/user/reset-password"
+                  className="text-xs bg-[#C0192B] text-white px-4 py-2 rounded font-semibold inline-block hover:bg-[#a11424] transition-all"
+                >
+                  Proceed to Reset Password Page →
+                </Link>
+              </div>
             </div>
           )}
 
@@ -80,32 +88,9 @@ const UserLoginPage = () => {
               <input
                 type="email"
                 name="email"
-                value={formData.email}
-                onChange={handleChange}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 placeholder="doctor@hospital.org"
-                className="w-full h-11 px-3.5 border border-gray-300 rounded-lg text-gray-800 text-sm focus:outline-none focus:border-[#476EAC] focus:ring-2 focus:ring-[#476EAC]/20 transition-all placeholder:text-gray-400"
-                required
-              />
-            </div>
-
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                  Password <span className="text-red-600">*</span>
-                </label>
-                <Link
-                  to="/user/forgot-password"
-                  className="text-xs text-[#C0192B] hover:text-[#a11424] font-semibold hover:underline"
-                >
-                  Forgot Password?
-                </Link>
-              </div>
-              <input
-                type="password"
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                placeholder="••••••••"
                 className="w-full h-11 px-3.5 border border-gray-300 rounded-lg text-gray-800 text-sm focus:outline-none focus:border-[#476EAC] focus:ring-2 focus:ring-[#476EAC]/20 transition-all placeholder:text-gray-400"
                 required
               />
@@ -120,23 +105,28 @@ const UserLoginPage = () => {
                 {loading ? (
                   <>
                     <i className="fa-solid fa-spinner fa-spin"></i>
-                    <span>Signing in...</span>
+                    <span>Processing Request...</span>
                   </>
                 ) : (
                   <>
-                    <span>Sign In</span>
-                    <i className="fa-solid fa-arrow-right text-xs"></i>
+                    <span>Send Reset Instructions</span>
+                    <i className="fa-solid fa-paper-plane text-xs"></i>
                   </>
                 )}
               </button>
 
-              <div className="text-center text-xs text-gray-600 pt-3 border-t border-gray-100">
-                Don't have an account?{' '}
+              <div className="text-center text-xs text-gray-600 pt-3 border-t border-gray-100 flex items-center justify-between">
+                <Link
+                  to="/user/login"
+                  className="text-gray-500 hover:text-gray-800 font-medium hover:underline cursor-pointer"
+                >
+                  ← Back to Sign In
+                </Link>
                 <Link
                   to="/user/register"
-                  className="text-[#C0192B] hover:text-[#a11424] font-bold hover:underline cursor-pointer ml-1"
+                  className="text-[#C0192B] hover:text-[#a11424] font-bold hover:underline cursor-pointer"
                 >
-                  Create an Account
+                  Register Account
                 </Link>
               </div>
             </div>
@@ -159,4 +149,4 @@ const UserLoginPage = () => {
   );
 };
 
-export default UserLoginPage;
+export default UserForgotPasswordPage;

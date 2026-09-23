@@ -68,7 +68,7 @@ const AbstractSubmissionPage = () => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const MAX_FILE_SIZE_BYTES = 1 * 1024 * 1024; // 1MB strictly
+  const MAX_FILE_SIZE_BYTES = 20 * 1024 * 1024; // 20MB
 
   const handlePdfChange = (e) => {
     const file = e.target.files[0];
@@ -78,7 +78,7 @@ const AbstractSubmissionPage = () => {
         return;
       }
       if (file.size > MAX_FILE_SIZE_BYTES) {
-        setError(`PDF size (${(file.size / (1024 * 1024)).toFixed(2)} MB) exceeds the 1 MB limit. Please upload a smaller / compressed PDF.`);
+        setError(`PDF size (${(file.size / (1024 * 1024)).toFixed(2)} MB) exceeds the 20 MB limit. Please upload a smaller PDF.`);
         if (pdfInputRef.current) pdfInputRef.current.value = '';
         return;
       }
@@ -338,7 +338,7 @@ const AbstractSubmissionPage = () => {
                   <LuFileText className="text-red-600" size={18} />
                   <span>Upload Abstract PDF Document (Optional / Recommended)</span>
                 </label>
-                <p className="text-xs text-gray-500 mb-3">Upload research paper / abstract PDF file (Maximum size: 1 MB, .pdf only)</p>
+                <p className="text-xs text-gray-500 mb-3">Upload research paper / abstract PDF file (Maximum size: 20 MB, .pdf only)</p>
                 
                 <input
                   ref={pdfInputRef}
@@ -356,7 +356,7 @@ const AbstractSubmissionPage = () => {
                   >
                     <LuCloudUpload className="text-red-500 mb-1.5" size={28} />
                     <span className="text-xs font-semibold text-gray-700">Click to Select PDF</span>
-                    <span className="text-[11px] text-gray-500 mt-0.5">Maximum size: 1 MB (.pdf only)</span>
+                    <span className="text-[11px] text-gray-500 mt-0.5">Maximum size: 20 MB (.pdf only)</span>
                   </label>
                 ) : (
                   <div className="flex items-center justify-between p-3.5 bg-white border border-red-200 rounded-lg shadow-2xs">

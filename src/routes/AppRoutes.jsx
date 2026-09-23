@@ -9,11 +9,31 @@ import AdminRegistrationsPage from '../pages/admin/AdminRegistrationsPage';
 import AdminAbstractsPage from '../pages/admin/AdminAbstractsPage';
 import AdminUsersPage from '../pages/admin/AdminUsersPage';
 
+// User Portal Pages
+import UserLoginPage from '../pages/user/UserLoginPage';
+import UserRegisterPage from '../pages/user/UserRegisterPage';
+import UserForgotPasswordPage from '../pages/user/UserForgotPasswordPage';
+import UserResetPasswordPage from '../pages/user/UserResetPasswordPage';
+import UserDashboardPage from '../pages/user/UserDashboardPage';
+import UserProfilePage from '../pages/user/UserProfilePage';
+import RegistrationWizardPage from '../pages/user/RegistrationWizardPage';
+import AbstractSubmissionPage from '../pages/user/AbstractSubmissionPage';
+import InvoiceReceiptPage from '../pages/user/InvoiceReceiptPage';
+
 // Protection helper for Admin
 const AdminAuthGuard = ({ children }) => {
   const adminAuth = localStorage.getItem('spctt_admin_auth');
   if (!adminAuth) {
     return <Navigate to="/admin/login" replace />;
+  }
+  return children;
+};
+
+// Protection helper for User
+const UserAuthGuard = ({ children }) => {
+  const userAuth = localStorage.getItem('spctt_user_auth');
+  if (!userAuth) {
+    return <Navigate to="/user/login" replace />;
   }
   return children;
 };
@@ -30,8 +50,59 @@ const AppRoutes = () => {
           isAdminLoggedIn ? (
             <Navigate to="/admin/dashboard" replace />
           ) : (
-            <Navigate to="/admin/login" replace />
+            <Navigate to="/user/login" replace />
           )
+        }
+      />
+
+      {/* User Authentication Routes */}
+      <Route path="/user/login" element={<UserLoginPage />} />
+      <Route path="/user/register" element={<UserRegisterPage />} />
+      <Route path="/register" element={<UserRegisterPage />} />
+      <Route path="/user/forgot-password" element={<UserForgotPasswordPage />} />
+      <Route path="/forgot-password" element={<UserForgotPasswordPage />} />
+      <Route path="/user/reset-password" element={<UserResetPasswordPage />} />
+      <Route path="/reset-password" element={<UserResetPasswordPage />} />
+
+      {/* Protected User Portal Routes */}
+      <Route
+        path="/user/dashboard"
+        element={
+          <UserAuthGuard>
+            <UserDashboardPage />
+          </UserAuthGuard>
+        }
+      />
+      <Route
+        path="/user/profile"
+        element={
+          <UserAuthGuard>
+            <UserProfilePage />
+          </UserAuthGuard>
+        }
+      />
+      <Route
+        path="/user/registration-wizard"
+        element={
+          <UserAuthGuard>
+            <RegistrationWizardPage />
+          </UserAuthGuard>
+        }
+      />
+      <Route
+        path="/user/abstract-submission"
+        element={
+          <UserAuthGuard>
+            <AbstractSubmissionPage />
+          </UserAuthGuard>
+        }
+      />
+      <Route
+        path="/user/invoice/:id"
+        element={
+          <UserAuthGuard>
+            <InvoiceReceiptPage />
+          </UserAuthGuard>
         }
       />
 
@@ -59,7 +130,7 @@ const AppRoutes = () => {
       </Route>
 
       {/* Global Fallback */}
-      <Route path="*" element={<Navigate to="/admin/login" replace />} />
+      <Route path="*" element={<Navigate to="/user/login" replace />} />
     </Routes>
   );
 };
