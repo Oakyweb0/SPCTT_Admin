@@ -281,7 +281,7 @@ const Header = ({ onToggleSidebar, onToggleMobileSidebar, pageTitle = 'Dashboard
       <div className="header-right">
         {/* Live Public Website Link */}
         <a
-          href="https://registration.spctt2026.elisyan.in/"
+          href="https://2027.spctt.org/"
           target="_blank"
           rel="noopener noreferrer"
           className="live-site-btn"

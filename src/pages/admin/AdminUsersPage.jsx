@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { 
-  LuSearch, 
-  LuRefreshCw, 
-  LuUsers, 
-  LuMail, 
-  LuPhone, 
-  LuBuilding2, 
+import {
+  LuSearch,
+  LuRefreshCw,
+  LuUsers,
+  LuMail,
+  LuPhone,
+  LuBuilding2,
   LuShieldCheck,
   LuCalendar,
   LuTrash2,
@@ -34,7 +34,7 @@ const AdminUsersPage = () => {
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
-  
+
   // Notification state
   const [notification, setNotification] = useState(null);
 
@@ -197,7 +197,7 @@ const AdminUsersPage = () => {
     try {
       setIsUpdating(true);
       setEditError(null);
-      
+
       const payload = { ...editForm };
 
       const res = await adminApi.updateUser(editTarget.id, payload);
@@ -309,15 +309,16 @@ const AdminUsersPage = () => {
             <button
               onClick={handleExportExcel}
               disabled={exporting || loading}
-              className="btn btn-outline-success btn-sm d-inline-flex align-items-center gap-2 px-3 py-2 rounded-3 shadow-none fw-medium"
+              className="btn btn-success btn-sm d-inline-flex align-items-center gap-2 px-3 py-2 rounded-3 shadow-none text-white fw-medium"
+              style={{ backgroundColor: '#10b981', borderColor: '#10b981' }}
               title="Export Users to Excel (.xlsx)"
             >
-              <LuDownload className={exporting ? 'fa-spin' : ''} size={16} />
+              <LuDownload className={exporting ? 'fa-spin' : ''} size={15} />
               <span>{exporting ? 'Exporting...' : 'Export Excel'}</span>
             </button>
             <button
               onClick={handleOpenAdd}
-              className="btn btn-success btn-sm d-inline-flex align-items-center gap-2 px-3 py-2 rounded-3 shadow-none fw-medium"
+              className="btn btn-primary btn-sm d-inline-flex align-items-center gap-2 px-3 py-2 rounded-3 shadow-none fw-medium"
             >
               <LuUserPlus size={16} />
               <span>Add New User</span>
@@ -454,19 +455,17 @@ const AdminUsersPage = () => {
                       </div>
                     </td>
                     <td className="text-center">
-                      <span className={`badge ${
-                        u.role === 'admin' ? 'bg-purple-subtle text-purple border border-purple' :
-                        u.role === 'manager' ? 'bg-primary-subtle text-primary border border-primary' :
-                        'bg-info-subtle text-info border border-info'
-                      } text-uppercase px-2 py-1 rounded-pill d-inline-flex align-items-center justify-content-center gap-1`} style={{ fontSize: '0.7rem', letterSpacing: '0.04em', fontWeight: 600, whiteSpace: 'nowrap' }}>
+                      <span className={`badge ${u.role === 'admin' ? 'bg-purple-subtle text-purple border border-purple' :
+                          u.role === 'manager' ? 'bg-primary-subtle text-primary border border-primary' :
+                            'bg-info-subtle text-info border border-info'
+                        } text-uppercase px-2 py-1 rounded-pill d-inline-flex align-items-center justify-content-center gap-1`} style={{ fontSize: '0.7rem', letterSpacing: '0.04em', fontWeight: 600, whiteSpace: 'nowrap' }}>
                         {u.role === 'admin' && <LuShieldCheck size={12} className="flex-shrink-0" />}
                         <span>{u.role || 'User'}</span>
                       </span>
                     </td>
                     <td className="text-center">
-                      <span className={`badge ${
-                        u.status === 'active' ? 'bg-success-subtle text-success border border-success' : 'bg-danger-subtle text-danger border border-danger'
-                      } text-uppercase px-2 py-1 rounded-pill d-inline-flex align-items-center justify-content-center`} style={{ fontSize: '0.7rem', letterSpacing: '0.04em', fontWeight: 600, whiteSpace: 'nowrap' }}>
+                      <span className={`badge ${u.status === 'active' ? 'bg-success-subtle text-success border border-success' : 'bg-danger-subtle text-danger border border-danger'
+                        } text-uppercase px-2 py-1 rounded-pill d-inline-flex align-items-center justify-content-center`} style={{ fontSize: '0.7rem', letterSpacing: '0.04em', fontWeight: 600, whiteSpace: 'nowrap' }}>
                         <span>{u.status || 'active'}</span>
                       </span>
                     </td>
@@ -695,7 +694,7 @@ const AdminUsersPage = () => {
             <div className="modal-content border-0 shadow-lg rounded-4 overflow-hidden bg-white">
               <div className="modal-header border-bottom py-3 px-4 d-flex justify-content-between align-items-center bg-light">
                 <div className="d-flex align-items-center gap-2">
-                  <div className="bg-success-subtle text-success p-2 rounded-circle">
+                  <div className="bg-primary-subtle text-primary p-2 rounded-circle">
                     <LuUserPlus size={18} />
                   </div>
                   <div>
@@ -861,7 +860,7 @@ const AdminUsersPage = () => {
                   </button>
                   <button
                     type="submit"
-                    className="btn btn-success px-4 rounded-2 fw-medium shadow-none d-inline-flex align-items-center gap-1.5"
+                    className="btn btn-primary px-4 rounded-2 fw-medium shadow-none d-inline-flex align-items-center gap-1.5"
                     disabled={isCreating}
                   >
                     {isCreating ? (
@@ -915,11 +914,10 @@ const AdminUsersPage = () => {
                   </div>
                   <div className="d-flex gap-2 mt-2">
                     <span className="badge bg-secondary-subtle text-secondary border px-2 py-1">ID: #{deleteTarget.id}</span>
-                    <span className={`badge ${
-                      deleteTarget.role === 'admin' ? 'bg-purple-subtle text-purple border border-purple' :
-                      deleteTarget.role === 'manager' ? 'bg-primary-subtle text-primary border border-primary' :
-                      'bg-info-subtle text-info border border-info'
-                    } px-2 py-1 text-uppercase d-inline-flex align-items-center gap-1`}>
+                    <span className={`badge ${deleteTarget.role === 'admin' ? 'bg-purple-subtle text-purple border border-purple' :
+                        deleteTarget.role === 'manager' ? 'bg-primary-subtle text-primary border border-primary' :
+                          'bg-info-subtle text-info border border-info'
+                      } px-2 py-1 text-uppercase d-inline-flex align-items-center gap-1`}>
                       {deleteTarget.role === 'admin' && <LuShieldCheck size={12} />}
                       <span>{deleteTarget.role || 'user'}</span>
                     </span>
