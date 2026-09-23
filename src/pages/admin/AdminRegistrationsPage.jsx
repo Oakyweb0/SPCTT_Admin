@@ -6,7 +6,11 @@ import {
   LuClipboardList,
   LuSlidersHorizontal,
   LuX,
-  LuDownload
+  LuDownload,
+  LuCreditCard,
+  LuFileText,
+  LuClock,
+  LuInfo
 } from 'react-icons/lu';
 import { adminApi } from '../../services/api';
 import { downloadBlobFile } from '../../services/api/adminApi';
@@ -20,6 +24,8 @@ const AdminRegistrationsPage = () => {
   const [statusFilter, setStatusFilter] = useState('');
   const [paymentFilter, setPaymentFilter] = useState('');
   const [selectedReg, setSelectedReg] = useState(null);
+  const [paymentDetail, setPaymentDetail] = useState(null);
+  const [paymentDetailLoading, setPaymentDetailLoading] = useState(false);
   const [updating, setUpdating] = useState(false);
   const [updateStatus, setUpdateStatus] = useState({
     status: '',
@@ -46,6 +52,27 @@ const AdminRegistrationsPage = () => {
       console.error('Error loading registrations:', err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleOpenDetails = async (reg) => {
+    setSelectedReg(reg);
+    setPaymentDetail(null);
+    setUpdateStatus({
+      status: reg.status,
+      paymentStatus: reg.payment_status
+    });
+
+    try {
+      setPaymentDetailLoading(true);
+      const res = await adminApi.getPaymentStatusByRegistrationId(reg.id);
+      if (res && res.status && res.data) {
+        setPaymentDetail(res.data);
+      }
+    } catch (err) {
+      console.warn('Could not load detailed payment status:', err.message);
+    } finally {
+      setPaymentDetailLoading(false);
     }
   };
 
@@ -85,6 +112,7 @@ const AdminRegistrationsPage = () => {
       setUpdating(true);
       await adminApi.updateRegistrationStatus(selectedReg.id, updateStatus);
       setSelectedReg(null);
+      setPaymentDetail(null);
       await loadRegistrations();
     } catch (err) {
       alert(err.message || 'Failed to update registration status');
@@ -278,17 +306,12 @@ const AdminRegistrationsPage = () => {
                     </td>
                     <td className="text-center text-nowrap">
                       <button
-                        onClick={() => {
-                          setSelectedReg(reg);
-                          setUpdateStatus({
-                            status: reg.status,
-                            paymentStatus: reg.payment_status
-                          });
-                        }}
+                        onClick={() => handleOpenDetails(reg)}
                         className="btn btn-outline-primary btn-sm px-3 py-1.5 rounded-2 d-inline-flex align-items-center gap-1.5 shadow-none"
                         style={{ fontSize: '0.78rem', fontWeight: 500 }}
                       >
-                        Edit
+                        <LuClipboardList size={14} />
+                        <span>Manage</span>
                       </button>
                     </td>
                   </tr>
@@ -312,68 +335,171 @@ const AdminRegistrationsPage = () => {
         />
       </div>
 
-      {/* Edit Status Modal */}
+      {/* Registration & Payment Details Modal */}
       {selectedReg && (
-        <div className="modal fade show d-block" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
-          <div className="modal-dialog modal-dialog-centered">
-            <div className="modal-content rounded-4 shadow-lg border-0">
-              <div className="modal-header border-bottom">
+        <div className="modal fade show d-block" style={{ backgroundColor: 'rgba(15, 23, 42, 0.65)', backdropFilter: 'blur(4px)' }}>
+          <div className="modal-dialog modal-dialog-centered modal-lg">
+            <div className="modal-content rounded-4 shadow-2xl border-0 overflow-hidden">
+              {/* Header */}
+              <div className="modal-header bg-light py-3 px-4 border-bottom d-flex align-items-center justify-content-between">
                 <div>
-                  <h5 className="modal-title fw-bold">Update Status</h5>
-                  <p className="text-muted small mb-0">{selectedReg.registration_code} — {selectedReg.full_name}</p>
+                  <div className="d-flex align-items-center gap-2">
+                    <h5 className="modal-title fw-bold text-dark mb-0">Registration & Payment Details</h5>
+                    <span className="badge bg-primary-subtle text-primary font-monospace px-2.5 py-1">
+                      {selectedReg.registration_code}
+                    </span>
+                  </div>
+                  <p className="text-muted small mb-0 mt-0.5">
+                    {selectedReg.title || ''} {selectedReg.full_name} &bull; {selectedReg.email}
+                  </p>
                 </div>
                 <button
                   type="button"
-                  className="btn-close"
-                  onClick={() => setSelectedReg(null)}
+                  className="btn-close shadow-none"
+                  onClick={() => {
+                    setSelectedReg(null);
+                    setPaymentDetail(null);
+                  }}
                 ></button>
               </div>
 
-              <div className="modal-body p-4 space-y-3">
-                <div className="mb-3">
-                  <label className="form-label small fw-bold text-muted text-uppercase">Registration Status</label>
-                  <select
-                    value={updateStatus.status}
-                    onChange={(e) => setUpdateStatus({ ...updateStatus, status: e.target.value })}
-                    className="form-select"
-                  >
-                    <option value="draft">Draft</option>
-                    <option value="submitted">Submitted</option>
-                    <option value="confirmed">Confirmed</option>
-                    <option value="cancelled">Cancelled</option>
-                  </select>
-                </div>
+              {/* Body */}
+              <div className="modal-body p-4">
+                {paymentDetailLoading ? (
+                  <div className="text-center py-5">
+                    <div className="spinner-border text-primary mb-3" style={{ width: '2rem', height: '2rem' }}></div>
+                    <div className="text-muted small">Fetching live payment status from server...</div>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {/* Payment Info Card */}
+                    <div className="p-3 bg-light rounded-3 border mb-3">
+                      <div className="d-flex align-items-center justify-content-between mb-2">
+                        <div className="d-flex align-items-center gap-2 text-primary fw-bold small text-uppercase">
+                          <LuCreditCard size={16} />
+                          <span>Razorpay Payment Gateway Info</span>
+                        </div>
+                        <span className={`badge ${
+                          (paymentDetail?.paymentStatus || updateStatus.paymentStatus) === 'paid'
+                            ? 'bg-success text-white'
+                            : 'bg-warning text-dark'
+                        } text-uppercase px-2.5 py-1 rounded-pill`} style={{ fontSize: '0.72rem', letterSpacing: '0.04em' }}>
+                          {paymentDetail?.paymentStatus || updateStatus.paymentStatus || 'pending'}
+                        </span>
+                      </div>
 
-                <div className="mb-3">
-                  <label className="form-label small fw-bold text-muted text-uppercase">Payment Status</label>
-                  <select
-                    value={updateStatus.paymentStatus}
-                    onChange={(e) => setUpdateStatus({ ...updateStatus, paymentStatus: e.target.value })}
-                    className="form-select"
-                  >
-                    <option value="pending">Pending</option>
-                    <option value="paid">Paid</option>
-                    <option value="failed">Failed</option>
-                    <option value="refunded">Refunded</option>
-                  </select>
-                </div>
+                      <div className="row g-2 small text-dark mt-1">
+                        <div className="col-sm-6">
+                          <span className="text-muted">Payment Method:</span>{' '}
+                          <span className="fw-semibold">{paymentDetail?.paymentMethod || selectedReg.payment_method || 'Axis Razorpay (Elisyan India)'}</span>
+                        </div>
+                        <div className="col-sm-6">
+                          <span className="text-muted">Transaction ID:</span>{' '}
+                          <span className="font-monospace fw-semibold text-primary">{paymentDetail?.transactionId || selectedReg.transaction_id || 'Not Generated Yet'}</span>
+                        </div>
+                        <div className="col-sm-6">
+                          <span className="text-muted">Category:</span>{' '}
+                          <span className="fw-semibold">{paymentDetail?.categoryName || selectedReg.category_name || 'Standard'}</span>
+                        </div>
+                        <div className="col-sm-6">
+                          <span className="text-muted">Paid Date:</span>{' '}
+                          <span className="fw-semibold">{paymentDetail?.paidAt ? new Date(paymentDetail.paidAt).toLocaleString('en-IN') : (selectedReg.paid_at ? new Date(selectedReg.paid_at).toLocaleString('en-IN') : 'N/A')}</span>
+                        </div>
+                      </div>
+
+                      {/* Financial Breakdown */}
+                      {paymentDetail?.breakdown && (
+                        <div className="mt-3 pt-2 border-top">
+                          <div className="row g-1 small">
+                            <div className="col-6 text-muted">Category Base Price:</div>
+                            <div className="col-6 text-end fw-medium">{formatCurrency(paymentDetail.breakdown.categoryPrice)}</div>
+                            
+                            {paymentDetail.breakdown.accompanyingTotal > 0 && (
+                              <>
+                                <div className="col-6 text-muted">Accompanying Delegates Total:</div>
+                                <div className="col-6 text-end fw-medium">{formatCurrency(paymentDetail.breakdown.accompanyingTotal)}</div>
+                              </>
+                            )}
+
+                            <div className="col-6 text-muted">Subtotal:</div>
+                            <div className="col-6 text-end fw-medium">{formatCurrency(paymentDetail.breakdown.subtotal)}</div>
+
+                            <div className="col-6 text-muted">GST ({paymentDetail.breakdown.gstRate}%):</div>
+                            <div className="col-6 text-end fw-medium">{formatCurrency(paymentDetail.breakdown.gstAmount)}</div>
+
+                            <div className="col-6 fw-bold text-dark border-top pt-1 mt-1">Grand Total:</div>
+                            <div className="col-6 text-end fw-bold text-primary border-top pt-1 mt-1">{formatCurrency(paymentDetail.breakdown.grandTotal)}</div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Status Update Form */}
+                    <div className="p-3 bg-white border rounded-3">
+                      <h6 className="fw-bold text-dark small text-uppercase mb-3">Update Registration & Payment Status</h6>
+                      <div className="row g-3">
+                        <div className="col-md-6 col-12">
+                          <label className="form-label small fw-bold text-muted text-uppercase">Registration Status</label>
+                          <select
+                            value={updateStatus.status}
+                            onChange={(e) => setUpdateStatus({ ...updateStatus, status: e.target.value })}
+                            className="form-select shadow-none"
+                          >
+                            <option value="draft">Draft</option>
+                            <option value="submitted">Submitted</option>
+                            <option value="confirmed">Confirmed</option>
+                            <option value="cancelled">Cancelled</option>
+                          </select>
+                        </div>
+
+                        <div className="col-md-6 col-12">
+                          <label className="form-label small fw-bold text-muted text-uppercase">Payment Status</label>
+                          <select
+                            value={updateStatus.paymentStatus}
+                            onChange={(e) => setUpdateStatus({ ...updateStatus, paymentStatus: e.target.value })}
+                            className="form-select shadow-none"
+                          >
+                            <option value="pending">Pending</option>
+                            <option value="paid">Paid</option>
+                            <option value="failed">Failed</option>
+                            <option value="refunded">Refunded</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
 
-              <div className="modal-footer border-top">
+              {/* Footer */}
+              <div className="modal-footer bg-light border-top py-3 px-4 d-flex justify-content-between">
                 <button
                   type="button"
-                  onClick={() => setSelectedReg(null)}
-                  className="btn btn-light"
+                  onClick={() => {
+                    setSelectedReg(null);
+                    setPaymentDetail(null);
+                  }}
+                  className="btn btn-outline-secondary px-4 shadow-none"
                 >
-                  Cancel
+                  Close
                 </button>
                 <button
                   type="button"
                   onClick={handleStatusUpdate}
                   disabled={updating}
-                  className="btn btn-primary px-4"
+                  className="btn btn-primary px-4 shadow-none d-inline-flex align-items-center gap-2"
                 >
-                  {updating ? 'Saving...' : 'Save Changes'}
+                  {updating ? (
+                    <>
+                      <div className="spinner-border spinner-border-sm"></div>
+                      <span>Saving...</span>
+                    </>
+                  ) : (
+                    <>
+                      <LuCheck size={16} />
+                      <span>Save Changes</span>
+                    </>
+                  )}
                 </button>
               </div>
             </div>
@@ -385,3 +511,4 @@ const AdminRegistrationsPage = () => {
 };
 
 export default AdminRegistrationsPage;
+

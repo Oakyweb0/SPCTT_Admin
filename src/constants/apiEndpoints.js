@@ -42,12 +42,13 @@ export const API_ENDPOINTS = {
 
   // Payment & Transactions
   PAYMENT: {
-    CREATE_ORDER: '/payment/create-order',
-    PROCESS: '/payment/process',
-    VERIFY: '/payment/verify',
-    STATUS: '/payment/status',
-    HISTORY: '/payment/history',
-    DETAILS: (registrationId) => `/payment/details/${registrationId}`,
+    CREATE_ORDER: '/payments/create-order',
+    PROCESS: '/payments/process',
+    VERIFY: '/payments/verify',
+    STATUS: '/payments/status',
+    STATUS_BY_ID: (registrationId) => `/payments/status/${registrationId}`,
+    HISTORY: '/payments/history',
+    DETAILS: (registrationId) => `/payments/status/${registrationId}`,
   },
 
   // Abstracts

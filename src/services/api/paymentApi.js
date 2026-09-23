@@ -42,6 +42,13 @@ export const paymentApi = {
    */
   getDetails: (registrationId) => {
     return apiClient.get(API_ENDPOINTS.PAYMENT.DETAILS(registrationId));
+  },
+
+  /**
+   * Get payment status by registration ID
+   */
+  getStatusByRegistrationId: (registrationId) => {
+    return apiClient.get(API_ENDPOINTS.PAYMENT.STATUS_BY_ID(registrationId));
   }
 };
 
