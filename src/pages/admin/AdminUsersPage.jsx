@@ -476,24 +476,24 @@ const AdminUsersPage = () => {
                       </div>
                     </td>
                     <td className="text-center text-nowrap">
-                      <div className="d-inline-flex align-items-center gap-1.5">
+                      <div className="d-inline-flex align-items-center gap-2">
                         <button
+                          type="button"
                           onClick={() => handleOpenEdit(u)}
-                          className="btn btn-outline-primary btn-sm px-2 py-1 rounded-2 d-inline-flex align-items-center gap-1 transition-all shadow-none"
+                          className="tbl-action-btn tbl-action-btn-edit"
                           title={`Edit ${u.name}`}
-                          style={{ fontSize: '0.74rem', fontWeight: 500 }}
+                          aria-label="Edit user"
                         >
-                          <LuPencil size={12} />
-                          <span>Edit</span>
+                          <LuPencil size={15} />
                         </button>
                         <button
+                          type="button"
                           onClick={() => setDeleteTarget(u)}
-                          className="btn btn-outline-danger btn-sm px-2 py-1 rounded-2 d-inline-flex align-items-center gap-1 transition-all shadow-none"
+                          className="tbl-action-btn tbl-action-btn-delete"
                           title={`Delete ${u.name}`}
-                          style={{ fontSize: '0.74rem', fontWeight: 500 }}
+                          aria-label="Delete user"
                         >
-                          <LuTrash2 size={12} />
-                          <span>Delete</span>
+                          <LuTrash2 size={15} />
                         </button>
                       </div>
                     </td>
