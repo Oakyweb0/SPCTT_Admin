@@ -309,16 +309,15 @@ const AdminUsersPage = () => {
             <button
               onClick={handleExportExcel}
               disabled={exporting || loading}
-              className="btn btn-success btn-sm d-inline-flex align-items-center gap-2 px-3 py-2 rounded-3 shadow-none text-white fw-medium"
-              style={{ backgroundColor: '#10b981', borderColor: '#10b981' }}
+              className="spctt-outline-btn"
               title="Export Users to Excel (.xlsx)"
             >
               <LuDownload className={exporting ? 'fa-spin' : ''} size={15} />
-              <span>{exporting ? 'Exporting...' : 'Export Excel'}</span>
+              <span>{exporting ? 'Exporting...' : 'Export List'}</span>
             </button>
             <button
               onClick={handleOpenAdd}
-              className="btn btn-primary btn-sm d-inline-flex align-items-center gap-2 px-3 py-2 rounded-3 shadow-none fw-medium"
+              className="spctt-primary-btn"
             >
               <LuUserPlus size={16} />
               <span>Add New User</span>
@@ -326,9 +325,9 @@ const AdminUsersPage = () => {
             <button
               onClick={loadUsers}
               disabled={loading}
-              className="btn btn-outline-secondary btn-sm d-inline-flex align-items-center gap-2 px-3 py-2 rounded-3 shadow-none"
+              className="spctt-outline-btn"
             >
-              <LuRefreshCw className={loading ? 'fa-spin' : ''} />
+              <LuRefreshCw className={loading ? 'fa-spin' : ''} size={15} />
               <span>Refresh</span>
             </button>
           </div>

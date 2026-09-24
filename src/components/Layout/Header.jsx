@@ -1,18 +1,18 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { 
-  LuUser, 
-  LuLock, 
+import {
+  LuUser,
+  LuLock,
   LuKeyRound,
-  LuLogOut, 
-  LuSun, 
-  LuMoon, 
-  LuSearch, 
-  LuBell, 
-  LuExternalLink, 
-  LuMenu, 
-  LuChevronDown, 
-  LuCheck, 
+  LuLogOut,
+  LuSun,
+  LuMoon,
+  LuSearch,
+  LuBell,
+  LuExternalLink,
+  LuMenu,
+  LuChevronDown,
+  LuCheck,
   LuX,
   LuShieldCheck,
   LuCode
@@ -23,7 +23,7 @@ const Header = ({ onToggleSidebar, onToggleMobileSidebar, pageTitle = 'Dashboard
   const navigate = useNavigate();
   const authData = getStoredAuth();
   const initialUser = authData?.user || authData || {};
-  
+
   const [userProfile, setUserProfile] = useState({
     title: initialUser.title || 'Dr.',
     name: initialUser.name || 'SPCTT Administrator',
@@ -44,7 +44,7 @@ const Header = ({ onToggleSidebar, onToggleMobileSidebar, pageTitle = 'Dashboard
   // Modals state
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
-  
+
   // Profile form state
   const [profileForm, setProfileForm] = useState({
     title: 'Dr.',
@@ -325,7 +325,7 @@ const Header = ({ onToggleSidebar, onToggleMobileSidebar, pageTitle = 'Dashboard
                 <div className="dropdown-header-title">{userProfile.name}</div>
                 <div className="dropdown-header-subtitle">{userProfile.email}</div>
               </div>
-              
+
               {/* 1. Working My Profile Button */}
               <button
                 type="button"
@@ -335,7 +335,7 @@ const Header = ({ onToggleSidebar, onToggleMobileSidebar, pageTitle = 'Dashboard
                 <LuUser className="dropdown-item-icon text-primary" size={16} />
                 <span>My Profile</span>
               </button>
-              
+
               {/* 2. Working Change Password Button */}
               <button
                 type="button"

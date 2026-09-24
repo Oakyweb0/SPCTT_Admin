@@ -619,19 +619,18 @@ const AdminAbstractsPage = () => {
               <button
                 onClick={handleExportExcel}
                 disabled={exporting || loading}
-                className="btn btn-success btn-sm d-inline-flex align-items-center gap-2 px-3 py-2 rounded-3 shadow-none text-white fw-medium"
-                style={{ backgroundColor: '#10b981', borderColor: '#10b981' }}
+                className="spctt-outline-btn"
                 title="Export all/filtered abstracts to Excel (.xlsx)"
               >
                 <LuDownload className={exporting ? 'fa-spin' : ''} size={15} />
-                <span>{exporting ? 'Exporting...' : 'Export Excel'}</span>
+                <span>{exporting ? 'Exporting...' : 'Export List'}</span>
               </button>
               <button
                 onClick={loadAbstracts}
                 disabled={loading}
-                className="btn btn-outline-info btn-sm d-inline-flex align-items-center gap-2 px-3 py-2 rounded-3 shadow-none"
+                className="spctt-primary-btn"
               >
-                <LuRefreshCw className={loading ? 'fa-spin' : ''} />
+                <LuRefreshCw className={loading ? 'fa-spin' : ''} size={15} />
                 <span>Refresh</span>
               </button>
             </div>
