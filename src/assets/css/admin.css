@@ -89,7 +89,7 @@
 
   --spctt-border: #1e293b;
   --spctt-border-subtle: #172338;
-  
+
   --spctt-primary-light: rgba(71, 110, 172, 0.22);
   --spctt-primary-subtle: rgba(71, 110, 172, 0.14);
   --spctt-secondary-light: rgba(192, 25, 43, 0.22);
@@ -122,7 +122,12 @@ body {
   overflow-x: hidden;
 }
 
-h1, h2, h3, h4, h5, h6,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
 .spctt-heading {
   font-family: var(--spctt-font-title);
   color: var(--spctt-dark);
@@ -197,6 +202,7 @@ a:hover {
 .spctt-sidebar::-webkit-scrollbar {
   width: 5px;
 }
+
 .spctt-sidebar::-webkit-scrollbar-thumb {
   background: rgba(255, 255, 255, 0.15);
   border-radius: 4px;
@@ -1454,6 +1460,7 @@ a:hover {
     opacity: 0;
     transform: scale(0.95);
   }
+
   100% {
     opacity: 1;
     transform: scale(1);
@@ -1465,6 +1472,7 @@ a:hover {
     opacity: 0;
     transform: translateY(-8px);
   }
+
   100% {
     opacity: 1;
     transform: translateY(0);
@@ -1520,7 +1528,7 @@ a:hover {
   .live-site-btn span {
     display: none;
   }
-  
+
   .banner-title-area h1 {
     font-size: 1.5rem;
   }
@@ -1576,12 +1584,10 @@ a:hover {
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(
-    180deg,
-    rgba(11, 21, 40, 0.40) 0%,
-    rgba(15, 23, 42, 0.50) 45%,
-    rgba(11, 21, 40, 0.65) 100%
-  );
+  background: linear-gradient(180deg,
+      rgba(11, 21, 40, 0.40) 0%,
+      rgba(15, 23, 42, 0.50) 45%,
+      rgba(11, 21, 40, 0.65) 100%);
 }
 
 /* Main Login Container & Glass Card */
@@ -1598,7 +1604,7 @@ a:hover {
   border: 1px solid rgba(255, 255, 255, 0.8);
   border-radius: 1.25rem;
   padding: 2.5rem 2.25rem;
-  box-shadow: 
+  box-shadow:
     0 25px 50px -12px rgba(15, 23, 42, 0.35),
     0 0 0 1px rgba(255, 255, 255, 0.4);
   animation: loginCardFadeIn 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
@@ -1609,6 +1615,7 @@ a:hover {
     opacity: 0;
     transform: translateY(16px) scale(0.98);
   }
+
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
@@ -2028,9 +2035,11 @@ a:hover {
 .bg-purple-subtle {
   background-color: #f3e8ff !important;
 }
+
 .text-purple {
   color: #7e22ce !important;
 }
+
 .border-purple {
   border-color: #d8b4fe !important;
 }
@@ -2038,9 +2047,11 @@ a:hover {
 .bg-info-subtle {
   background-color: #e0f2fe !important;
 }
+
 .text-info {
   color: #0284c7 !important;
 }
+
 .border-info {
   border-color: #bae6fd !important;
 }
@@ -2052,10 +2063,12 @@ a:hover {
   border-radius: 50%;
   margin-right: 5px;
 }
+
 .badge-status-dot.active {
   background-color: #16a34a;
   box-shadow: 0 0 0 2px rgba(22, 163, 74, 0.2);
 }
+
 .badge-status-dot.inactive {
   background-color: #dc2626;
   box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.2);
@@ -2456,10 +2469,3 @@ a:hover {
   border-color: rgba(220, 38, 38, 0.35);
   color: #fca5a5;
 }
-
-
-
-
-
-
-

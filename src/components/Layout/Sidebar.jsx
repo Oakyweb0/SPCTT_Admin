@@ -31,20 +31,20 @@ const Sidebar = ({ onNavigate }) => {
     <aside className="spctt-sidebar">
       {/* Brand Header with Full Logo linking to Dashboard */}
       <div className="sidebar-brand-wrapper">
-        <Link 
-          to="/admin/dashboard" 
-          onClick={onNavigate} 
+        <Link
+          to="/admin/dashboard"
+          onClick={onNavigate}
           className="sidebar-full-logo-box text-decoration-none"
           title="Go to Dashboard"
         >
-          <img 
-            src={logoImg || '/logo.png'} 
+          <img
+            src={logoImg || '/logo.png'}
             onError={(e) => {
               e.currentTarget.onerror = null;
               e.currentTarget.src = '/logo.png';
             }}
-            alt="SPCTT Logo" 
-            className="sidebar-full-logo" 
+            alt="SPCTT Logo"
+            className="sidebar-full-logo"
           />
         </Link>
       </div>
