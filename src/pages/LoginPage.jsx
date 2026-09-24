@@ -84,15 +84,30 @@ const LoginPage = () => {
     }
   };
 
-  const handleForgotSubmit = (e) => {
+  const [forgotLoading, setForgotLoading] = useState(false);
+  const [forgotError, setForgotError] = useState('');
+  const [forgotMsg, setForgotMsg] = useState('');
+
+  const handleForgotSubmit = async (e) => {
     e.preventDefault();
-    if (!resetEmail) return;
-    setResetSent(true);
-    setTimeout(() => {
-      setResetSent(false);
-      setShowForgotModal(false);
-      setResetEmail('');
-    }, 2500);
+    if (!resetEmail.trim()) return;
+    setForgotLoading(true);
+    setForgotError('');
+    setForgotMsg('');
+
+    try {
+      const res = await authApi.forgotPassword(resetEmail.trim());
+      if (res.status || res.success) {
+        setResetSent(true);
+        setForgotMsg(res.message || 'A 6-digit OTP has been sent to your email.');
+      } else {
+        setForgotError(res.message || 'Failed to send reset OTP.');
+      }
+    } catch (err) {
+      setForgotError(err.message || 'Error processing forgot password request.');
+    } finally {
+      setForgotLoading(false);
+    }
   };
 
   return (
@@ -287,18 +302,51 @@ const LoginPage = () => {
               </div>
               <div className="modal-body py-3">
                 {resetSent ? (
-                  <div className="alert alert-success d-flex align-items-center gap-2">
-                    <i className="fa-solid fa-circle-check fs-5"></i>
-                    <div>
-                      <strong>Recovery Email Sent!</strong>
-                      <p className="mb-0 small">Please check your inbox for password reset instructions.</p>
+                  <div className="alert alert-success d-flex flex-column gap-2 p-3">
+                    <div className="d-flex align-items-center gap-2">
+                      <i className="fa-solid fa-circle-check fs-5 text-success"></i>
+                      <strong>OTP Sent to Your Email!</strong>
+                    </div>
+                    <p className="mb-2 small text-muted">
+                      {forgotMsg || 'A 6-digit OTP has been sent to your administrator email address. Please check your inbox.'}
+                    </p>
+                    <div className="d-flex justify-content-end gap-2 mt-2">
+                      <button
+                        type="button"
+                        className="btn btn-sm btn-outline-secondary"
+                        onClick={() => {
+                          setShowForgotModal(false);
+                          setResetSent(false);
+                          setResetEmail('');
+                        }}
+                      >
+                        Close
+                      </button>
+                      <button
+                        type="button"
+                        className="btn btn-sm btn-primary"
+                        onClick={() => {
+                          setShowForgotModal(false);
+                          navigate(`/user/reset-password?email=${encodeURIComponent(resetEmail.trim())}`);
+                        }}
+                      >
+                        Enter OTP & Reset Password →
+                      </button>
                     </div>
                   </div>
                 ) : (
                   <>
                     <p className="text-muted small mb-3">
-                      Enter your registered administrator email address and we will send you a reset link.
+                      Enter your registered administrator email address to receive a 6-digit OTP for resetting your password.
                     </p>
+
+                    {forgotError && (
+                      <div className="alert alert-danger py-2 px-3 small d-flex align-items-center gap-2 mb-3">
+                        <i className="fa-solid fa-circle-exclamation flex-shrink-0"></i>
+                        <span>{forgotError}</span>
+                      </div>
+                    )}
+
                     <form onSubmit={handleForgotSubmit}>
                       <div className="mb-3">
                         <label className="form-label small fw-semibold">Admin Email Address</label>
@@ -315,12 +363,22 @@ const LoginPage = () => {
                         <button
                           type="button"
                           className="btn btn-light"
-                          onClick={() => setShowForgotModal(false)}
+                          onClick={() => {
+                            setShowForgotModal(false);
+                            setForgotError('');
+                          }}
                         >
                           Cancel
                         </button>
-                        <button type="submit" className="btn btn-primary">
-                          Send Reset Link
+                        <button type="submit" className="btn btn-primary" disabled={forgotLoading}>
+                          {forgotLoading ? (
+                            <>
+                              <span className="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                              <span>Sending...</span>
+                            </>
+                          ) : (
+                            <span>Send OTP</span>
+                          )}
                         </button>
                       </div>
                     </form>

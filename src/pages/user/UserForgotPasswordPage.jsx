@@ -22,16 +22,16 @@ const UserForgotPasswordPage = () => {
     try {
       setLoading(true);
       const res = await authApi.forgotPassword(email.trim());
-      if (res.status) {
+      if (res.status || res.success) {
         setSuccess(
-          res.message || 'Password reset token generated successfully. Please check your email or use the reset link.'
+          res.message || 'A 6-digit OTP has been sent to your registered email address. Please check your inbox or spam folder.'
         );
       } else {
         setError(res.message || 'Failed to process forgot password request.');
       }
     } catch (err) {
       console.error(err);
-      setError(err.message || 'Error requesting password reset.');
+      setError(err.message || 'Error requesting password reset OTP.');
     } finally {
       setLoading(false);
     }
@@ -51,7 +51,7 @@ const UserForgotPasswordPage = () => {
               Forgot Your Password?
             </h2>
             <p className="text-xs text-gray-500 mt-1">
-              Enter your registered email address and we will generate a password reset request for you.
+              Enter your registered email address to receive a 6-digit OTP to reset your password.
             </p>
           </div>
 
@@ -66,15 +66,15 @@ const UserForgotPasswordPage = () => {
             <div className="mb-6 p-4 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm space-y-2">
               <div className="flex items-center gap-2 font-bold">
                 <i className="fa-solid fa-circle-check text-base"></i>
-                <span>Reset Request Created</span>
+                <span>OTP Sent Successfully</span>
               </div>
               <p className="text-xs leading-relaxed">{success}</p>
               <div className="pt-2">
                 <Link
-                  to="/user/reset-password"
+                  to={`/user/reset-password?email=${encodeURIComponent(email.trim())}`}
                   className="text-xs bg-[#C0192B] text-white px-4 py-2 rounded font-semibold inline-block hover:bg-[#a11424] transition-all"
                 >
-                  Proceed to Reset Password Page →
+                  Enter OTP & Reset Password →
                 </Link>
               </div>
             </div>
