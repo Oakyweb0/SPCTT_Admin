@@ -1,8 +1,8 @@
 import React from 'react';
-import { LuChevronLeft, LuChevronRight } from 'react-icons/lu';
 
 /**
  * Reusable Modern Pagination Component for SPCTT Data Tables
+ * Styled to match Image 1 (Showing X–Y of Z label + Previous / Numbers / Next in crimson active state)
  */
 const Pagination = ({
   currentPage = 1,
@@ -11,7 +11,8 @@ const Pagination = ({
   onPageChange,
   onPageSizeChange,
   pageSizeOptions = [5, 10, 25, 50, 100],
-  itemLabel = 'entries'
+  showPageSize = false,
+  itemLabel = 'registrations'
 }) => {
   const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
   const safeCurrentPage = Math.min(Math.max(1, currentPage), totalPages);
@@ -76,15 +77,13 @@ const Pagination = ({
 
   return (
     <div className="spctt-pagination-container">
-      {/* Left: Info & Items Per Page Selector */}
+      {/* Left: Info Text */}
       <div className="spctt-pagination-info">
-        <span>
-          Showing <strong className="text-dark">{startItem}</strong> to{' '}
-          <strong className="text-dark">{endItem}</strong> of{' '}
-          <strong className="text-dark">{totalItems}</strong> {itemLabel}
+        <span className="spctt-pagination-text">
+          Showing {startItem}–{endItem} of {totalItems.toLocaleString()} {itemLabel}
         </span>
 
-        {onPageSizeChange && (
+        {showPageSize && onPageSizeChange && (
           <div className="d-flex align-items-center gap-1.5 ms-sm-2">
             <span className="small text-muted">Per page:</span>
             <select
@@ -112,12 +111,10 @@ const Pagination = ({
               type="button"
               onClick={handlePrev}
               disabled={safeCurrentPage <= 1}
-              className="spctt-page-btn"
+              className="spctt-page-btn spctt-page-btn-nav"
               aria-label="Previous Page"
-              title="Previous Page"
             >
-              <LuChevronLeft size={16} />
-              <span className="d-none d-sm-inline">Prev</span>
+              Previous
             </button>
           </li>
 
@@ -139,7 +136,6 @@ const Pagination = ({
                   onClick={() => onPageChange && onPageChange(page)}
                   className={`spctt-page-btn ${isCurrent ? 'active' : ''}`}
                   aria-current={isCurrent ? 'page' : undefined}
-                  title={`Go to Page ${page}`}
                 >
                   {page}
                 </button>
@@ -153,12 +149,10 @@ const Pagination = ({
               type="button"
               onClick={handleNext}
               disabled={safeCurrentPage >= totalPages}
-              className="spctt-page-btn"
+              className="spctt-page-btn spctt-page-btn-nav"
               aria-label="Next Page"
-              title="Next Page"
             >
-              <span className="d-none d-sm-inline">Next</span>
-              <LuChevronRight size={16} />
+              Next
             </button>
           </li>
         </ul>
