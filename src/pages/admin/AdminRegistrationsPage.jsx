@@ -3,6 +3,7 @@ import {
   LuSearch, 
   LuRefreshCw, 
   LuCheck, 
+  LuTriangleAlert,
   LuClipboardList,
   LuSlidersHorizontal,
   LuX,
@@ -20,6 +21,7 @@ const AdminRegistrationsPage = () => {
   const [registrations, setRegistrations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [exporting, setExporting] = useState(false);
+  const [notification, setNotification] = useState(null);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [paymentFilter, setPaymentFilter] = useState('');
@@ -87,11 +89,21 @@ const AdminRegistrationsPage = () => {
       const blobData = await adminApi.exportRegistrations(params);
       const dateStr = new Date().toISOString().split('T')[0];
       downloadBlobFile(blobData, `SPCTT_Registrations_${dateStr}.xlsx`);
+      setNotification({
+        type: 'success',
+        message: 'Registrations exported to Excel (.xlsx) successfully!'
+      });
     } catch (err) {
       console.error('Error exporting registrations:', err);
-      alert('Failed to export registrations to Excel.');
+      setNotification({
+        type: 'danger',
+        message: 'Failed to export registrations to Excel. Please try again.'
+      });
     } finally {
       setExporting(false);
+      setTimeout(() => {
+        setNotification(null);
+      }, 4000);
     }
   };
 
@@ -113,11 +125,21 @@ const AdminRegistrationsPage = () => {
       await adminApi.updateRegistrationStatus(selectedReg.id, updateStatus);
       setSelectedReg(null);
       setPaymentDetail(null);
+      setNotification({
+        type: 'success',
+        message: 'Registration status updated successfully!'
+      });
       await loadRegistrations();
     } catch (err) {
-      alert(err.message || 'Failed to update registration status');
+      setNotification({
+        type: 'danger',
+        message: err.message || 'Failed to update registration status'
+      });
     } finally {
       setUpdating(false);
+      setTimeout(() => {
+        setNotification(null);
+      }, 4000);
     }
   };
 
@@ -133,6 +155,41 @@ const AdminRegistrationsPage = () => {
 
   return (
     <div className="dashboard-page-container w-100">
+      {/* Compact Floating Toast Notification */}
+      {notification && (
+        <div 
+          className="position-fixed top-0 start-50 translate-middle-x p-3" 
+          style={{ zIndex: 9999, minWidth: '320px', maxWidth: '480px', pointerEvents: 'none' }}
+        >
+          <div 
+            className={`alert alert-${notification.type} shadow-lg rounded-3 mb-0 d-flex align-items-center justify-content-between py-2 px-3 border`}
+            role="alert"
+            style={{ 
+              pointerEvents: 'auto', 
+              animation: 'fadeIn 0.25s ease-in-out',
+              backdropFilter: 'blur(8px)',
+              fontSize: '0.85rem'
+            }}
+          >
+            <div className="d-flex align-items-center gap-2">
+              {notification.type === 'success' ? (
+                <LuCheck size={16} className="text-success flex-shrink-0" />
+              ) : (
+                <LuTriangleAlert size={16} className="text-danger flex-shrink-0" />
+              )}
+              <span className="fw-semibold">{notification.message}</span>
+            </div>
+            <button 
+              type="button" 
+              className="btn-close btn-sm shadow-none ms-2" 
+              style={{ fontSize: '0.65rem' }} 
+              onClick={() => setNotification(null)}
+              aria-label="Close"
+            ></button>
+          </div>
+        </div>
+      )}
+
       {/* 1. Header Banner */}
       <div className="dashboard-card-section mb-4">
         <div className="dashboard-card-header bg-white py-3 px-4 d-flex align-items-center justify-content-between flex-wrap gap-3">
@@ -149,19 +206,18 @@ const AdminRegistrationsPage = () => {
             <button
               onClick={handleExportExcel}
               disabled={exporting || loading}
-              className="btn btn-success btn-sm d-inline-flex align-items-center gap-2 px-3 py-2 rounded-3 shadow-none text-white fw-medium"
-              style={{ backgroundColor: '#10b981', borderColor: '#10b981' }}
+              className="spctt-outline-btn"
               title="Export Registrations to Excel (.xlsx)"
             >
               <LuDownload className={exporting ? 'fa-spin' : ''} size={15} />
-              <span>{exporting ? 'Exporting...' : 'Export Excel'}</span>
+              <span>{exporting ? 'Exporting...' : 'Export List'}</span>
             </button>
             <button
               onClick={loadRegistrations}
               disabled={loading}
-              className="btn btn-outline-primary btn-sm d-inline-flex align-items-center gap-2 px-3 py-2 rounded-3 shadow-none"
+              className="spctt-primary-btn"
             >
-              <LuRefreshCw className={loading ? 'fa-spin' : ''} />
+              <LuRefreshCw className={loading ? 'fa-spin' : ''} size={15} />
               <span>Refresh</span>
             </button>
           </div>
