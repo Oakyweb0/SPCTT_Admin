@@ -377,9 +377,10 @@ const AdminUsersPage = () => {
           <table className="spctt-table w-100">
             <thead>
               <tr>
+                <th className="text-center" style={{ width: '5%', minWidth: '45px' }}>S.No</th>
                 <th style={{ width: '22%' }}>Delegate Profile</th>
-                <th style={{ width: '23%' }}>Contact Details</th>
-                <th style={{ width: '20%' }}>Institution / Organization</th>
+                <th style={{ width: '22%' }}>Contact Details</th>
+                <th style={{ width: '18%' }}>Institution / Organization</th>
                 <th className="text-center" style={{ width: '9%' }}>Role</th>
                 <th className="text-center" style={{ width: '9%' }}>Status</th>
                 <th style={{ width: '10%' }}>Registered Date</th>
@@ -389,7 +390,7 @@ const AdminUsersPage = () => {
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan={7}>
+                  <td colSpan={8}>
                     <div className="table-empty-state py-5">
                       <div className="spinner-border text-success mb-3" style={{ width: '2.2rem', height: '2.2rem' }}></div>
                       <h6 className="table-empty-title mb-1">Loading Registered Users...</h6>
@@ -399,7 +400,7 @@ const AdminUsersPage = () => {
                 </tr>
               ) : filteredUsers.length === 0 ? (
                 <tr>
-                  <td colSpan={7}>
+                  <td colSpan={8}>
                     <div className="table-empty-state">
                       <div className="table-empty-icon-box" style={{ background: 'rgba(22, 163, 74, 0.1)', color: '#16a34a' }}>
                         <LuUsers size={26} />
@@ -414,8 +415,13 @@ const AdminUsersPage = () => {
                   </td>
                 </tr>
               ) : (
-                paginatedUsers.map((u) => (
+                paginatedUsers.map((u, idx) => (
                   <tr key={u.id}>
+                    <td className="text-center">
+                      <span className="fw-semibold text-muted" style={{ fontSize: '0.82rem' }}>
+                        {(currentPage - 1) * pageSize + idx + 1}
+                      </span>
+                    </td>
                     <td>
                       <div className="d-flex align-items-center gap-2.5">
                         <div className={`user-avatar-badge ${u.role || 'user'}`}>

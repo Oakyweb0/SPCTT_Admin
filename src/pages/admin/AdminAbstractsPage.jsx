@@ -693,20 +693,21 @@ const AdminAbstractsPage = () => {
             <table className="spctt-table w-100" style={{ minWidth: '920px' }}>
               <thead>
                 <tr style={{ background: '#f8fafc' }}>
+                  <th className="py-3 px-3 text-center" style={{ width: '5%', minWidth: '45px' }}>S.No</th>
                   <th className="py-3 px-3 text-nowrap" style={{ width: '10%' }}>Code</th>
-                  <th className="py-3 px-3" style={{ width: '27%' }}>Topic & Presenter</th>
-                  <th className="py-3 px-3" style={{ width: '19%' }}>Institute</th>
-                  <th className="py-3 px-2 text-center" style={{ width: '9%' }}>Category</th>
-                  <th className="py-3 px-3" style={{ width: '15%' }}>Contact</th>
-                  <th className="py-3 px-2 text-center" style={{ width: '8%' }}>PDF</th>
+                  <th className="py-3 px-3" style={{ width: '25%' }}>Topic & Presenter</th>
+                  <th className="py-3 px-3" style={{ width: '18%' }}>Institute</th>
+                  <th className="py-3 px-2 text-center" style={{ width: '8%' }}>Category</th>
+                  <th className="py-3 px-3" style={{ width: '14%' }}>Contact</th>
+                  <th className="py-3 px-2 text-center" style={{ width: '7%' }}>PDF</th>
                   <th className="py-3 px-2 text-center" style={{ width: '9%' }}>Status</th>
-                  <th className="py-3 px-3 text-center" style={{ width: '11%', minWidth: '130px' }}>Actions</th>
+                  <th className="py-3 px-3 text-center" style={{ width: '11%', minWidth: '120px' }}>Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {loading ? (
                   <tr>
-                    <td colSpan={8}>
+                    <td colSpan={9}>
                       <div className="table-empty-state py-4 text-center">
                         <div className="spinner-border text-primary mb-2" style={{ width: '2rem', height: '2rem' }}></div>
                         <h6 className="table-empty-title mb-1">Loading Research Abstracts...</h6>
@@ -716,7 +717,7 @@ const AdminAbstractsPage = () => {
                   </tr>
                 ) : filteredAbstracts.length === 0 ? (
                   <tr>
-                    <td colSpan={8}>
+                    <td colSpan={9}>
                       <div className="table-empty-state text-center py-4">
                         <div className="table-empty-icon-box mb-2">
                           <LuFileText size={24} />
@@ -731,11 +732,16 @@ const AdminAbstractsPage = () => {
                     </td>
                   </tr>
                 ) : (
-                  paginatedAbstracts.map((abs) => {
+                  paginatedAbstracts.map((abs, idx) => {
                     const pdfUrl = getPdfUrl(abs);
 
                     return (
                       <tr key={abs.id} style={{ borderBottom: '1px solid #eef2f6' }}>
+                        <td className="py-3 px-2 align-middle text-center">
+                          <span className="fw-semibold text-muted" style={{ fontSize: '0.82rem' }}>
+                            {(currentPage - 1) * pageSize + idx + 1}
+                          </span>
+                        </td>
                         <td className="py-3 px-3 align-middle text-nowrap">
                           <span className="badge bg-light text-primary border font-monospace px-2 py-1" style={{ fontSize: '0.78rem', fontWeight: 600 }}>
                             {abs.abstract_code}
