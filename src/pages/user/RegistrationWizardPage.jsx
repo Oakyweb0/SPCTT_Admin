@@ -59,7 +59,7 @@ const RegistrationWizardPage = () => {
   });
 
   // Payment method
-  const [paymentMethod, setPaymentMethod] = useState('Axis Razorpay (Elisyan India)');
+  const [paymentMethod, setPaymentMethod] = useState('Axis Razorpay (PAGE WORLDWIDE)');
 
   // Full registration record from server
   const [registration, setRegistration] = useState(null);
@@ -973,13 +973,13 @@ const RegistrationWizardPage = () => {
                 <input
                   type="radio"
                   name="paymentMethod"
-                  value="Axis Razorpay (Elisyan India)"
-                  checked={paymentMethod === 'Axis Razorpay (Elisyan India)'}
+                  value="Axis Razorpay (PAGE WORLDWIDE)"
+                  checked={paymentMethod === 'Axis Razorpay (PAGE WORLDWIDE)'}
                   onChange={(e) => setPaymentMethod(e.target.value)}
                   className="w-4 h-4 text-[#004b63] border-gray-300 focus:ring-[#004b63]"
                 />
                 <div className="flex items-center gap-2">
-                  <span className="font-semibold text-gray-900">Axis Razorpay (Elisyan India)</span>
+                  <span className="font-semibold text-gray-900">Axis Razorpay (PAGE WORLDWIDE)</span>
                   <span className="text-xs bg-blue-100 text-blue-800 px-2 py-0.5 rounded font-medium">Credit/Debit Card, UPI, Netbanking</span>
                 </div>
               </label>

@@ -456,7 +456,7 @@ const AdminRegistrationsPage = () => {
                       <div className="row g-2 small text-dark mt-1">
                         <div className="col-sm-6">
                           <span className="text-muted">Payment Method:</span>{' '}
-                          <span className="fw-semibold">{paymentDetail?.paymentMethod || selectedReg.payment_method || 'Axis Razorpay (Elisyan India)'}</span>
+                          <span className="fw-semibold">{(paymentDetail?.paymentMethod || selectedReg.payment_method || 'Axis Razorpay (PAGE WORLDWIDE)').replace(/Elisyan\s*India/gi, 'PAGE WORLDWIDE')}</span>
                         </div>
                         <div className="col-sm-6">
                           <span className="text-muted">Transaction ID:</span>{' '}
