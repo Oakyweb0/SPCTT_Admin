@@ -5,8 +5,8 @@ export const registrationApi = {
   /**
    * Get registration categories with pricing
    */
-  getCategories: () => {
-    return apiClient.get(API_ENDPOINTS.REGISTRATION.CATEGORIES);
+  getCategories: (params = {}) => {
+    return apiClient.get(API_ENDPOINTS.REGISTRATION.CATEGORIES, { params });
   },
 
   /**

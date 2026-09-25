@@ -16,14 +16,17 @@ const RegistrationWizardPage = () => {
   const [error, setError] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
 
-  // Categories list
+  // Fee Type Flag: 'regular' | 'on_spot'
+  const [feeType, setFeeType] = useState('regular');
+
+  // Categories list with Regular & On-Spot prices
   const [categories, setCategories] = useState([
-    { id: 1, code: 'SPCTT_MEMBERS', name: 'SPCTT Members (Consultants)', price: 3250 },
-    { id: 2, code: 'NON_MEMBERS', name: 'Non-Members (Consultants)', price: 4000 },
-    { id: 3, code: 'FELLOWS_STUDENTS', name: 'Fellows/ Students', price: 2500 },
-    { id: 4, code: 'NURSES', name: 'Nurses', price: 2000 },
-    { id: 5, code: 'INDUSTRY_DELEGATES', name: 'Industry Delegates', price: 6000 },
-    { id: 6, code: 'ACCOMPANYING_PERSONS', name: 'Accompanying Persons (including children > 10 yrs old)', price: 4000 }
+    { id: 1, code: 'SPCTT_MEMBERS', name: 'SPCTT Members (Consultants)', regular_fee: 2500, on_spot_fee: 3000, price: 2500 },
+    { id: 2, code: 'NON_MEMBERS', name: 'Non-Members (Consultants)', regular_fee: 3500, on_spot_fee: 4000, price: 3500 },
+    { id: 3, code: 'FELLOWS_STUDENTS', name: 'Fellows / Students', regular_fee: 2000, on_spot_fee: 2500, price: 2000 },
+    { id: 4, code: 'NURSES', name: 'Nurses', regular_fee: 1500, on_spot_fee: 2000, price: 1500 },
+    { id: 5, code: 'INDUSTRY_DELEGATES', name: 'Industry Delegates', regular_fee: 5000, on_spot_fee: 6000, price: 5000 },
+    { id: 6, code: 'ACCOMPANYING_PERSONS', name: 'Accompanying Persons (including children > 10 yrs old)', regular_fee: 3500, on_spot_fee: 4000, price: 3500 }
   ]);
 
   // Selected Category (Step 1)
@@ -91,6 +94,9 @@ const RegistrationWizardPage = () => {
 
         if (reg) {
           setRegistration(reg);
+          if (reg.fee_type) {
+            setFeeType(reg.fee_type);
+          }
           if (reg.category_id) {
             setSelectedCategoryId(reg.category_id);
           }
@@ -164,6 +170,19 @@ const RegistrationWizardPage = () => {
     return `₹${num.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
   };
 
+  // Switch Fee Type Flag (Regular vs On-Spot)
+  const handleFeeTypeChange = async (type) => {
+    setFeeType(type);
+    try {
+      const res = await registrationApi.getCategories({ fee_type: type });
+      if (res?.data?.length > 0) {
+        setCategories(res.data);
+      }
+    } catch (e) {
+      console.warn('Could not refresh categories on fee type change:', e);
+    }
+  };
+
   // ----------------------------------------------------
   // STEP 1 HANDLER: Save Category
   // ----------------------------------------------------
@@ -174,7 +193,8 @@ const RegistrationWizardPage = () => {
     try {
       setSaving(true);
       const res = await registrationApi.saveStep1Category({
-        categoryId: selectedCategoryId
+        categoryId: selectedCategoryId,
+        feeType: feeType
       });
 
       if (res.status) {
@@ -380,40 +400,104 @@ const RegistrationWizardPage = () => {
         {/* ========================================================================= */}
         {currentStep === 1 && (
           <div>
-            <div className="border-b border-[#a01c2b]/30 pb-3 mb-8">
-              <p className="text-gray-600 text-sm">Please choose your appropriate registration category below:</p>
+            {/* Tariff Switcher */}
+            <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 sm:p-5 mb-6 shadow-sm">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                  <h3 className="text-base font-bold text-gray-900 flex items-center gap-2">
+                    <span className="w-2.5 h-2.5 rounded-full bg-[#004b63]"></span>
+                    Registration Fee Tier / Pricing Flag
+                  </h3>
+                  <p className="text-xs text-gray-500 mt-0.5">
+                    Select your fee tier: Regular Fee (Till 15 Jan, 2027) or On-Spot Fee (Conference Days)
+                  </p>
+                </div>
+
+                <div className="inline-flex bg-gray-200/90 p-1 rounded-lg border border-gray-300">
+                  <button
+                    type="button"
+                    onClick={() => handleFeeTypeChange('regular')}
+                    className={`px-4 py-2 text-xs sm:text-sm font-semibold rounded-md transition-all text-center ${
+                      feeType === 'regular'
+                        ? 'bg-[#004b63] text-white shadow'
+                        : 'text-gray-700 hover:text-gray-900 hover:bg-white/50'
+                    }`}
+                  >
+                    <span>Regular Fee</span>
+                    <span className="block text-[10px] font-normal opacity-90">(Till 15 Jan, 2027)</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => handleFeeTypeChange('on_spot')}
+                    className={`px-4 py-2 text-xs sm:text-sm font-semibold rounded-md transition-all text-center ${
+                      feeType === 'on_spot'
+                        ? 'bg-[#9e1c2b] text-white shadow'
+                        : 'text-gray-700 hover:text-gray-900 hover:bg-white/50'
+                    }`}
+                  >
+                    <span>On-Spot Fee</span>
+                    <span className="block text-[10px] font-normal opacity-90">(Conference Days)</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div className="border-b border-[#a01c2b]/30 pb-3 mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <p className="text-gray-700 text-sm font-medium">
+                Please choose your appropriate registration category below:
+              </p>
+              <span className={`text-xs px-3 py-1 rounded-full font-semibold w-fit ${feeType === 'on_spot' ? 'bg-red-100 text-[#9e1c2b]' : 'bg-teal-100 text-[#004b63]'}`}>
+                {feeType === 'on_spot' ? 'On-Spot Fee Active' : 'Regular Fee Active'}
+              </span>
             </div>
 
             <form onSubmit={handleStep1Proceed} className="space-y-6">
-              <div className="space-y-4 max-w-xl mx-auto">
-                {categories.map((cat) => (
-                  <label
-                    key={cat.id}
-                    className={`flex items-center justify-between p-3.5 rounded border transition-all cursor-pointer select-none ${
-                      selectedCategoryId === cat.id
-                        ? 'border-[#004b63] bg-teal-50/40 text-gray-900 font-medium ring-1 ring-[#004b63]'
-                        : 'border-gray-200 hover:border-gray-300 text-gray-700'
-                    }`}
-                  >
-                    <div className="flex items-center gap-3.5">
-                      <input
-                        type="radio"
-                        name="registrationCategory"
-                        value={cat.id}
-                        checked={selectedCategoryId === cat.id}
-                        onChange={() => setSelectedCategoryId(cat.id)}
-                        className="w-4 h-4 text-[#004b63] border-gray-300 focus:ring-[#004b63] cursor-pointer"
-                      />
-                      <span className="text-sm md:text-base">{cat.name}</span>
-                    </div>
-                    <span className="text-sm md:text-base font-semibold text-gray-900">
-                      {formatCurrency(cat.price)}
-                    </span>
-                  </label>
-                ))}
+              <div className="space-y-3.5 max-w-2xl mx-auto">
+                {categories.map((cat) => {
+                  const regularPrice = cat.regular_fee !== undefined ? cat.regular_fee : cat.price;
+                  const onSpotPrice = cat.on_spot_fee !== undefined ? cat.on_spot_fee : cat.price;
+                  const activePrice = feeType === 'on_spot' ? onSpotPrice : regularPrice;
+
+                  return (
+                    <label
+                      key={cat.id}
+                      className={`flex items-center justify-between p-4 rounded-lg border transition-all cursor-pointer select-none ${
+                        selectedCategoryId === cat.id
+                          ? 'border-[#004b63] bg-teal-50/50 text-gray-900 font-medium ring-2 ring-[#004b63]/30 shadow-sm'
+                          : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50/40 text-gray-700'
+                      }`}
+                    >
+                      <div className="flex items-center gap-3.5">
+                        <input
+                          type="radio"
+                          name="registrationCategory"
+                          value={cat.id}
+                          checked={selectedCategoryId === cat.id}
+                          onChange={() => setSelectedCategoryId(cat.id)}
+                          className="w-4 h-4 text-[#004b63] border-gray-300 focus:ring-[#004b63] cursor-pointer"
+                        />
+                        <div>
+                          <span className="text-sm md:text-base font-semibold block text-gray-900">{cat.name}</span>
+                          <span className="text-xs text-gray-500 font-normal">
+                            Regular: {formatCurrency(regularPrice)} | On-Spot: {formatCurrency(onSpotPrice)}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <span className="text-base md:text-lg font-bold text-[#831422]">
+                          {formatCurrency(activePrice)}
+                        </span>
+                        <span className="block text-[11px] text-gray-500 font-normal">
+                          + 18% GST
+                        </span>
+                      </div>
+                    </label>
+                  );
+                })}
               </div>
 
-              <div className="pt-8 text-center sm:text-left max-w-xl mx-auto">
+              <div className="pt-6 text-center sm:text-left max-w-2xl mx-auto">
                 <button
                   type="submit"
                   disabled={saving}
@@ -645,7 +729,7 @@ const RegistrationWizardPage = () => {
 
               <div className="bg-amber-50/60 border border-amber-200/70 p-4 rounded mb-6 text-sm text-amber-900">
                 <p>
-                  <strong>Note:</strong> Accompanying person registration fee is <strong>₹3,500.00</strong> per person (plus 18% GST).
+                  <strong>Note:</strong> Accompanying person registration fee is <strong>{feeType === 'on_spot' ? '₹4,000.00' : '₹3,500.00'}</strong> per person (plus 18% GST).
                 </p>
               </div>
 
