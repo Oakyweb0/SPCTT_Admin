@@ -64,6 +64,25 @@ export const registrationApi = {
   getInvoiceById: (id) => {
     return apiClient.get(API_ENDPOINTS.REGISTRATION.INVOICE_BY_ID(id));
   },
+
+  /**
+   * Download Invoice / Receipt PDF
+   */
+  downloadInvoicePdf: async (id, filename = 'invoice.pdf') => {
+    const response = await apiClient.get(API_ENDPOINTS.REGISTRATION.INVOICE_DOWNLOAD(id), {
+      responseType: 'blob'
+    });
+    const blob = new Blob([response.data], { type: 'application/pdf' });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', filename);
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.URL.revokeObjectURL(url);
+    return true;
+  }
 };
 
 export default registrationApi;

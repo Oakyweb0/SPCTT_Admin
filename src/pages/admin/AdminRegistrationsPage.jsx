@@ -278,10 +278,11 @@ const AdminRegistrationsPage = () => {
           <table className="spctt-table w-100">
             <thead>
               <tr>
+                <th className="text-center" style={{ width: '7%' }}>Reg ID</th>
                 <th style={{ width: '12%' }}>Reg Code</th>
                 <th style={{ width: '22%' }}>Delegate Details</th>
                 <th style={{ width: '15%' }}>Category</th>
-                <th style={{ width: '18%' }}>Organization</th>
+                <th style={{ width: '15%' }}>Organization</th>
                 <th className="text-end" style={{ width: '11%' }}>Grand Total</th>
                 <th className="text-center" style={{ width: '8%' }}>Payment</th>
                 <th className="text-center" style={{ width: '8%' }}>Status</th>
@@ -318,9 +319,14 @@ const AdminRegistrationsPage = () => {
               ) : (
                 paginatedRegistrations.map((reg) => (
                   <tr key={reg.id}>
+                    <td className="text-center">
+                      <span className="badge bg-secondary-subtle text-dark border font-monospace px-2 py-1 fw-bold" style={{ fontSize: '0.8rem' }}>
+                        #{reg.id}
+                      </span>
+                    </td>
                     <td>
-                      <span className="badge bg-light text-primary border font-monospace px-2 py-1">
-                        {reg.registration_code}
+                      <span className="badge bg-light text-primary border font-monospace px-2.5 py-1 fw-bold" style={{ fontSize: '0.82rem' }}>
+                        {reg.registration_code || `REG-${reg.id}`}
                       </span>
                     </td>
                     <td>
@@ -399,9 +405,12 @@ const AdminRegistrationsPage = () => {
               {/* Header */}
               <div className="modal-header bg-light py-3 px-4 border-bottom d-flex align-items-center justify-content-between">
                 <div>
-                  <div className="d-flex align-items-center gap-2">
+                  <div className="d-flex align-items-center gap-2 flex-wrap">
                     <h5 className="modal-title fw-bold text-dark mb-0">Registration & Payment Details</h5>
-                    <span className="badge bg-primary-subtle text-primary font-monospace px-2.5 py-1">
+                    <span className="badge bg-dark text-white font-monospace px-2.5 py-1">
+                      ID: #{selectedReg.id}
+                    </span>
+                    <span className="badge bg-primary-subtle text-primary font-monospace px-2.5 py-1 fw-bold">
                       {selectedReg.registration_code}
                     </span>
                   </div>

@@ -8,6 +8,7 @@ const InvoiceReceiptPage = () => {
   const [invoices, setInvoices] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedInvoice, setSelectedInvoice] = useState(null);
+  const [downloadingId, setDownloadingId] = useState(null);
 
   useEffect(() => {
     const auth = getUserAuth();
@@ -32,6 +33,19 @@ const InvoiceReceiptPage = () => {
 
     loadInvoices();
   }, [navigate]);
+
+  const handleDownloadPdf = async (inv) => {
+    try {
+      setDownloadingId(inv.id);
+      const cleanNum = (inv.invoice_number || 'invoice').replace(/[^a-zA-Z0-9-_]/g, '_');
+      await registrationApi.downloadInvoicePdf(inv.id, `SPCTT_${cleanNum}.pdf`);
+    } catch (err) {
+      console.error('Error downloading invoice PDF:', err);
+      alert('Failed to download invoice PDF. Please try again.');
+    } finally {
+      setDownloadingId(null);
+    }
+  };
 
   const formatCurrency = (amount) => {
     const num = parseFloat(amount || 0);
@@ -117,12 +131,21 @@ const InvoiceReceiptPage = () => {
                         </span>
                       </td>
                       <td className="py-3.5 px-4 text-center">
-                        <button
-                          onClick={() => setSelectedInvoice(inv)}
-                          className="text-[#9e1c2b] hover:text-[#831422] font-semibold text-xs border border-[#9e1c2b]/30 px-3 py-1.5 rounded hover:bg-red-50 transition-colors"
-                        >
-                          View / Print
-                        </button>
+                        <div className="flex items-center justify-center gap-2">
+                          <button
+                            onClick={() => setSelectedInvoice(inv)}
+                            className="text-[#004b63] hover:text-[#00384a] font-semibold text-xs border border-[#004b63]/30 px-2.5 py-1.5 rounded hover:bg-teal-50 transition-colors"
+                          >
+                            View
+                          </button>
+                          <button
+                            onClick={() => handleDownloadPdf(inv)}
+                            disabled={downloadingId === inv.id}
+                            className="bg-[#9e1c2b] hover:bg-[#831422] text-white font-medium text-xs px-2.5 py-1.5 rounded transition-colors disabled:opacity-50"
+                          >
+                            {downloadingId === inv.id ? 'Downloading...' : '📥 PDF'}
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))}
@@ -202,6 +225,13 @@ const InvoiceReceiptPage = () => {
                   </table>
 
                   <div className="pt-4 flex justify-end gap-3 border-t border-gray-200">
+                    <button
+                      onClick={() => handleDownloadPdf(selectedInvoice)}
+                      disabled={downloadingId === selectedInvoice.id}
+                      className="bg-[#9e1c2b] hover:bg-[#831422] text-white px-5 py-2 rounded text-sm font-medium transition-colors disabled:opacity-50 flex items-center gap-1.5"
+                    >
+                      {downloadingId === selectedInvoice.id ? 'Downloading...' : '📥 Download Official PDF'}
+                    </button>
                     <button
                       onClick={handlePrint}
                       className="bg-[#004b63] hover:bg-[#00384a] text-white px-5 py-2 rounded text-sm font-medium transition-colors"
