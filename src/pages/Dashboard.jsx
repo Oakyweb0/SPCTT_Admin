@@ -102,30 +102,30 @@ const Dashboard = () => {
                 <span className="stat-card-label">Registrations</span>
                 
                 {/* Vertical list: Total submissions, Paid and Pending */}
-                <div className="d-flex flex-column gap-2 my-2">
-                  <div className="d-flex align-items-baseline gap-2">
-                    <span className="stat-card-value text-primary" style={{ fontSize: '1.45rem' }}>
+                <div className="d-flex flex-column gap-1 my-1">
+                  <div className="d-flex align-items-baseline gap-1.5" style={{ lineHeight: 1.25 }}>
+                    <span className="fw-bold text-primary" style={{ fontSize: '1.18rem' }}>
                       {loading ? '...' : (stats.totalRegistrations || 0)}
                     </span>
-                    <span className="text-muted fw-semibold" style={{ fontSize: '0.85rem' }}>
+                    <span className="text-muted" style={{ fontSize: '0.82rem' }}>
                       Total submissions
                     </span>
                   </div>
 
-                  <div className="d-flex align-items-baseline gap-2">
-                    <span className="stat-card-value text-primary" style={{ fontSize: '1.45rem' }}>
+                  <div className="d-flex align-items-baseline gap-1.5" style={{ lineHeight: 1.25 }}>
+                    <span className="fw-bold text-primary" style={{ fontSize: '1.18rem' }}>
                       {loading ? '...' : (stats.paidRegistrations || 0)}
                     </span>
-                    <span className="text-muted fw-semibold" style={{ fontSize: '0.85rem' }}>
+                    <span className="text-muted" style={{ fontSize: '0.82rem' }}>
                       Paid
                     </span>
                   </div>
 
-                  <div className="d-flex align-items-baseline gap-2">
-                    <span className="stat-card-value text-primary" style={{ fontSize: '1.45rem' }}>
+                  <div className="d-flex align-items-baseline gap-1.5" style={{ lineHeight: 1.25 }}>
+                    <span className="fw-bold text-primary" style={{ fontSize: '1.18rem' }}>
                       {loading ? '...' : (stats.pendingRegistrations ?? Math.max(0, (stats.totalRegistrations || 0) - (stats.paidRegistrations || 0)))}
                     </span>
-                    <span className="text-muted fw-semibold" style={{ fontSize: '0.85rem' }}>
+                    <span className="text-muted" style={{ fontSize: '0.82rem' }}>
                       Pending
                     </span>
                   </div>
@@ -133,11 +133,11 @@ const Dashboard = () => {
               </div>
 
               <div className="stat-icon-box">
-                <LuClipboardList size={24} />
+                <LuClipboardList size={22} />
               </div>
             </div>
 
-            <div className="stat-card-bottom mt-2">
+            <div className="stat-card-bottom mt-1 pt-2">
               <span className="text-muted small">Delegate registrations</span>
               <Link to="/admin/registration" className="text-decoration-none fw-bold text-primary small d-flex align-items-center gap-1">
                 View <LuArrowUpRight size={13} />
@@ -149,18 +149,18 @@ const Dashboard = () => {
         {/* Card 2: Research Abstracts */}
         <div className="col-md-4 col-12">
           <div className="stat-card-wrapper stat-theme-blogs">
-            <div className="stat-card-top">
+            <div className="stat-card-top mb-1">
               <div className="stat-card-info">
                 <span className="stat-card-label">Abstracts</span>
-                <span className="stat-card-value text-info">
+                <span className="stat-card-value text-info my-1">
                   {loading ? '...' : stats.totalAbstracts}
                 </span>
               </div>
               <div className="stat-icon-box">
-                <LuFileText size={24} />
+                <LuFileText size={22} />
               </div>
             </div>
-            <div className="stat-card-bottom">
+            <div className="stat-card-bottom mt-1 pt-2">
               <span className="text-muted small">Papers for review</span>
               <Link to="/admin/abstract" className="text-decoration-none fw-bold text-info small d-flex align-items-center gap-1">
                 Review <LuArrowUpRight size={13} />
@@ -172,18 +172,18 @@ const Dashboard = () => {
         {/* Card 3: Total Users / Delegates */}
         <div className="col-md-4 col-12">
           <div className="stat-card-wrapper stat-theme-enquiries">
-            <div className="stat-card-top">
+            <div className="stat-card-top mb-1">
               <div className="stat-card-info">
                 <span className="stat-card-label">Registered Users</span>
-                <span className="stat-card-value text-success">
+                <span className="stat-card-value text-success my-1">
                   {loading ? '...' : stats.totalUsers}
                 </span>
               </div>
               <div className="stat-icon-box">
-                <LuUsers size={24} />
+                <LuUsers size={22} />
               </div>
             </div>
-            <div className="stat-card-bottom">
+            <div className="stat-card-bottom mt-1 pt-2">
               <span className="text-muted small">Delegate accounts</span>
               <Link to="/admin/users" className="text-decoration-none fw-bold text-success small d-flex align-items-center gap-1">
                 Manage <LuArrowUpRight size={13} />
