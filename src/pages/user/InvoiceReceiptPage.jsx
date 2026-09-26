@@ -122,11 +122,10 @@ const InvoiceReceiptPage = () => {
                         {formatCurrency(inv.total_amount)}
                       </td>
                       <td className="py-3.5 px-4 text-center">
-                        <span className={`text-xs px-2.5 py-1 rounded-full font-semibold uppercase ${
-                          inv.status === 'paid'
-                            ? 'bg-emerald-100 text-emerald-800'
-                            : 'bg-amber-100 text-amber-800'
-                        }`}>
+                        <span className={`text-xs px-2.5 py-1 rounded-full font-semibold uppercase ${inv.status === 'paid'
+                          ? 'bg-emerald-100 text-emerald-800'
+                          : 'bg-amber-100 text-amber-800'
+                          }`}>
                           {inv.status}
                         </span>
                       </td>
@@ -165,38 +164,38 @@ const InvoiceReceiptPage = () => {
                     ✕
                   </button>
 
-                  {/* Header Banner Image with Navy Overlay */}
-                  <div className="relative w-full overflow-hidden border border-[#476EAC]">
+                  {/* Header Banner Image with Red and Black Theme Overlay */}
+                  <div className="relative w-full overflow-hidden border border-[#C0192B]">
                     <img
-                      src="https://pub-32253d31098b4cfc9f901824d48b3dc5.r2.dev/assets/assets_imgi_2_page_header.png"
+                      src="https://pub-32253d31098b4cfc9f901824d48b3dc5.r2.dev/assets/spctt_2027_banner_header.png"
                       alt="SPCTT 2027 Header"
                       className="w-full h-36 sm:h-40 md:h-44 object-cover block"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-r from-[#0B1B3D]/90 via-[#0B1B3D]/70 to-[#0B1B3D]/85 p-4 sm:p-5 flex flex-col justify-between text-white">
+                    <div className="absolute inset-0 bg-gradient-to-r from-white/95 via-white/88 to-white/80 p-4 sm:p-5 flex flex-col justify-between text-gray-900">
                       {/* Top Row: Title, Subtitle, Dates, Venue */}
                       <div className="flex items-start justify-between gap-4">
                         <div className="max-w-[58%] sm:max-w-[62%]">
-                          <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-white tracking-tight leading-none drop-shadow-md">
+                          <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-[#C0192B] tracking-tight leading-none drop-shadow-sm">
                             4th SPCTT 2027
                           </h2>
-                          <p className="text-xs sm:text-sm md:text-base font-bold text-gray-200 leading-snug mt-1.5 drop-shadow-sm">
+                          <p className="text-xs sm:text-sm md:text-base font-bold text-[#111827] leading-snug mt-1.5">
                             Annual Conference of Society for Pediatric Cellular Therapy and Transplant
                           </p>
                         </div>
                         <div className="text-right text-xs sm:text-sm space-y-2 shrink-0">
                           <div>
-                            <span className="text-[10px] sm:text-xs font-bold text-blue-200 block uppercase tracking-wider leading-none">
+                            <span className="text-[10px] sm:text-xs font-bold text-[#C0192B] block uppercase tracking-wider leading-none">
                               DATES
                             </span>
-                            <span className="text-xs sm:text-sm md:text-base font-bold text-white">
+                            <span className="text-xs sm:text-sm md:text-base font-bold text-[#111827]">
                               March 06 & 07, 2027
                             </span>
                           </div>
                           <div>
-                            <span className="text-[10px] sm:text-xs font-bold text-blue-200 block uppercase tracking-wider leading-none">
+                            <span className="text-[10px] sm:text-xs font-bold text-[#C0192B] block uppercase tracking-wider leading-none">
                               VENUE
                             </span>
-                            <span className="text-xs sm:text-sm font-semibold text-gray-100 leading-tight block">
+                            <span className="text-xs sm:text-sm font-bold text-[#111827] leading-tight block">
                               Taj Vivanta, Dwarka,<br className="hidden sm:inline" /> New Delhi (India)
                             </span>
                           </div>
@@ -204,10 +203,10 @@ const InvoiceReceiptPage = () => {
                       </div>
 
                       {/* Bottom Row on Banner: GST Number Bar */}
-                      <div className="flex items-center justify-between pt-2 border-t border-white/20 mt-1">
+                      <div className="flex items-center justify-between pt-2 border-t border-[#C0192B]/20 mt-1">
                         <div className="text-xs sm:text-sm font-medium">
-                          <span className="text-blue-200 font-bold">GST Number : </span>
-                          <span className="font-bold text-white tracking-wide">
+                          <span className="text-[#C0192B] font-bold">GST Number : </span>
+                          <span className="font-bold text-[#111827] tracking-wide">
                             {(selectedInvoice.gst_number && selectedInvoice.gst_number !== '08AAMAG2209E1ZX') ? selectedInvoice.gst_number : '09AARCP4212B1ZK'}
                           </span>
                         </div>
