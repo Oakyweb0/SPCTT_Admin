@@ -258,7 +258,7 @@ const InvoiceReceiptPage = () => {
                       <div className="border border-t-0 border-gray-200 p-4 space-y-3 text-sm sm:text-[15px] bg-white border-b-2 border-b-[#476EAC]">
                         <div className="flex justify-between items-center">
                           <span className="text-gray-600 font-semibold w-1/3">Payment Gateway</span>
-                          <span className="text-gray-950 font-bold w-2/3">{((selectedInvoice.payment_method || 'Axis Razorpay (PAGE WORLDWIDE)').replace(/Elisyan\s*India/gi, 'PAGE WORLDWIDE')).toUpperCase()}</span>
+                          <span className="text-gray-950 font-bold w-2/3">{((selectedInvoice.payment_method || 'Razorpay (PAGE WORLDWIDE)').replace(/Axis\s*Razorpay/gi, 'Razorpay').replace(/Elisyan\s*India/gi, 'PAGE WORLDWIDE')).toUpperCase()}</span>
                         </div>
                         <div className="flex justify-between items-center">
                           <span className="text-gray-600 font-semibold w-1/3">Transaction ID</span>

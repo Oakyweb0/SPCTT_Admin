@@ -62,7 +62,7 @@ const RegistrationWizardPage = () => {
   });
 
   // Payment method
-  const [paymentMethod, setPaymentMethod] = useState('Axis Razorpay (PAGE WORLDWIDE)');
+  const [paymentMethod, setPaymentMethod] = useState('Razorpay (PAGE WORLDWIDE)');
 
   // Full registration record from server
   const [registration, setRegistration] = useState(null);
@@ -294,7 +294,8 @@ const RegistrationWizardPage = () => {
 
       // Execute Payment
       const payRes = await registrationApi.makePayment({
-        paymentMethod
+        paymentMethod,
+        amount: totalPayable
       });
 
       if (payRes.status && payRes.data) {
@@ -323,6 +324,8 @@ const RegistrationWizardPage = () => {
   const grandSubtotal = catRate + accRate;
   const grandGst = catGst + accGst;
   const grandTotal = grandSubtotal + grandGst;
+  const facilitationCharge = parseFloat((grandTotal * 0.045).toFixed(2));
+  const totalPayable = parseFloat((grandTotal + facilitationCharge).toFixed(2));
 
   const getPageTitle = () => {
     switch (currentStep) {
@@ -1034,13 +1037,33 @@ const RegistrationWizardPage = () => {
                       </>
                     )}
 
-                    {/* Grand Total Row */}
+                    {/* Sub Total Row */}
+                    <tr className="bg-gray-50/70 border-t border-gray-200 text-sm font-semibold text-gray-700">
+                      <td className="py-2.5 px-4" colSpan={3}>
+                        Sub Total (Base Amount + 18% GST)
+                      </td>
+                      <td className="py-2.5 px-4 text-right text-gray-900 font-bold">
+                        {formatCurrency(grandTotal)}
+                      </td>
+                    </tr>
+
+                    {/* Facilitation Charge Row */}
+                    <tr className="bg-gray-50/40 text-xs text-gray-600">
+                      <td className="py-2 px-4 italic" colSpan={3}>
+                        Facilitation Charges (4.5%)
+                      </td>
+                      <td className="py-2 px-4 text-right font-medium text-gray-800">
+                        {formatCurrency(facilitationCharge)}
+                      </td>
+                    </tr>
+
+                    {/* Total Payable Row */}
                     <tr className="bg-teal-50/50 border-t-2 border-teal-600/30 text-base font-bold text-gray-900">
                       <td className="py-4 px-4 text-[#004b63]" colSpan={3}>
-                        Grand total (including 18% GST)
+                        Total Payable Amount
                       </td>
                       <td className="py-4 px-4 text-right text-lg text-[#004b63]">
-                        {formatCurrency(grandTotal)}
+                        {formatCurrency(totalPayable)}
                       </td>
                     </tr>
                   </tbody>
@@ -1057,13 +1080,13 @@ const RegistrationWizardPage = () => {
                 <input
                   type="radio"
                   name="paymentMethod"
-                  value="Axis Razorpay (PAGE WORLDWIDE)"
-                  checked={paymentMethod === 'Axis Razorpay (PAGE WORLDWIDE)'}
+                  value="Razorpay (PAGE WORLDWIDE)"
+                  checked={paymentMethod === 'Razorpay (PAGE WORLDWIDE)'}
                   onChange={(e) => setPaymentMethod(e.target.value)}
                   className="w-4 h-4 text-[#004b63] border-gray-300 focus:ring-[#004b63]"
                 />
                 <div className="flex items-center gap-2">
-                  <span className="font-semibold text-gray-900">Axis Razorpay (PAGE WORLDWIDE)</span>
+                  <span className="font-semibold text-gray-900">Razorpay (PAGE WORLDWIDE)</span>
                   <span className="text-xs bg-blue-100 text-blue-800 px-2 py-0.5 rounded font-medium">Credit/Debit Card, UPI, Netbanking</span>
                 </div>
               </label>
@@ -1085,7 +1108,7 @@ const RegistrationWizardPage = () => {
                 ) : (
                   <>
                     <span>Make Payment</span>
-                    <span>({formatCurrency(grandTotal)})</span>
+                    <span>({formatCurrency(totalPayable)})</span>
                   </>
                 )}
               </button>
@@ -1137,7 +1160,7 @@ const RegistrationWizardPage = () => {
               </div>
               <div className="flex justify-between pt-1 text-base font-bold text-[#004b63]">
                 <span>Total Paid:</span>
-                <span>{formatCurrency(registration?.grand_total || grandTotal)}</span>
+                <span>{formatCurrency(paymentSuccessData?.amount || totalPayable || (parseFloat(registration?.grand_total || grandTotal) * 1.045))}</span>
               </div>
             </div>
 

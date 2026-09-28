@@ -346,7 +346,7 @@ const AdminRegistrationsPage = () => {
                       {reg.organization || '—'}
                     </td>
                     <td className="text-end fw-bold text-dark">
-                      {formatCurrency(reg.grand_total)}
+                      <div>{formatCurrency(reg.total_payable || (parseFloat(reg.grand_total || 0) * 1.045))}</div>
                     </td>
                     <td className="text-center">
                       <span className={`badge ${
@@ -456,7 +456,7 @@ const AdminRegistrationsPage = () => {
                       <div className="row g-2 small text-dark mt-1">
                         <div className="col-sm-6">
                           <span className="text-muted">Payment Method:</span>{' '}
-                          <span className="fw-semibold">{(paymentDetail?.paymentMethod || selectedReg.payment_method || 'Axis Razorpay (PAGE WORLDWIDE)').replace(/Elisyan\s*India/gi, 'PAGE WORLDWIDE')}</span>
+                          <span className="fw-semibold">{(paymentDetail?.paymentMethod || selectedReg.payment_method || 'Razorpay (PAGE WORLDWIDE)').replace(/Axis\s*Razorpay/gi, 'Razorpay').replace(/Elisyan\s*India/gi, 'PAGE WORLDWIDE')}</span>
                         </div>
                         <div className="col-sm-6">
                           <span className="text-muted">Transaction ID:</span>{' '}
@@ -492,8 +492,14 @@ const AdminRegistrationsPage = () => {
                             <div className="col-6 text-muted">GST ({paymentDetail.breakdown.gstRate}%):</div>
                             <div className="col-6 text-end fw-medium">{formatCurrency(paymentDetail.breakdown.gstAmount)}</div>
 
-                            <div className="col-6 fw-bold text-dark border-top pt-1 mt-1">Grand Total:</div>
-                            <div className="col-6 text-end fw-bold text-primary border-top pt-1 mt-1">{formatCurrency(paymentDetail.breakdown.grandTotal)}</div>
+                            <div className="col-6 text-muted">Sub Total (Base + GST):</div>
+                            <div className="col-6 text-end fw-semibold text-dark">{formatCurrency(paymentDetail.breakdown.grandTotal)}</div>
+
+                            <div className="col-6 text-muted">Facilitation Charges (4.5%):</div>
+                            <div className="col-6 text-end fw-medium">{formatCurrency(paymentDetail.breakdown.facilitationCharges || (paymentDetail.breakdown.grandTotal * 0.045))}</div>
+
+                            <div className="col-6 fw-bold text-dark border-top pt-1 mt-1">Total Payable Amount:</div>
+                            <div className="col-6 text-end fw-bold text-danger border-top pt-1 mt-1">{formatCurrency(paymentDetail.breakdown.totalPayable || (paymentDetail.breakdown.grandTotal * 1.045))}</div>
                           </div>
                         </div>
                       )}
