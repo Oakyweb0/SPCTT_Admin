@@ -164,21 +164,25 @@ const InvoiceReceiptPage = () => {
                     ✕
                   </button>
 
-                  {/* Header Banner Image with Red and Black Theme Overlay */}
-                  <div className="relative w-full overflow-hidden border border-[#C0192B]">
+                  {/* Header Banner Image with Dark Navy Theme Overlay */}
+                  <div className="relative w-full overflow-hidden border border-[#13254A] rounded-t-lg">
                     <img
                       src="https://pub-32253d31098b4cfc9f901824d48b3dc5.r2.dev/assets/spctt_2027_banner_header.png"
                       alt="SPCTT 2027 Header"
                       className="w-full h-36 sm:h-40 md:h-44 object-cover block"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-r from-white/95 via-white/88 to-white/80 p-4 sm:p-5 flex flex-col justify-between text-gray-900">
+                    {/* Gradient Overlay requested */}
+                    <div className="absolute inset-0 z-[1] bg-gradient-to-r from-[#13254A]/95 via-[#13254A]/75 to-[#13254A]/40 pointer-events-none" />
+
+                    {/* Banner Content */}
+                    <div className="absolute inset-0 z-[2] p-4 sm:p-5 flex flex-col justify-between text-white">
                       {/* Top Row: Title, Subtitle, Dates, Venue */}
                       <div className="flex items-start justify-between gap-4">
                         <div className="max-w-[58%] sm:max-w-[62%]">
-                          <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-[#C0192B] tracking-tight leading-none drop-shadow-sm">
+                          <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-white tracking-tight leading-none drop-shadow-md">
                             4th SPCTT 2027
                           </h2>
-                          <p className="text-xs sm:text-sm md:text-base font-bold text-[#111827] leading-snug mt-1.5">
+                          <p className="text-xs sm:text-sm md:text-base font-semibold text-slate-200 leading-snug mt-1.5">
                             Annual Conference of Society for Pediatric Cellular Therapy and Transplant
                           </p>
                         </div>
@@ -187,7 +191,7 @@ const InvoiceReceiptPage = () => {
                             <span className="text-[10px] sm:text-xs font-bold text-[#C0192B] block uppercase tracking-wider leading-none">
                               DATES
                             </span>
-                            <span className="text-xs sm:text-sm md:text-base font-bold text-[#111827]">
+                            <span className="text-xs sm:text-sm md:text-base font-bold text-white">
                               March 06 & 07, 2027
                             </span>
                           </div>
@@ -195,7 +199,7 @@ const InvoiceReceiptPage = () => {
                             <span className="text-[10px] sm:text-xs font-bold text-[#C0192B] block uppercase tracking-wider leading-none">
                               VENUE
                             </span>
-                            <span className="text-xs sm:text-sm font-bold text-[#111827] leading-tight block">
+                            <span className="text-xs sm:text-sm font-medium text-slate-200 leading-tight block">
                               Taj Vivanta, Dwarka,<br className="hidden sm:inline" /> New Delhi (India)
                             </span>
                           </div>
@@ -203,10 +207,10 @@ const InvoiceReceiptPage = () => {
                       </div>
 
                       {/* Bottom Row on Banner: GST Number Bar */}
-                      <div className="flex items-center justify-between pt-2 border-t border-[#C0192B]/20 mt-1">
+                      <div className="flex items-center justify-between pt-2 border-t border-white/20 mt-1">
                         <div className="text-xs sm:text-sm font-medium">
                           <span className="text-[#C0192B] font-bold">GST Number : </span>
-                          <span className="font-bold text-[#111827] tracking-wide">
+                          <span className="font-bold text-white tracking-wide">
                             {(selectedInvoice.gst_number && selectedInvoice.gst_number !== '08AAMAG2209E1ZX') ? selectedInvoice.gst_number : '09AARCP4212B1ZK'}
                           </span>
                         </div>
