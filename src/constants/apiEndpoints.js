@@ -40,7 +40,6 @@ export const API_ENDPOINTS = {
     INVOICES: '/registration/invoices',
     INVOICE_BY_ID: (id) => `/registration/invoices/${id}`,
     INVOICE_DOWNLOAD: (id) => `/registration/invoices/${id}/download`,
-    INVOICE_PDF: (id) => `/registration/invoices/${id}/pdf`,
   },
 
   // Payment & Transactions
