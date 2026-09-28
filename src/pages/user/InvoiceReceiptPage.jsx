@@ -276,9 +276,7 @@ const InvoiceReceiptPage = () => {
                       const baseAmount = parseFloat(selectedInvoice.amount || selectedInvoice.rate || 0);
                       const gstAmount = parseFloat(selectedInvoice.gst_amount || (baseAmount * 0.18).toFixed(2));
                       const totalBasePlusGst = parseFloat((baseAmount + gstAmount).toFixed(2));
-                      const razorpayCharge = parseFloat((totalBasePlusGst * 0.025).toFixed(2));
-                      const razorpayTax = parseFloat((razorpayCharge * 0.18).toFixed(2));
-                      const facilitationCharges = parseFloat((razorpayCharge + razorpayTax).toFixed(2));
+                      const facilitationCharges = parseFloat((totalBasePlusGst * 0.045).toFixed(2));
                       const totalPayable = parseFloat((totalBasePlusGst + facilitationCharges).toFixed(2));
 
                       return (
@@ -300,7 +298,7 @@ const InvoiceReceiptPage = () => {
                               <span className="text-gray-950 font-bold">{formatCurrency(totalBasePlusGst)}</span>
                             </div>
                             <div className="flex justify-between">
-                              <span className="text-gray-600 font-semibold">Facilitation Charges (2.5% Razorpay + 18% Tax on Razorpay)</span>
+                              <span className="text-gray-600 font-semibold">Facilitation Charges (4.5%)</span>
                               <span className="text-gray-950 font-bold">{formatCurrency(facilitationCharges)}</span>
                             </div>
 
