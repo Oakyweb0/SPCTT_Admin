@@ -49,6 +49,7 @@ const AdminUsersPage = () => {
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
+  const [totalItems, setTotalItems] = useState(0);
 
   // Notification state
   const [notification, setNotification] = useState(null);
@@ -87,12 +88,33 @@ const AdminUsersPage = () => {
     status: 'active'
   });
 
-  const loadUsers = async () => {
+  const loadUsers = async (customPage = currentPage, customSearch = search) => {
     try {
       setLoading(true);
-      const res = await adminApi.getUsers();
-      if (res.status && res.data) {
+      const params = {
+        page: customPage,
+        limit: pageSize,
+        sortField,
+        sortOrder
+      };
+      if (customSearch && customSearch.trim()) {
+        params.search = customSearch.trim();
+        if (searchCategory && searchCategory !== 'all') {
+          params.searchCategory = searchCategory;
+        }
+      }
+      if (roleFilter) {
+        params.role = roleFilter;
+      }
+
+      const res = await adminApi.getUsers(params);
+      if (res && res.status && res.data) {
         setUsers(res.data);
+        if (res.pagination) {
+          setTotalItems(res.pagination.total);
+        } else {
+          setTotalItems(res.data.length);
+        }
       }
     } catch (err) {
       console.error('Error loading users:', err);
@@ -127,8 +149,8 @@ const AdminUsersPage = () => {
   };
 
   useEffect(() => {
-    loadUsers();
-  }, []);
+    loadUsers(currentPage);
+  }, [currentPage, pageSize, roleFilter, sortField, sortOrder, searchCategory]);
 
   // Handle outside click for search suggestions menu
   useEffect(() => {
@@ -284,100 +306,12 @@ const AdminUsersPage = () => {
 
   const handleSearchSubmit = (e) => {
     if (e) e.preventDefault();
-    setCurrentPage(1);
-    setShowSearchMenu(false);
-  };
-
-  // Filtered users according to search query and category
-  const filteredUsers = users.filter((u) => {
-    const s = search.toLowerCase().trim();
-    let matchSearch = true;
-
-    if (s) {
-      if (searchCategory === 'id') {
-        matchSearch = String(u.id).includes(s.replace('#', ''));
-      } else if (searchCategory === 'name') {
-        matchSearch = Boolean(u.name && u.name.toLowerCase().includes(s));
-      } else if (searchCategory === 'email') {
-        matchSearch = Boolean(u.email && u.email.toLowerCase().includes(s));
-      } else if (searchCategory === 'phone') {
-        matchSearch = Boolean(u.phone && u.phone.toLowerCase().includes(s));
-      } else if (searchCategory === 'organization') {
-        matchSearch = Boolean(u.organization && u.organization.toLowerCase().includes(s));
-      } else {
-        matchSearch = (
-          (u.name && u.name.toLowerCase().includes(s)) ||
-          (u.email && u.email.toLowerCase().includes(s)) ||
-          (u.organization && u.organization.toLowerCase().includes(s)) ||
-          (u.phone && u.phone.toLowerCase().includes(s)) ||
-          (u.id && String(u.id).includes(s.replace('#', '')))
-        );
-      }
-    }
-
-    const matchRole = !roleFilter || u.role === roleFilter;
-    return matchSearch && matchRole;
-  });
-
-  // Sorted users according to sortField and sortOrder
-  const sortedUsers = [...filteredUsers].sort((a, b) => {
-    let valA = a[sortField];
-    let valB = b[sortField];
-
-    if (sortField === 'id') {
-      valA = Number(valA || 0);
-      valB = Number(valB || 0);
-    } else if (sortField === 'name') {
-      valA = String(a.name || '').toLowerCase();
-      valB = String(b.name || '').toLowerCase();
-    } else if (sortField === 'email') {
-      valA = String(a.email || '').toLowerCase();
-      valB = String(b.email || '').toLowerCase();
-    } else if (sortField === 'created_at') {
-      valA = new Date(a.created_at || 0).getTime();
-      valB = new Date(b.created_at || 0).getTime();
+    if (currentPage === 1) {
+      loadUsers(1, search);
     } else {
-      valA = String(valA || '').toLowerCase();
-      valB = String(valB || '').toLowerCase();
+      setCurrentPage(1);
     }
-
-    if (valA < valB) return sortOrder === 'asc' ? -1 : 1;
-    if (valA > valB) return sortOrder === 'asc' ? 1 : -1;
-    return 0;
-  });
-
-  const paginatedUsers = sortedUsers.slice(
-    (currentPage - 1) * pageSize,
-    currentPage * pageSize
-  );
-
-  // Dynamic suggestions for search popup
-  const suggestedUsers = users
-    .filter((u) => {
-      const s = search.toLowerCase().trim();
-      if (!s) return true;
-      if (searchCategory === 'id') return String(u.id).includes(s.replace('#', ''));
-      if (searchCategory === 'name') return Boolean(u.name && u.name.toLowerCase().includes(s));
-      if (searchCategory === 'email') return Boolean(u.email && u.email.toLowerCase().includes(s));
-      if (searchCategory === 'phone') return Boolean(u.phone && u.phone.toLowerCase().includes(s));
-      if (searchCategory === 'organization') return Boolean(u.organization && u.organization.toLowerCase().includes(s));
-      return (
-        (u.name && u.name.toLowerCase().includes(s)) ||
-        (u.email && u.email.toLowerCase().includes(s)) ||
-        (u.organization && u.organization.toLowerCase().includes(s)) ||
-        (u.phone && u.phone.toLowerCase().includes(s)) ||
-        (u.id && String(u.id).includes(s.replace('#', '')))
-      );
-    })
-    .slice(0, 6);
-
-  const getInitials = (name) => {
-    if (!name) return 'U';
-    const parts = name.trim().split(' ');
-    if (parts.length >= 2) {
-      return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
-    }
-    return name.slice(0, 2).toUpperCase();
+    setShowSearchMenu(false);
   };
 
   const toggleSort = (field) => {
@@ -387,6 +321,19 @@ const AdminUsersPage = () => {
       setSortField(field);
       setSortOrder('asc');
     }
+    setCurrentPage(1);
+  };
+
+  // Dynamic suggestions for search popup
+  const suggestedUsers = users.slice(0, 6);
+
+  const getInitials = (name) => {
+    if (!name) return 'U';
+    const parts = name.trim().split(' ');
+    if (parts.length >= 2) {
+      return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
+    }
+    return name.slice(0, 2).toUpperCase();
   };
 
   return (
@@ -737,7 +684,7 @@ const AdminUsersPage = () => {
                     </div>
                   </td>
                 </tr>
-              ) : filteredUsers.length === 0 ? (
+              ) : users.length === 0 ? (
                 <tr>
                   <td colSpan={9}>
                     <div className="table-empty-state py-4">
@@ -754,7 +701,7 @@ const AdminUsersPage = () => {
                   </td>
                 </tr>
               ) : (
-                paginatedUsers.map((u, idx) => (
+                users.map((u, idx) => (
                   <tr key={u.id}>
                     <td className="text-center" style={{ padding: '6px 4px' }}>
                       <span className="fw-semibold text-muted" style={{ fontSize: '0.78rem' }}>
@@ -857,7 +804,7 @@ const AdminUsersPage = () => {
         {/* Pagination Controls */}
         <Pagination
           currentPage={currentPage}
-          totalItems={filteredUsers.length}
+          totalItems={totalItems}
           pageSize={pageSize}
           onPageChange={setCurrentPage}
           onPageSizeChange={(newSize) => {
