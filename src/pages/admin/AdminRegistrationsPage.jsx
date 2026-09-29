@@ -280,24 +280,24 @@ const AdminRegistrationsPage = () => {
 
         {/* Table Content */}
         <div className="activity-table-container table-responsive">
-          <table className="spctt-table align-middle w-100" style={{ minWidth: '920px' }}>
+          <table className="spctt-table align-middle w-100">
             <thead>
               <tr style={{ background: '#f8fafc' }}>
-                <th className="py-3 px-3 text-center" style={{ width: '5%', minWidth: '45px' }}>ID</th>
-                <th className="py-3 px-3 text-nowrap" style={{ width: '10%' }}>Reg. Code</th>
-                <th className="py-3 px-3" style={{ width: '22%' }}>Delegate Info</th>
-                <th className="py-3 px-2 text-center" style={{ width: '12%' }}>Category</th>
-                <th className="py-3 px-3" style={{ width: '18%' }}>Organization</th>
-                <th className="py-3 px-3 text-end" style={{ width: '10%' }}>Amount</th>
-                <th className="py-3 px-2 text-center" style={{ width: '9%' }}>Payment</th>
-                <th className="py-3 px-2 text-center" style={{ width: '9%' }}>Status</th>
-                <th className="py-3 px-3 text-center" style={{ width: '8%', minWidth: '95px' }}>Action</th>
+                <th className="py-3 px-1 text-center" style={{ width: '45px', minWidth: '40px' }}>ID</th>
+                <th className="py-3 px-2 text-center text-nowrap" style={{ width: '95px' }}>Reg. Code</th>
+                <th className="py-3 px-2" style={{ minWidth: '170px' }}>Delegate Info</th>
+                <th className="py-3 px-1 text-center" style={{ width: '130px' }}>Category</th>
+                <th className="py-3 px-2" style={{ minWidth: '110px' }}>Organization</th>
+                <th className="py-3 px-2 text-end" style={{ width: '90px' }}>Amount</th>
+                <th className="py-3 px-1 text-center" style={{ width: '85px' }}>Payment</th>
+                <th className="py-3 px-1 text-center" style={{ width: '85px' }}>Status</th>
+                <th className="py-3 px-2 text-center" style={{ width: '90px' }}>Action</th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan="9">
+                  <td colSpan={9}>
                     <div className="table-empty-state py-4 text-center">
                       <div className="spinner-border text-primary mb-2" style={{ width: '2rem', height: '2rem' }}></div>
                       <h6 className="table-empty-title mb-1">Loading Conference Registrations...</h6>
@@ -307,7 +307,7 @@ const AdminRegistrationsPage = () => {
                 </tr>
               ) : paginatedRegistrations.length === 0 ? (
                 <tr>
-                  <td colSpan="9">
+                  <td colSpan={9}>
                     <div className="table-empty-state text-center py-4">
                       <div className="table-empty-icon-box mb-2" style={{ background: 'rgba(71, 110, 172, 0.1)', color: 'var(--spctt-primary)' }}>
                         <LuClipboardList size={24} />
@@ -320,31 +320,31 @@ const AdminRegistrationsPage = () => {
               ) : (
                 paginatedRegistrations.map((reg) => (
                   <tr key={reg.id} style={{ borderBottom: '1px solid #eef2f6' }}>
-                    <td className="py-3 px-2 align-middle text-center">
+                    <td className="py-3 px-1 align-middle text-center">
                       <span className="fw-semibold text-muted" style={{ fontSize: '0.82rem' }}>
                         #{reg.id}
                       </span>
                     </td>
-                    <td className="py-3 px-3 align-middle text-nowrap">
+                    <td className="py-3 px-2 align-middle text-center text-nowrap">
                       {reg.registration_code ? (
                         <span className="badge bg-light text-primary border font-monospace px-2 py-1" style={{ fontSize: '0.78rem', fontWeight: 600 }}>
                           {reg.registration_code}
                         </span>
                       ) : (
-                        <span className="text-muted small fst-italic px-2" style={{ fontSize: '0.75rem' }}>—</span>
+                        <span className="text-muted small fst-italic px-1" style={{ fontSize: '0.75rem' }}>—</span>
                       )}
                     </td>
-                    <td className="py-3 px-3 align-middle">
-                      <div className="fw-bold text-dark text-truncate" style={{ lineHeight: '1.35', fontSize: '0.86rem', marginBottom: '2px', maxWidth: '200px' }} title={`${reg.title || ''} ${reg.full_name}`}>
+                    <td className="py-3 px-2 align-middle">
+                      <div className="fw-bold text-dark text-truncate" style={{ lineHeight: '1.35', fontSize: '0.86rem', marginBottom: '2px', maxWidth: '190px' }} title={`${reg.title || ''} ${reg.full_name}`}>
                         {reg.title || ''} {reg.full_name}
                       </div>
-                      <div className="text-muted small text-truncate" style={{ fontSize: '0.75rem', maxWidth: '200px' }} title={reg.email}>
+                      <div className="text-muted small text-truncate" style={{ fontSize: '0.75rem', maxWidth: '190px' }} title={reg.email}>
                         {reg.email}
                       </div>
                       {reg.phone && <div className="text-muted small text-truncate mt-0.5" style={{ fontSize: '0.72rem' }}>{reg.phone}</div>}
                     </td>
-                    <td className="py-3 px-2 align-middle text-center">
-                      <span className="badge badge-category-teal px-2.5 py-1 rounded-pill" style={{ fontSize: '0.72rem', fontWeight: 700 }}>
+                    <td className="py-3 px-1 align-middle text-center">
+                      <span className="badge badge-category-teal px-2 py-1 rounded-pill text-truncate d-inline-block" style={{ fontSize: '0.70rem', fontWeight: 700, maxWidth: '140px' }} title={reg.category_name || 'Standard'}>
                         {reg.category_name || 'Standard'}
                       </span>
                       {reg.accompanying_count > 0 && (
@@ -353,19 +353,19 @@ const AdminRegistrationsPage = () => {
                         </span>
                       )}
                     </td>
-                    <td className="py-3 px-3 align-middle">
-                      <div className="text-dark text-truncate" style={{ fontSize: '0.80rem', lineHeight: '1.3', color: '#475569', maxWidth: '170px' }} title={reg.organization || '—'}>
+                    <td className="py-3 px-2 align-middle">
+                      <div className="text-dark text-truncate" style={{ fontSize: '0.80rem', lineHeight: '1.3', color: '#475569', maxWidth: '150px' }} title={reg.organization || '—'}>
                         {reg.organization || '—'}
                       </div>
                     </td>
-                    <td className="py-3 px-3 align-middle text-end">
-                      <div className="fw-bold text-dark" style={{ fontSize: '0.86rem' }}>
+                    <td className="py-3 px-2 align-middle text-end">
+                      <div className="fw-bold text-dark text-nowrap" style={{ fontSize: '0.86rem' }}>
                         {formatCurrency(reg.total_payable || (parseFloat(reg.grand_total || 0) * 1.045))}
                       </div>
                     </td>
-                    <td className="py-3 px-2 align-middle text-center">
+                    <td className="py-3 px-1 align-middle text-center">
                       <span 
-                        className="badge text-uppercase px-2.5 py-1 rounded-pill" 
+                        className="badge text-uppercase px-2 py-1 rounded-pill" 
                         style={{ 
                           fontSize: '0.68rem', 
                           letterSpacing: '0.03em', 
@@ -377,22 +377,22 @@ const AdminRegistrationsPage = () => {
                         {reg.payment_status}
                       </span>
                     </td>
-                    <td className="py-3 px-2 align-middle text-center">
+                    <td className="py-3 px-1 align-middle text-center">
                       <span className={`badge ${
                         reg.status === 'confirmed' ? 'bg-primary-subtle text-primary border border-primary' :
                         reg.status === 'draft' ? 'bg-light text-muted border' :
                         'bg-info-subtle text-info border border-info'
-                      } text-uppercase px-2.5 py-1 rounded-pill`} style={{ fontSize: '0.68rem', letterSpacing: '0.03em', fontWeight: 700 }}>
+                      } text-uppercase px-2 py-1 rounded-pill`} style={{ fontSize: '0.68rem', letterSpacing: '0.03em', fontWeight: 700 }}>
                         {reg.status}
                       </span>
                     </td>
-                    <td className="py-3 px-3 align-middle text-center text-nowrap">
+                    <td className="py-3 px-2 align-middle text-center text-nowrap">
                       <button
                         onClick={() => navigate(`/admin/registration/${reg.id}`)}
-                        className="btn btn-outline-primary btn-sm px-3 rounded-2 d-inline-flex align-items-center gap-1.5 shadow-none fw-semibold"
-                        style={{ height: '32px', fontSize: '0.78rem' }}
+                        className="btn btn-outline-primary btn-sm px-2.5 rounded-2 d-inline-flex align-items-center gap-1 shadow-none fw-semibold"
+                        style={{ height: '30px', fontSize: '0.78rem' }}
                       >
-                        <LuClipboardList size={14} />
+                        <LuClipboardList size={13} />
                         <span>Manage</span>
                       </button>
                     </td>
