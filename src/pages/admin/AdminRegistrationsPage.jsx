@@ -14,7 +14,8 @@ import {
   LuInfo,
   LuArrowUpDown,
   LuArrowUp,
-  LuArrowDown
+  LuArrowDown,
+  LuMail
 } from 'react-icons/lu';
 import { adminApi } from '../../services/api';
 import { downloadBlobFile } from '../../services/api/adminApi';
@@ -285,7 +286,8 @@ const AdminRegistrationsPage = () => {
               <tr style={{ background: '#f8fafc' }}>
                 <th className="py-3 px-1 text-center" style={{ width: '45px', minWidth: '40px' }}>ID</th>
                 <th className="py-3 px-2 text-center text-nowrap" style={{ width: '95px' }}>Reg. Code</th>
-                <th className="py-3 px-2" style={{ minWidth: '170px' }}>Delegate Info</th>
+                <th className="py-3 px-2" style={{ minWidth: '150px' }}>Delegate Info</th>
+                <th className="py-3 px-2" style={{ minWidth: '160px' }}>Email</th>
                 <th className="py-3 px-1 text-center" style={{ width: '130px' }}>Category</th>
                 <th className="py-3 px-2" style={{ minWidth: '110px' }}>Organization</th>
                 <th className="py-3 px-2 text-end" style={{ width: '90px' }}>Amount</th>
@@ -297,7 +299,7 @@ const AdminRegistrationsPage = () => {
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan={9}>
+                  <td colSpan={10}>
                     <div className="table-empty-state py-4 text-center">
                       <div className="spinner-border text-primary mb-2" style={{ width: '2rem', height: '2rem' }}></div>
                       <h6 className="table-empty-title mb-1">Loading Conference Registrations...</h6>
@@ -307,7 +309,7 @@ const AdminRegistrationsPage = () => {
                 </tr>
               ) : paginatedRegistrations.length === 0 ? (
                 <tr>
-                  <td colSpan={9}>
+                  <td colSpan={10}>
                     <div className="table-empty-state text-center py-4">
                       <div className="table-empty-icon-box mb-2" style={{ background: 'rgba(71, 110, 172, 0.1)', color: 'var(--spctt-primary)' }}>
                         <LuClipboardList size={24} />
@@ -335,13 +337,16 @@ const AdminRegistrationsPage = () => {
                       )}
                     </td>
                     <td className="py-3 px-2 align-middle">
-                      <div className="fw-bold text-dark text-truncate" style={{ lineHeight: '1.35', fontSize: '0.86rem', marginBottom: '2px', maxWidth: '190px' }} title={`${reg.title || ''} ${reg.full_name}`}>
+                      <div className="fw-bold text-dark text-truncate" style={{ lineHeight: '1.35', fontSize: '0.86rem', marginBottom: '2px', maxWidth: '170px' }} title={`${reg.title || ''} ${reg.full_name}`}>
                         {reg.title || ''} {reg.full_name}
                       </div>
-                      <div className="text-muted small text-truncate" style={{ fontSize: '0.75rem', maxWidth: '190px' }} title={reg.email}>
-                        {reg.email}
+                      {reg.phone && <div className="text-muted small text-truncate mt-0.5" style={{ fontSize: '0.75rem' }}>{reg.phone}</div>}
+                    </td>
+                    <td className="py-3 px-2 align-middle">
+                      <div className="d-flex align-items-center gap-1.5 text-dark text-truncate" style={{ fontSize: '0.80rem', maxWidth: '175px' }} title={reg.email || '—'}>
+                        <LuMail size={13} className="text-primary flex-shrink-0" />
+                        <span className="text-truncate">{reg.email || '—'}</span>
                       </div>
-                      {reg.phone && <div className="text-muted small text-truncate mt-0.5" style={{ fontSize: '0.72rem' }}>{reg.phone}</div>}
                     </td>
                     <td className="py-3 px-1 align-middle text-center">
                       <span className="badge badge-category-teal px-2 py-1 rounded-pill text-truncate d-inline-block" style={{ fontSize: '0.70rem', fontWeight: 700, maxWidth: '140px' }} title={reg.category_name || 'Standard'}>

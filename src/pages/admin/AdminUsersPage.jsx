@@ -39,7 +39,7 @@ const AdminUsersPage = () => {
 
   // Sorting state (ascending / descending)
   const [sortField, setSortField] = useState('id');
-  const [sortOrder, setSortOrder] = useState('asc'); // 'asc' or 'desc'
+  const [sortOrder, setSortOrder] = useState('desc'); // 'asc' or 'desc'
 
   // Search category state & popup
   const [searchCategory, setSearchCategory] = useState('all'); // 'all', 'id', 'name', 'email', 'phone', 'organization'
@@ -573,26 +573,28 @@ const AdminUsersPage = () => {
 
             {/* Sort & Role Controls */}
             <div className="col-lg-5 col-md-12 col-12 d-flex flex-wrap align-items-center justify-content-lg-end gap-2">
-              {/* Ascending / Descending User ID Button */}
+              <LuSlidersHorizontal size={16} className="text-muted flex-shrink-0" />
+
+              {/* Ascending / Descending Order Button */}
               <button
                 type="button"
                 onClick={() => {
-                  setSortField('id');
                   setSortOrder((prev) => (prev === 'asc' ? 'desc' : 'asc'));
+                  setCurrentPage(1);
                 }}
                 className="btn btn-sm btn-white bg-white border d-flex align-items-center gap-1.5 shadow-none px-2.5 py-1"
                 style={{ height: '34px', fontSize: '0.82rem', fontWeight: 600, color: '#334155' }}
-                title={`Sort by User ID: Current is ${sortOrder === 'asc' ? 'Ascending (1 → 9)' : 'Descending (9 → 1)'}. Click to switch.`}
+                title={`Current: ${sortOrder === 'asc' ? 'Ascending (1 → 9)' : 'Descending (9 → 1)'}. Click to switch.`}
               >
-                {sortOrder === 'asc' && sortField === 'id' ? (
+                {sortOrder === 'asc' ? (
                   <>
                     <LuArrowUp size={14} className="text-primary" />
-                    <span>User ID: Ascending (1 → 9)</span>
+                    <span>Ascending (1 → 9)</span>
                   </>
                 ) : (
                   <>
                     <LuArrowDown size={14} className="text-primary" />
-                    <span>User ID: Descending (9 → 1)</span>
+                    <span>Descending (9 → 1)</span>
                   </>
                 )}
               </button>
