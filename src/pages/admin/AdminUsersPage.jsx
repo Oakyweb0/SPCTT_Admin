@@ -617,13 +617,13 @@ const AdminUsersPage = () => {
 
         {/* Users Table */}
         <div className="activity-table-container table-responsive">
-          <table className="spctt-table align-middle w-100" style={{ minWidth: '920px' }}>
+          <table className="spctt-table align-middle w-100">
             <thead>
               <tr style={{ background: '#f8fafc' }}>
-                <th className="py-3 px-3 text-center" style={{ width: '5%', minWidth: '45px' }}>S.No</th>
+                <th className="py-3 px-1 text-center" style={{ width: '45px', minWidth: '40px' }}>S.No</th>
                 <th
-                  className="py-3 px-3 text-center user-select-none"
-                  style={{ width: '9%', cursor: 'pointer' }}
+                  className="py-3 px-2 text-center user-select-none"
+                  style={{ width: '80px', cursor: 'pointer' }}
                   onClick={() => toggleSort('id')}
                   title="Click to sort by User ID (Ascending / Descending)"
                 >
@@ -637,8 +637,8 @@ const AdminUsersPage = () => {
                   </div>
                 </th>
                 <th
-                  className="py-3 px-3 user-select-none"
-                  style={{ width: '22%', cursor: 'pointer' }}
+                  className="py-3 px-2 user-select-none"
+                  style={{ cursor: 'pointer' }}
                   onClick={() => toggleSort('name')}
                   title="Click to sort by Name"
                 >
@@ -651,13 +651,13 @@ const AdminUsersPage = () => {
                     )}
                   </div>
                 </th>
-                <th className="py-3 px-3" style={{ width: '20%' }}>Contact Details</th>
-                <th className="py-3 px-3" style={{ width: '18%' }}>Institution / Organization</th>
-                <th className="py-3 px-2 text-center" style={{ width: '8%' }}>Role</th>
-                <th className="py-3 px-2 text-center" style={{ width: '8%' }}>Status</th>
+                <th className="py-3 px-2">Contact Details</th>
+                <th className="py-3 px-2">Institution / Organization</th>
+                <th className="py-3 px-1 text-center" style={{ width: '80px' }}>Role</th>
+                <th className="py-3 px-1 text-center" style={{ width: '80px' }}>Status</th>
                 <th
-                  className="py-3 px-3 text-center user-select-none"
-                  style={{ width: '11%', cursor: 'pointer' }}
+                  className="py-3 px-2 text-center user-select-none"
+                  style={{ width: '105px', cursor: 'pointer' }}
                   onClick={() => toggleSort('created_at')}
                   title="Click to sort by Registered Date"
                 >
@@ -670,7 +670,7 @@ const AdminUsersPage = () => {
                     )}
                   </div>
                 </th>
-                <th className="py-3 px-3 text-center" style={{ width: '9%', minWidth: '90px' }}>Actions</th>
+                <th className="py-3 px-2 text-center" style={{ width: '80px' }}>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -703,30 +703,30 @@ const AdminUsersPage = () => {
               ) : (
                 users.map((u, idx) => (
                   <tr key={u.id} style={{ borderBottom: '1px solid #eef2f6' }}>
-                    <td className="py-3 px-2 align-middle text-center">
+                    <td className="py-3 px-1 align-middle text-center">
                       <span className="fw-semibold text-muted" style={{ fontSize: '0.82rem' }}>
                         {(currentPage - 1) * pageSize + idx + 1}
                       </span>
                     </td>
-                    <td className="py-3 px-3 align-middle text-center">
+                    <td className="py-3 px-2 align-middle text-center text-nowrap">
                       <span className="badge bg-light text-primary border font-monospace px-2 py-1" style={{ fontSize: '0.78rem', fontWeight: 600 }}>
                         #{u.id}
                       </span>
                     </td>
-                    <td className="py-3 px-3 align-middle">
+                    <td className="py-3 px-2 align-middle">
                       <div className="d-flex align-items-center gap-2">
                         <div className={`user-avatar-badge ${u.role || 'user'}`} style={{ width: '32px', height: '32px', fontSize: '0.75rem', fontWeight: 700 }}>
                           {getInitials(u.name)}
                         </div>
-                        <div className="text-truncate" style={{ maxWidth: '180px' }}>
+                        <div className="text-truncate" style={{ maxWidth: '170px' }}>
                           <div className="fw-bold text-dark text-truncate" title={`${u.title ? `${u.title} ` : ''}${u.name}`} style={{ fontSize: '0.86rem', lineHeight: '1.35', marginBottom: '2px' }}>
                             {u.title ? `${u.title} ` : ''}{u.name}
                           </div>
                         </div>
                       </div>
                     </td>
-                    <td className="py-3 px-3 align-middle">
-                      <div className="text-truncate" style={{ maxWidth: '185px' }}>
+                    <td className="py-3 px-2 align-middle">
+                      <div className="text-truncate" style={{ maxWidth: '175px' }}>
                         <div className="d-flex align-items-center gap-1 text-dark fw-medium text-truncate" title={u.email} style={{ fontSize: '0.80rem' }}>
                           <LuMail size={13} className="text-primary flex-shrink-0" />
                           <span className="text-truncate">{u.email}</span>
@@ -739,8 +739,8 @@ const AdminUsersPage = () => {
                         )}
                       </div>
                     </td>
-                    <td className="py-3 px-3 align-middle">
-                      <div className="d-flex align-items-center gap-1.5 text-truncate" style={{ maxWidth: '170px' }} title={u.organization || 'Not specified'}>
+                    <td className="py-3 px-2 align-middle">
+                      <div className="d-flex align-items-center gap-1.5 text-truncate" style={{ maxWidth: '160px' }} title={u.organization || 'Not specified'}>
                         <LuBuilding2 size={13} className="text-muted flex-shrink-0" />
                         {u.organization ? (
                           <span className="text-dark text-truncate" style={{ fontSize: '0.80rem', lineHeight: '1.3', color: '#475569' }}>{u.organization}</span>
@@ -749,48 +749,48 @@ const AdminUsersPage = () => {
                         )}
                       </div>
                     </td>
-                    <td className="py-3 px-2 align-middle text-center">
+                    <td className="py-3 px-1 align-middle text-center">
                       <span className={`badge ${u.role === 'admin' ? 'bg-purple-subtle text-purple border border-purple' :
                           u.role === 'manager' ? 'bg-primary-subtle text-primary border border-primary' :
                             'bg-info-subtle text-info border border-info'
-                        } text-uppercase px-2.5 py-1 rounded-pill d-inline-flex align-items-center justify-content-center gap-1`} style={{ fontSize: '0.68rem', letterSpacing: '0.03em', fontWeight: 700, whiteSpace: 'nowrap' }}>
+                        } text-uppercase px-2 py-1 rounded-pill d-inline-flex align-items-center justify-content-center gap-1`} style={{ fontSize: '0.68rem', letterSpacing: '0.03em', fontWeight: 700, whiteSpace: 'nowrap' }}>
                         {u.role === 'admin' && <LuShieldCheck size={11} className="flex-shrink-0" />}
                         <span>{u.role || 'User'}</span>
                       </span>
                     </td>
-                    <td className="py-3 px-2 align-middle text-center">
+                    <td className="py-3 px-1 align-middle text-center">
                       <span className={`badge ${u.status === 'active' ? 'bg-success-subtle text-success border border-success' : 'bg-danger-subtle text-danger border border-danger'
-                        } text-uppercase px-2.5 py-1 rounded-pill d-inline-flex align-items-center justify-content-center`} style={{ fontSize: '0.68rem', letterSpacing: '0.03em', fontWeight: 700, whiteSpace: 'nowrap' }}>
+                        } text-uppercase px-2 py-1 rounded-pill d-inline-flex align-items-center justify-content-center`} style={{ fontSize: '0.68rem', letterSpacing: '0.03em', fontWeight: 700, whiteSpace: 'nowrap' }}>
                         <span>{u.status || 'active'}</span>
                       </span>
                     </td>
-                    <td className="py-3 px-3 align-middle text-center">
+                    <td className="py-3 px-2 align-middle text-center">
                       <div className="d-inline-flex align-items-center gap-1 text-muted text-nowrap" style={{ fontSize: '0.75rem' }}>
                         <LuCalendar size={13} className="text-muted flex-shrink-0" />
                         <span>{new Date(u.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}</span>
                       </div>
                     </td>
-                    <td className="py-3 px-3 align-middle text-center text-nowrap">
-                      <div className="d-inline-flex align-items-center justify-content-center" style={{ gap: '6px' }}>
+                    <td className="py-3 px-2 align-middle text-center text-nowrap">
+                      <div className="d-inline-flex align-items-center justify-content-center" style={{ gap: '4px' }}>
                         <button
                           type="button"
                           onClick={() => handleOpenEdit(u)}
                           className="btn btn-sm btn-outline-secondary d-inline-flex align-items-center justify-content-center rounded-2 shadow-none"
-                          style={{ width: '32px', height: '32px', padding: 0 }}
+                          style={{ width: '30px', height: '30px', padding: 0 }}
                           title={`Edit ${u.name}`}
                           aria-label="Edit user"
                         >
-                          <LuPencil size={14} />
+                          <LuPencil size={13} />
                         </button>
                         <button
                           type="button"
                           onClick={() => setDeleteTarget(u)}
                           className="btn btn-sm btn-outline-danger d-inline-flex align-items-center justify-content-center rounded-2 shadow-none"
-                          style={{ width: '32px', height: '32px', padding: 0 }}
+                          style={{ width: '30px', height: '30px', padding: 0 }}
                           title={`Delete ${u.name}`}
                           aria-label="Delete user"
                         >
-                          <LuTrash2 size={14} />
+                          <LuTrash2 size={13} />
                         </button>
                       </div>
                     </td>
