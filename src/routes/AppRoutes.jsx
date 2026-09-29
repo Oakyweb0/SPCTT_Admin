@@ -98,6 +98,22 @@ const AppRoutes = () => {
         }
       />
       <Route
+        path="/user/invoices"
+        element={
+          <UserAuthGuard>
+            <InvoiceReceiptPage />
+          </UserAuthGuard>
+        }
+      />
+      <Route
+        path="/user/invoice"
+        element={
+          <UserAuthGuard>
+            <InvoiceReceiptPage />
+          </UserAuthGuard>
+        }
+      />
+      <Route
         path="/user/invoice/:id"
         element={
           <UserAuthGuard>

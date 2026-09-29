@@ -62,7 +62,8 @@ const AdminRegistrationsPage = () => {
     setPaymentDetail(null);
     setUpdateStatus({
       status: reg.status,
-      paymentStatus: reg.payment_status
+      paymentStatus: reg.payment_status,
+      sendEmail: true
     });
 
     try {
@@ -122,12 +123,12 @@ const AdminRegistrationsPage = () => {
     if (!selectedReg) return;
     try {
       setUpdating(true);
-      await adminApi.updateRegistrationStatus(selectedReg.id, updateStatus);
+      const res = await adminApi.updateRegistrationStatus(selectedReg.id, updateStatus);
       setSelectedReg(null);
       setPaymentDetail(null);
       setNotification({
         type: 'success',
-        message: 'Registration status updated successfully!'
+        message: res?.message || 'Registration & payment status updated successfully!'
       });
       await loadRegistrations();
     } catch (err) {
@@ -535,6 +536,23 @@ const AdminRegistrationsPage = () => {
                             <option value="failed">Failed</option>
                             <option value="refunded">Refunded</option>
                           </select>
+                        </div>
+
+                        {/* Email Notification Option */}
+                        <div className="col-12 mt-3 pt-2 border-top">
+                          <div className="form-check form-switch d-flex align-items-center gap-2">
+                            <input
+                              className="form-check-input ms-0"
+                              type="checkbox"
+                              role="switch"
+                              id="sendPaymentEmailNotification"
+                              checked={updateStatus.sendEmail !== false}
+                              onChange={(e) => setUpdateStatus({ ...updateStatus, sendEmail: e.target.checked })}
+                            />
+                            <label className="form-check-label small fw-semibold text-dark cursor-pointer" htmlFor="sendPaymentEmailNotification">
+                              📧 Send instant confirmation & receipt email to delegate ({selectedReg.email}) & CC admin alert
+                            </label>
+                          </div>
                         </div>
                       </div>
                     </div>
