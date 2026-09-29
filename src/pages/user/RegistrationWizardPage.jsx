@@ -1136,7 +1136,7 @@ const RegistrationWizardPage = () => {
                           New Subscription - {selectedCat.name}
                         </span>
                         <div className="text-xs text-gray-500 mt-0.5">
-                          #{registration?.registration_code || 'REG-1287024'}: {attendeeData.title} {attendeeData.fullName}
+                          {registration?.registration_code ? `${registration.registration_code}: ` : ''}{attendeeData.title} {attendeeData.fullName}
                         </div>
                       </td>
                       <td className="py-3.5 px-4 text-center font-medium">1</td>
@@ -1285,7 +1285,7 @@ const RegistrationWizardPage = () => {
             <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 text-left space-y-3 text-sm">
               <div className="flex justify-between border-b border-gray-200 pb-2">
                 <span className="text-gray-500">Registration Code:</span>
-                <span className="font-bold text-gray-900">{registration?.registration_code || '#REG-1287024'}</span>
+                <span className="font-bold text-gray-900">{paymentSuccessData?.registrationCode || registration?.registration_code || '—'}</span>
               </div>
               <div className="flex justify-between border-b border-gray-200 pb-2">
                 <span className="text-gray-500">Category:</span>

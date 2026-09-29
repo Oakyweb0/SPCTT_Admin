@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { LuCheck, LuTriangleAlert } from 'react-icons/lu';
 import bannerImg from '../assets/images/banner1.jpeg';
 import logoImg from '../assets/images/logo.png';
 import { authApi, saveAuthSession } from '../services/api';
+
+const RECAPTCHA_SITE_KEY = '6LeyktUtAAAAADvLGtQlJzU5x6ZkmpxWfdvL6ci6';
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -22,6 +24,64 @@ const LoginPage = () => {
   const [showForgotModal, setShowForgotModal] = useState(false);
   const [resetEmail, setResetEmail] = useState('');
   const [resetSent, setResetSent] = useState(false);
+
+  // reCAPTCHA state
+  const [captchaToken, setCaptchaToken] = useState(null);
+  const recaptchaContainerRef = useRef(null);
+  const widgetIdRef = useRef(null);
+
+  useEffect(() => {
+    window.onRecaptchaSuccess = (token) => {
+      setCaptchaToken(token);
+      setErrorMsg('');
+    };
+
+    window.onRecaptchaExpired = () => {
+      setCaptchaToken(null);
+    };
+
+    window.onRecaptchaError = () => {
+      setCaptchaToken(null);
+    };
+
+    const renderCaptcha = () => {
+      if (window.grecaptcha && window.grecaptcha.render && recaptchaContainerRef.current) {
+        if (widgetIdRef.current === null && recaptchaContainerRef.current.children.length === 0) {
+          try {
+            widgetIdRef.current = window.grecaptcha.render(recaptchaContainerRef.current, {
+              sitekey: RECAPTCHA_SITE_KEY,
+              callback: window.onRecaptchaSuccess,
+              'expired-callback': window.onRecaptchaExpired,
+              'error-callback': window.onRecaptchaError,
+              theme: 'light',
+            });
+          } catch (err) {
+            console.error('reCAPTCHA render error:', err);
+          }
+        }
+      }
+    };
+
+    if (!window.grecaptcha) {
+      window.onRecaptchaLoaded = () => {
+        renderCaptcha();
+      };
+      if (!document.getElementById('google-recaptcha-script')) {
+        const script = document.createElement('script');
+        script.id = 'google-recaptcha-script';
+        script.src = 'https://www.google.com/recaptcha/api.js?onload=onRecaptchaLoaded&render=explicit';
+        script.async = true;
+        script.defer = true;
+        document.head.appendChild(script);
+      }
+    } else if (window.grecaptcha.render) {
+      renderCaptcha();
+    } else {
+      window.onRecaptchaLoaded = () => {
+        renderCaptcha();
+      };
+    }
+  }, []);
 
   const handleLoginChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -43,12 +103,18 @@ const LoginPage = () => {
       return;
     }
 
+    if (!captchaToken) {
+      setErrorMsg('Please complete the CAPTCHA verification (I am not a robot).');
+      return;
+    }
+
     setIsLoading(true);
 
     try {
       const response = await authApi.adminLogin({
         email: loginData.email.trim(),
         password: loginData.password,
+        captchaToken,
       });
 
       if (response.status && response.data) {
@@ -76,11 +142,25 @@ const LoginPage = () => {
       } else {
         setErrorMsg(response.message || 'Login failed. Please check credentials.');
         setIsLoading(false);
+        // Reset reCAPTCHA on failure
+        if (window.grecaptcha && widgetIdRef.current !== null) {
+          try {
+            window.grecaptcha.reset(widgetIdRef.current);
+          } catch (e) {}
+          setCaptchaToken(null);
+        }
       }
     } catch (err) {
       console.error('Login error:', err);
       setErrorMsg(err.message || 'Could not connect to API server. Please check your network or server status.');
       setIsLoading(false);
+      // Reset reCAPTCHA on failure
+      if (window.grecaptcha && widgetIdRef.current !== null) {
+        try {
+          window.grecaptcha.reset(widgetIdRef.current);
+        } catch (e) {}
+        setCaptchaToken(null);
+      }
     }
   };
 
@@ -243,6 +323,15 @@ const LoginPage = () => {
                       <i className={`fa-solid ${showPassword ? 'fa-eye-slash' : 'fa-eye'}`}></i>
                     </button>
                   </div>
+                </div>
+
+                {/* Google reCAPTCHA Widget Container */}
+                <div className="form-group mb-3 d-flex justify-content-center">
+                  <div
+                    ref={recaptchaContainerRef}
+                    style={{ minHeight: '78px' }}
+                    className="recaptcha-widget-box"
+                  ></div>
                 </div>
 
                 {/* Remember Me Checkbox */}

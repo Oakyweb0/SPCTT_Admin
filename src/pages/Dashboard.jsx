@@ -244,9 +244,13 @@ const Dashboard = () => {
                         paginatedRegistrations.map((reg) => (
                           <tr key={reg.id}>
                             <td>
-                              <span className="badge bg-light text-primary border font-monospace px-1.5 py-0.5">
-                                {reg.registration_code}
-                              </span>
+                              {reg.registration_code ? (
+                                <span className="badge bg-light text-primary border font-monospace px-1.5 py-0.5">
+                                  {reg.registration_code}
+                                </span>
+                              ) : (
+                                <span className="text-muted small fst-italic px-1">—</span>
+                              )}
                             </td>
                             <td>
                               <div className="fw-bold text-dark text-truncate" style={{ maxWidth: '180px' }}>

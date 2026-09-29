@@ -14,7 +14,9 @@ import {
   LuUser,
   LuMail,
   LuPhone,
-  LuDownload
+  LuDownload,
+  LuArrowUp,
+  LuArrowDown
 } from 'react-icons/lu';
 import { adminApi } from '../../services/api';
 import { downloadBlobFile } from '../../services/api/adminApi';
@@ -24,9 +26,11 @@ const AdminAbstractsPage = () => {
   const [abstracts, setAbstracts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [exporting, setExporting] = useState(false);
-  const [search, setSearch] = useState('');
+  const [searchInput, setSearchInput] = useState('');
+  const [appliedSearch, setAppliedSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('');
+  const [sortOrder, setSortOrder] = useState('asc'); // 'asc' or 'desc'
   const [selectedAbs, setSelectedAbs] = useState(null);
   const [reviewModalAbs, setReviewModalAbs] = useState(null);
   const [reviewStatus, setReviewStatus] = useState('pending');
@@ -85,11 +89,17 @@ const AdminAbstractsPage = () => {
     }
   };
 
+  const handleSearchSubmit = (e) => {
+    if (e) e.preventDefault();
+    setAppliedSearch(searchInput.trim());
+    setCurrentPage(1);
+  };
+
   const handleExportExcel = async () => {
     try {
       setExporting(true);
       const params = {};
-      if (search) params.search = search;
+      if (appliedSearch) params.search = appliedSearch;
       if (statusFilter) params.status = statusFilter;
       if (categoryFilter) params.category = categoryFilter;
 
@@ -229,8 +239,8 @@ const AdminAbstractsPage = () => {
   };
 
   const filteredAbstracts = abstracts.filter((a) => {
-    const s = search.toLowerCase();
-    const matchSearch = !search || (
+    const s = appliedSearch.toLowerCase();
+    const matchSearch = !appliedSearch || (
       (a.topic && a.topic.toLowerCase().includes(s)) ||
       (a.title && a.title.toLowerCase().includes(s)) ||
       (a.name && a.name.toLowerCase().includes(s)) ||
@@ -246,7 +256,13 @@ const AdminAbstractsPage = () => {
     return matchSearch && matchStatus && matchCategory;
   });
 
-  const paginatedAbstracts = filteredAbstracts.slice(
+  const sortedAbstracts = [...filteredAbstracts].sort((a, b) => {
+    const idA = Number(a.id || 0);
+    const idB = Number(b.id || 0);
+    return sortOrder === 'asc' ? idA - idB : idB - idA;
+  });
+
+  const paginatedAbstracts = sortedAbstracts.slice(
     (currentPage - 1) * pageSize,
     currentPage * pageSize
   );
@@ -639,22 +655,48 @@ const AdminAbstractsPage = () => {
           {/* Search & Filter Toolbar */}
           <div className="p-3 bg-light border-top border-bottom">
             <div className="row g-3 align-items-center">
-              <div className="col-md-6 col-12">
-                <div className="search-input-box">
-                  <span className="input-icon">
-                    <LuSearch size={18} />
-                  </span>
-                  <input
-                    type="text"
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                    placeholder="Search by topic, author name, institute, email, code..."
-                    className="form-control shadow-none"
-                  />
-                </div>
+              <div className="col-md-5 col-12">
+                <form onSubmit={handleSearchSubmit} className="d-flex gap-2">
+                  <div className="search-input-box flex-grow-1">
+                    <span className="input-icon">
+                      <LuSearch size={18} />
+                    </span>
+                    <input
+                      type="text"
+                      value={searchInput}
+                      onChange={(e) => setSearchInput(e.target.value)}
+                      placeholder="Search by topic, author name, institute, email, code..."
+                      className="form-control shadow-none"
+                    />
+                  </div>
+                  <button type="submit" className="btn btn-primary px-3 text-nowrap shadow-none">
+                    Search
+                  </button>
+                </form>
               </div>
 
-              <div className="col-md-3 col-6">
+              <div className="col-md-7 col-12 d-flex justify-content-md-end align-items-center gap-2 flex-wrap">
+                {/* Ascending / Descending Order Button */}
+                <button
+                  type="button"
+                  onClick={() => setSortOrder((prev) => (prev === 'asc' ? 'desc' : 'asc'))}
+                  className="btn btn-sm btn-white bg-white border d-flex align-items-center gap-1.5 shadow-none px-2.5 py-1"
+                  style={{ height: '31px', fontSize: '0.82rem', fontWeight: 600, color: '#334155' }}
+                  title={`Current: ${sortOrder === 'asc' ? 'Ascending (Oldest / 1 → 9)' : 'Descending (Newest / 9 → 1)'}. Click to switch.`}
+                >
+                  {sortOrder === 'asc' ? (
+                    <>
+                      <LuArrowUp size={14} className="text-primary" />
+                      <span>Ascending (1 → 9)</span>
+                    </>
+                  ) : (
+                    <>
+                      <LuArrowDown size={14} className="text-primary" />
+                      <span>Descending (9 → 1)</span>
+                    </>
+                  )}
+                </button>
+
                 <select
                   value={categoryFilter}
                   onChange={(e) => {
@@ -662,14 +704,13 @@ const AdminAbstractsPage = () => {
                     setCurrentPage(1);
                   }}
                   className="form-select form-select-sm shadow-none"
+                  style={{ width: '185px' }}
                 >
                   <option value="">All Categories (Poster / Oral)</option>
                   <option value="Poster">Poster Presentation</option>
                   <option value="Oral">Oral Presentation</option>
                 </select>
-              </div>
 
-              <div className="col-md-3 col-6 d-flex justify-content-md-end">
                 <select
                   value={statusFilter}
                   onChange={(e) => {
@@ -677,6 +718,7 @@ const AdminAbstractsPage = () => {
                     setCurrentPage(1);
                   }}
                   className="form-select form-select-sm shadow-none"
+                  style={{ width: '135px' }}
                 >
                   <option value="">All Statuses</option>
                   <option value="pending">Pending</option>

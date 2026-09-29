@@ -225,7 +225,7 @@ const InvoiceReceiptPage = () => {
                         REGISTRATION RECEIPT
                       </div>
                       <div className="bg-[#476EAC] text-white py-2 text-center font-bold text-sm sm:text-base tracking-wide">
-                        Registration No : {selectedInvoice.registration_code || `SPC-2027-${String(selectedInvoice.registration_id || selectedInvoice.id || '001').padStart(4, '0')}`}
+                        Registration No : {selectedInvoice.registration_code || `SPCTT-${String(selectedInvoice.registration_id || selectedInvoice.id || '1').padStart(3, '0')}`}
                       </div>
                     </div>
 

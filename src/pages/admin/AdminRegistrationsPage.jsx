@@ -11,7 +11,10 @@ import {
   LuCreditCard,
   LuFileText,
   LuClock,
-  LuInfo
+  LuInfo,
+  LuArrowUpDown,
+  LuArrowUp,
+  LuArrowDown
 } from 'react-icons/lu';
 import { adminApi } from '../../services/api';
 import { downloadBlobFile } from '../../services/api/adminApi';
@@ -26,6 +29,10 @@ const AdminRegistrationsPage = () => {
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [paymentFilter, setPaymentFilter] = useState('');
+
+  // Sorting state (ascending / descending)
+  const [sortField, setSortField] = useState('id');
+  const [sortOrder, setSortOrder] = useState('desc'); // 'asc' or 'desc'
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
@@ -95,7 +102,30 @@ const AdminRegistrationsPage = () => {
     return `₹${num.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
   };
 
-  const paginatedRegistrations = registrations.slice(
+  const sortedRegistrations = [...registrations].sort((a, b) => {
+    let valA = a[sortField];
+    let valB = b[sortField];
+
+    if (sortField === 'id') {
+      valA = Number(valA || 0);
+      valB = Number(valB || 0);
+    } else if (sortField === 'amount') {
+      valA = parseFloat(a.total_payable || (parseFloat(a.grand_total || 0) * 1.045) || 0);
+      valB = parseFloat(b.total_payable || (parseFloat(b.grand_total || 0) * 1.045) || 0);
+    } else if (sortField === 'delegate') {
+      valA = `${a.title || ''} ${a.full_name || ''}`.trim().toLowerCase();
+      valB = `${b.title || ''} ${b.full_name || ''}`.trim().toLowerCase();
+    } else {
+      valA = String(valA || '').toLowerCase();
+      valB = String(valB || '').toLowerCase();
+    }
+
+    if (valA < valB) return sortOrder === 'asc' ? -1 : 1;
+    if (valA > valB) return sortOrder === 'asc' ? 1 : -1;
+    return 0;
+  });
+
+  const paginatedRegistrations = sortedRegistrations.slice(
     (currentPage - 1) * pageSize,
     currentPage * pageSize
   );
@@ -194,13 +224,35 @@ const AdminRegistrationsPage = () => {
             </div>
 
             <div className="col-md-6 col-12 d-flex justify-content-md-end gap-2">
-              <div className="d-flex align-items-center gap-2">
-                <LuSlidersHorizontal size={16} className="text-muted" />
+              <div className="d-flex align-items-center gap-2 flex-wrap">
+                <LuSlidersHorizontal size={16} className="text-muted flex-shrink-0" />
+
+                {/* Ascending / Descending Order Button */}
+                <button
+                  type="button"
+                  onClick={() => setSortOrder((prev) => (prev === 'asc' ? 'desc' : 'asc'))}
+                  className="btn btn-sm btn-white bg-white border d-flex align-items-center gap-1.5 shadow-none px-2.5 py-1"
+                  style={{ height: '31px', fontSize: '0.82rem', fontWeight: 600, color: '#334155' }}
+                  title={`Current: ${sortOrder === 'asc' ? 'Ascending (Oldest / 1 → 9)' : 'Descending (Newest / 9 → 1)'}. Click to switch.`}
+                >
+                  {sortOrder === 'asc' ? (
+                    <>
+                      <LuArrowUp size={14} className="text-primary" />
+                      <span>Ascending (1 → 9)</span>
+                    </>
+                  ) : (
+                    <>
+                      <LuArrowDown size={14} className="text-primary" />
+                      <span>Descending (9 → 1)</span>
+                    </>
+                  )}
+                </button>
+
                 <select
                   value={statusFilter}
                   onChange={(e) => setStatusFilter(e.target.value)}
                   className="form-select form-select-sm shadow-none"
-                  style={{ width: '150px' }}
+                  style={{ width: '135px' }}
                 >
                   <option value="">All Statuses</option>
                   <option value="draft">Draft</option>
@@ -213,7 +265,7 @@ const AdminRegistrationsPage = () => {
                   value={paymentFilter}
                   onChange={(e) => setPaymentFilter(e.target.value)}
                   className="form-select form-select-sm shadow-none"
-                  style={{ width: '160px' }}
+                  style={{ width: '145px' }}
                 >
                   <option value="">All Payments</option>
                   <option value="pending">Pending</option>
@@ -264,9 +316,13 @@ const AdminRegistrationsPage = () => {
                   <tr key={reg.id}>
                     <td className="text-muted font-monospace small">#{reg.id}</td>
                     <td>
-                      <span className="badge bg-light text-primary border font-monospace fw-bold px-2 py-1">
-                        {reg.registration_code}
-                      </span>
+                      {reg.registration_code ? (
+                        <span className="badge bg-light text-primary border font-monospace fw-bold px-2 py-1">
+                          {reg.registration_code}
+                        </span>
+                      ) : (
+                        <span className="text-muted small fst-italic px-2">—</span>
+                      )}
                     </td>
                     <td>
                       <div className="fw-semibold text-dark">

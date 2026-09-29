@@ -1075,19 +1075,19 @@ a:hover {
   background-color: #f8fafc;
   color: var(--spctt-muted);
   font-family: var(--spctt-font-sans);
-  font-size: 0.75rem;
+  font-size: 0.74rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  padding: 0.85rem 1.25rem;
+  letter-spacing: 0.04em;
+  padding: 0.65rem 0.75rem;
   border-bottom: 1px solid var(--spctt-border);
   white-space: nowrap;
 }
 
 .spctt-table tbody td {
-  padding: 1rem 1.25rem;
+  padding: 0.65rem 0.75rem;
   border-bottom: 1px solid var(--spctt-border-subtle);
-  font-size: 0.88rem;
+  font-size: 0.84rem;
   color: var(--spctt-body);
   vertical-align: middle;
 }
@@ -1978,20 +1978,20 @@ a:hover {
 .spctt-table thead th {
   background-color: #f8fafc;
   color: #475569;
-  font-size: 0.75rem;
+  font-size: 0.73rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
-  padding: 10px 12px;
+  letter-spacing: 0.03em;
+  padding: 8px 10px;
   border-bottom: 2px solid var(--spctt-border);
   white-space: nowrap;
 }
 
 .spctt-table tbody td {
-  padding: 10px 12px;
+  padding: 8px 10px;
   vertical-align: middle;
   border-bottom: 1px solid var(--spctt-border-subtle);
-  font-size: 0.84rem;
+  font-size: 0.83rem;
   color: var(--spctt-body);
   transition: background-color var(--spctt-transition-fast);
 }
@@ -2006,18 +2006,18 @@ a:hover {
 
 /* Avatar Badge */
 .user-avatar-badge {
-  width: 34px;
-  height: 34px;
-  border-radius: 8px;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
   background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
   color: #ffffff;
   font-weight: 700;
-  font-size: 0.78rem;
+  font-size: 0.72rem;
   letter-spacing: 0.02em;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 5px rgba(59, 130, 246, 0.25);
+  box-shadow: 0 1px 3px rgba(59, 130, 246, 0.2);
   flex-shrink: 0;
 }
 

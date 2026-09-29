@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import {
   LuSearch,
   LuRefreshCw,
@@ -18,7 +18,13 @@ import {
   LuLock,
   LuEye,
   LuEyeOff,
-  LuDownload
+  LuDownload,
+  LuArrowUp,
+  LuArrowDown,
+  LuArrowUpDown,
+  LuSlidersHorizontal,
+  LuHash,
+  LuFilter
 } from 'react-icons/lu';
 import { adminApi } from '../../services/api';
 import { downloadBlobFile } from '../../services/api/adminApi';
@@ -30,6 +36,15 @@ const AdminUsersPage = () => {
   const [exporting, setExporting] = useState(false);
   const [search, setSearch] = useState('');
   const [roleFilter, setRoleFilter] = useState('');
+
+  // Sorting state (ascending / descending)
+  const [sortField, setSortField] = useState('id');
+  const [sortOrder, setSortOrder] = useState('asc'); // 'asc' or 'desc'
+
+  // Search category state & popup
+  const [searchCategory, setSearchCategory] = useState('all'); // 'all', 'id', 'name', 'email', 'phone', 'organization'
+  const [showSearchMenu, setShowSearchMenu] = useState(false);
+  const searchContainerRef = useRef(null);
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
@@ -113,6 +128,19 @@ const AdminUsersPage = () => {
 
   useEffect(() => {
     loadUsers();
+  }, []);
+
+  // Handle outside click for search suggestions menu
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (searchContainerRef.current && !searchContainerRef.current.contains(event.target)) {
+        setShowSearchMenu(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
   }, []);
 
   const handleOpenAdd = () => {
@@ -254,22 +282,94 @@ const AdminUsersPage = () => {
     }
   };
 
+  const handleSearchSubmit = (e) => {
+    if (e) e.preventDefault();
+    setCurrentPage(1);
+    setShowSearchMenu(false);
+  };
+
+  // Filtered users according to search query and category
   const filteredUsers = users.filter((u) => {
-    const s = search.toLowerCase();
-    const matchSearch = !search || (
-      (u.name && u.name.toLowerCase().includes(s)) ||
-      (u.email && u.email.toLowerCase().includes(s)) ||
-      (u.organization && u.organization.toLowerCase().includes(s)) ||
-      (u.phone && u.phone.toLowerCase().includes(s))
-    );
+    const s = search.toLowerCase().trim();
+    let matchSearch = true;
+
+    if (s) {
+      if (searchCategory === 'id') {
+        matchSearch = String(u.id).includes(s.replace('#', ''));
+      } else if (searchCategory === 'name') {
+        matchSearch = Boolean(u.name && u.name.toLowerCase().includes(s));
+      } else if (searchCategory === 'email') {
+        matchSearch = Boolean(u.email && u.email.toLowerCase().includes(s));
+      } else if (searchCategory === 'phone') {
+        matchSearch = Boolean(u.phone && u.phone.toLowerCase().includes(s));
+      } else if (searchCategory === 'organization') {
+        matchSearch = Boolean(u.organization && u.organization.toLowerCase().includes(s));
+      } else {
+        matchSearch = (
+          (u.name && u.name.toLowerCase().includes(s)) ||
+          (u.email && u.email.toLowerCase().includes(s)) ||
+          (u.organization && u.organization.toLowerCase().includes(s)) ||
+          (u.phone && u.phone.toLowerCase().includes(s)) ||
+          (u.id && String(u.id).includes(s.replace('#', '')))
+        );
+      }
+    }
+
     const matchRole = !roleFilter || u.role === roleFilter;
     return matchSearch && matchRole;
   });
 
-  const paginatedUsers = filteredUsers.slice(
+  // Sorted users according to sortField and sortOrder
+  const sortedUsers = [...filteredUsers].sort((a, b) => {
+    let valA = a[sortField];
+    let valB = b[sortField];
+
+    if (sortField === 'id') {
+      valA = Number(valA || 0);
+      valB = Number(valB || 0);
+    } else if (sortField === 'name') {
+      valA = String(a.name || '').toLowerCase();
+      valB = String(b.name || '').toLowerCase();
+    } else if (sortField === 'email') {
+      valA = String(a.email || '').toLowerCase();
+      valB = String(b.email || '').toLowerCase();
+    } else if (sortField === 'created_at') {
+      valA = new Date(a.created_at || 0).getTime();
+      valB = new Date(b.created_at || 0).getTime();
+    } else {
+      valA = String(valA || '').toLowerCase();
+      valB = String(valB || '').toLowerCase();
+    }
+
+    if (valA < valB) return sortOrder === 'asc' ? -1 : 1;
+    if (valA > valB) return sortOrder === 'asc' ? 1 : -1;
+    return 0;
+  });
+
+  const paginatedUsers = sortedUsers.slice(
     (currentPage - 1) * pageSize,
     currentPage * pageSize
   );
+
+  // Dynamic suggestions for search popup
+  const suggestedUsers = users
+    .filter((u) => {
+      const s = search.toLowerCase().trim();
+      if (!s) return true;
+      if (searchCategory === 'id') return String(u.id).includes(s.replace('#', ''));
+      if (searchCategory === 'name') return Boolean(u.name && u.name.toLowerCase().includes(s));
+      if (searchCategory === 'email') return Boolean(u.email && u.email.toLowerCase().includes(s));
+      if (searchCategory === 'phone') return Boolean(u.phone && u.phone.toLowerCase().includes(s));
+      if (searchCategory === 'organization') return Boolean(u.organization && u.organization.toLowerCase().includes(s));
+      return (
+        (u.name && u.name.toLowerCase().includes(s)) ||
+        (u.email && u.email.toLowerCase().includes(s)) ||
+        (u.organization && u.organization.toLowerCase().includes(s)) ||
+        (u.phone && u.phone.toLowerCase().includes(s)) ||
+        (u.id && String(u.id).includes(s.replace('#', '')))
+      );
+    })
+    .slice(0, 6);
 
   const getInitials = (name) => {
     if (!name) return 'U';
@@ -278,6 +378,15 @@ const AdminUsersPage = () => {
       return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
     }
     return name.slice(0, 2).toUpperCase();
+  };
+
+  const toggleSort = (field) => {
+    if (sortField === field) {
+      setSortOrder((prev) => (prev === 'asc' ? 'desc' : 'asc'));
+    } else {
+      setSortField(field);
+      setSortOrder('asc');
+    }
   };
 
   return (
@@ -294,67 +403,253 @@ const AdminUsersPage = () => {
       )}
 
       {/* Header Banner */}
-      <div className="dashboard-card-section mb-4">
-        <div className="dashboard-card-header bg-white py-3 px-4 d-flex align-items-center justify-content-between flex-wrap gap-3">
-          <div className="d-flex align-items-center gap-3">
+      <div className="dashboard-card-section mb-3">
+        <div className="dashboard-card-header bg-white py-2.5 px-3 d-flex align-items-center justify-content-between flex-wrap gap-2">
+          <div className="d-flex align-items-center gap-2.5">
             <div className="p-2 bg-success-subtle text-success rounded-3">
-              <LuUsers size={24} />
+              <LuUsers size={22} />
             </div>
             <div>
-              <h2 className="dashboard-card-title mb-1">Registered Delegates & Users</h2>
-              <p className="text-muted small mb-0">Directory of all registered accounts, delegate institutional details, and system roles</p>
+              <h2 className="dashboard-card-title mb-0.5 fs-5">Registered Delegates & Users</h2>
+              <p className="text-muted small mb-0" style={{ fontSize: '0.78rem' }}>Directory of registered accounts, institutional details, and system roles</p>
             </div>
           </div>
-          <div className="d-flex align-items-center gap-2">
+          <div className="d-flex align-items-center gap-1.5">
             <button
               onClick={handleExportExcel}
               disabled={exporting || loading}
-              className="spctt-outline-btn"
+              className="spctt-outline-btn py-1 px-2.5"
+              style={{ fontSize: '0.82rem' }}
               title="Export Users to Excel (.xlsx)"
             >
-              <LuDownload className={exporting ? 'fa-spin' : ''} size={15} />
+              <LuDownload className={exporting ? 'fa-spin' : ''} size={14} />
               <span>{exporting ? 'Exporting...' : 'Export List'}</span>
             </button>
             <button
               onClick={handleOpenAdd}
-              className="spctt-primary-btn"
+              className="spctt-primary-btn py-1 px-2.5"
+              style={{ fontSize: '0.82rem' }}
             >
-              <LuUserPlus size={16} />
+              <LuUserPlus size={14} />
               <span>Add New User</span>
             </button>
             <button
               onClick={loadUsers}
               disabled={loading}
-              className="spctt-outline-btn"
+              className="spctt-outline-btn py-1 px-2.5"
+              style={{ fontSize: '0.82rem' }}
             >
-              <LuRefreshCw className={loading ? 'fa-spin' : ''} size={15} />
+              <LuRefreshCw className={loading ? 'fa-spin' : ''} size={14} />
               <span>Refresh</span>
             </button>
           </div>
         </div>
 
-        {/* Search Toolbar */}
-        <div className="p-3 bg-light border-top border-bottom">
-          <div className="row g-3 align-items-center">
-            <div className="col-md-8 col-12">
-              <div className="search-input-box">
-                <span className="input-icon">
-                  <LuSearch size={18} />
-                </span>
-                <input
-                  type="text"
-                  value={search}
-                  onChange={(e) => {
-                    setSearch(e.target.value);
-                    setCurrentPage(1);
-                  }}
-                  placeholder="Search delegates by name, email address, institution, phone..."
-                  className="form-control shadow-none"
-                />
-              </div>
+        {/* Search & Sort Toolbar */}
+        <div className="p-2.5 bg-light border-top border-bottom">
+          <div className="row g-2 align-items-center">
+            {/* Search Input Box with Tap-to-Open Menu & Search Button */}
+            <div className="col-lg-7 col-md-12 col-12">
+              <form onSubmit={handleSearchSubmit} className="d-flex align-items-center gap-1.5 w-100">
+                <div className="position-relative flex-grow-1" ref={searchContainerRef}>
+                  <div className="search-input-box position-relative">
+                    <span className="input-icon">
+                      <LuSearch size={18} />
+                    </span>
+                    <input
+                      type="text"
+                      value={search}
+                      onFocus={() => setShowSearchMenu(true)}
+                      onClick={() => setShowSearchMenu(true)}
+                      onChange={(e) => {
+                        setSearch(e.target.value);
+                        setCurrentPage(1);
+                        setShowSearchMenu(true);
+                      }}
+                      placeholder={
+                        searchCategory === 'id'
+                          ? 'Search by User ID (e.g. 1, 25, #10)...'
+                          : searchCategory === 'name'
+                          ? 'Search by Delegate Name...'
+                          : searchCategory === 'email'
+                          ? 'Search by Email Address...'
+                          : searchCategory === 'phone'
+                          ? 'Search by Phone Number...'
+                          : searchCategory === 'organization'
+                          ? 'Search by Institution / Organization...'
+                          : 'Search delegates by name, ID, email, institution, phone...'
+                      }
+                      className="form-control shadow-none pe-5"
+                    />
+                    {search && (
+                      <button
+                        type="button"
+                        className="btn btn-link p-0 text-muted position-absolute end-0 top-50 translate-middle-y me-3 text-decoration-none"
+                        style={{ zIndex: 5 }}
+                        onClick={() => {
+                          setSearch('');
+                          setCurrentPage(1);
+                        }}
+                        title="Clear search"
+                      >
+                        <LuX size={16} />
+                      </button>
+                    )}
+                  </div>
+
+                  {/* Tap / Dropdown Menu on Search Click */}
+                  {showSearchMenu && (
+                    <div
+                      className="position-absolute start-0 end-0 bg-white border shadow-lg rounded-3 p-3 mt-1"
+                      style={{ zIndex: 1050, maxHeight: '380px', overflowY: 'auto' }}
+                    >
+                      {/* Section 1: Search Category Tabs */}
+                      <div className="mb-3">
+                        <div className="d-flex align-items-center justify-content-between mb-2">
+                          <span className="text-muted text-uppercase fw-bold" style={{ fontSize: '0.7rem', letterSpacing: '0.04em' }}>
+                            Search In Field:
+                          </span>
+                          {searchCategory !== 'all' && (
+                            <button
+                              type="button"
+                              className="btn btn-link btn-sm p-0 text-decoration-none text-primary"
+                              style={{ fontSize: '0.75rem' }}
+                              onClick={() => setSearchCategory('all')}
+                            >
+                              Reset to All
+                            </button>
+                          )}
+                        </div>
+                        <div className="d-flex flex-wrap gap-1.5">
+                          {[
+                            { id: 'all', label: 'All Fields', icon: LuFilter },
+                            { id: 'id', label: 'User ID', icon: LuHash },
+                            { id: 'name', label: 'Name', icon: LuUsers },
+                            { id: 'email', label: 'Email', icon: LuMail },
+                            { id: 'organization', label: 'Institution', icon: LuBuilding2 },
+                            { id: 'phone', label: 'Phone', icon: LuPhone },
+                          ].map((cat) => {
+                            const Icon = cat.icon;
+                            const isActive = searchCategory === cat.id;
+                            return (
+                              <button
+                                key={cat.id}
+                                type="button"
+                                onClick={() => {
+                                  setSearchCategory(cat.id);
+                                  setCurrentPage(1);
+                                }}
+                                className={`btn btn-sm d-inline-flex align-items-center gap-1 px-2.5 py-1 rounded-pill ${
+                                  isActive
+                                    ? 'btn-primary text-white shadow-sm'
+                                    : 'btn-light border text-secondary'
+                                }`}
+                                style={{ fontSize: '0.78rem', fontWeight: isActive ? 600 : 500 }}
+                              >
+                                <Icon size={13} />
+                                <span>{cat.label}</span>
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+
+                      {/* Section 2: Quick Suggestions / Matching Items */}
+                      <div>
+                        <div className="d-flex align-items-center justify-content-between mb-2">
+                          <span className="text-muted text-uppercase fw-bold" style={{ fontSize: '0.7rem', letterSpacing: '0.04em' }}>
+                            {search.trim() ? `Matching Users (${suggestedUsers.length})` : 'Recent / Suggested Users:'}
+                          </span>
+                          <span className="text-muted" style={{ fontSize: '0.72rem' }}>
+                            Tap item to search
+                          </span>
+                        </div>
+
+                        {suggestedUsers.length === 0 ? (
+                          <div className="text-center py-3 text-muted small">
+                            No matching delegates found for "<strong>{search}</strong>"
+                          </div>
+                        ) : (
+                          <div className="d-flex flex-column gap-1">
+                            {suggestedUsers.map((u) => (
+                              <div
+                                key={u.id}
+                                onClick={() => {
+                                  if (searchCategory === 'id') {
+                                    setSearch(String(u.id));
+                                  } else {
+                                    setSearch(u.name || String(u.id));
+                                  }
+                                  setShowSearchMenu(false);
+                                  setCurrentPage(1);
+                                }}
+                                className="d-flex align-items-center justify-content-between p-2 rounded-2 border border-light bg-light bg-opacity-50 text-decoration-none text-dark transition-all"
+                                style={{ cursor: 'pointer' }}
+                                role="button"
+                              >
+                                <div className="d-flex align-items-center gap-2 overflow-hidden">
+                                  <span className="badge bg-light text-primary border font-monospace fw-bold px-1.5 py-1" style={{ fontSize: '0.75rem' }}>
+                                    #{u.id}
+                                  </span>
+                                  <div className="text-truncate">
+                                    <span className="fw-semibold small d-block text-truncate">
+                                      {u.title ? `${u.title} ` : ''}{u.name}
+                                    </span>
+                                    <span className="text-muted text-truncate d-block" style={{ fontSize: '0.74rem' }}>
+                                      {u.email} {u.organization ? `• ${u.organization}` : ''}
+                                    </span>
+                                  </div>
+                                </div>
+                                <span className="badge bg-primary-subtle text-primary border border-primary-subtle small px-2 py-0.5 ms-2 flex-shrink-0" style={{ fontSize: '0.7rem' }}>
+                                  Tap to select
+                                </span>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Explicit Search Button */}
+                <button
+                  type="submit"
+                  className="btn btn-primary px-3 text-nowrap shadow-none d-inline-flex align-items-center gap-1.5"
+                  style={{ height: '34px', fontSize: '0.82rem', fontWeight: 600, borderRadius: '6px' }}
+                >
+                  <LuSearch size={14} />
+                  <span>Search</span>
+                </button>
+              </form>
             </div>
 
-            <div className="col-md-4 col-12 d-flex justify-content-md-end">
+            {/* Sort & Role Controls */}
+            <div className="col-lg-5 col-md-12 col-12 d-flex flex-wrap align-items-center justify-content-lg-end gap-2">
+              {/* Ascending / Descending User ID Button */}
+              <button
+                type="button"
+                onClick={() => {
+                  setSortField('id');
+                  setSortOrder((prev) => (prev === 'asc' ? 'desc' : 'asc'));
+                }}
+                className="btn btn-sm btn-white bg-white border d-flex align-items-center gap-1.5 shadow-none px-2.5 py-1"
+                style={{ height: '34px', fontSize: '0.82rem', fontWeight: 600, color: '#334155' }}
+                title={`Sort by User ID: Current is ${sortOrder === 'asc' ? 'Ascending (1 → 9)' : 'Descending (9 → 1)'}. Click to switch.`}
+              >
+                {sortOrder === 'asc' && sortField === 'id' ? (
+                  <>
+                    <LuArrowUp size={14} className="text-primary" />
+                    <span>User ID: Ascending (1 → 9)</span>
+                  </>
+                ) : (
+                  <>
+                    <LuArrowDown size={14} className="text-primary" />
+                    <span>User ID: Descending (9 → 1)</span>
+                  </>
+                )}
+              </button>
+
               <select
                 value={roleFilter}
                 onChange={(e) => {
@@ -362,6 +657,7 @@ const AdminUsersPage = () => {
                   setCurrentPage(1);
                 }}
                 className="form-select form-select-sm w-auto shadow-none"
+                style={{ height: '34px', minWidth: '130px' }}
               >
                 <option value="">All Roles</option>
                 <option value="user">User / Delegate</option>
@@ -373,26 +669,69 @@ const AdminUsersPage = () => {
         </div>
 
         {/* Users Table */}
-        <div className="activity-table-container">
-          <table className="spctt-table w-100">
+        <div className="table-responsive">
+          <table className="spctt-table align-middle w-100" style={{ fontSize: '0.8rem' }}>
             <thead>
               <tr>
-                <th className="text-center" style={{ width: '5%', minWidth: '45px' }}>S.No</th>
-                <th style={{ width: '22%' }}>Delegate Profile</th>
-                <th style={{ width: '22%' }}>Contact Details</th>
-                <th style={{ width: '18%' }}>Institution / Organization</th>
-                <th className="text-center" style={{ width: '9%' }}>Role</th>
-                <th className="text-center" style={{ width: '9%' }}>Status</th>
-                <th style={{ width: '10%' }}>Registered Date</th>
-                <th className="text-center" style={{ width: '7%' }}>Action</th>
+                <th className="text-center" style={{ width: '38px', padding: '6px 4px' }}>S.No</th>
+                <th
+                  className="text-center user-select-none"
+                  style={{ width: '75px', cursor: 'pointer', padding: '6px 4px' }}
+                  onClick={() => toggleSort('id')}
+                  title="Click to sort by User ID (Ascending / Descending)"
+                >
+                  <div className="d-inline-flex align-items-center gap-1 justify-content-center">
+                    <span>User ID</span>
+                    {sortField === 'id' ? (
+                      sortOrder === 'asc' ? <LuArrowUp size={12} className="text-primary" /> : <LuArrowDown size={12} className="text-primary" />
+                    ) : (
+                      <LuArrowUpDown size={11} className="text-muted opacity-50" />
+                    )}
+                  </div>
+                </th>
+                <th
+                  className="user-select-none"
+                  style={{ cursor: 'pointer', padding: '6px 6px' }}
+                  onClick={() => toggleSort('name')}
+                  title="Click to sort by Name"
+                >
+                  <div className="d-inline-flex align-items-center gap-1">
+                    <span>Delegate Profile</span>
+                    {sortField === 'name' ? (
+                      sortOrder === 'asc' ? <LuArrowUp size={12} className="text-primary" /> : <LuArrowDown size={12} className="text-primary" />
+                    ) : (
+                      <LuArrowUpDown size={11} className="text-muted opacity-50" />
+                    )}
+                  </div>
+                </th>
+                <th style={{ padding: '6px 6px' }}>Contact Details</th>
+                <th style={{ padding: '6px 6px' }}>Institution / Organization</th>
+                <th className="text-center" style={{ width: '65px', padding: '6px 4px' }}>Role</th>
+                <th className="text-center" style={{ width: '65px', padding: '6px 4px' }}>Status</th>
+                <th
+                  className="text-center user-select-none"
+                  style={{ width: '95px', cursor: 'pointer', padding: '6px 4px' }}
+                  onClick={() => toggleSort('created_at')}
+                  title="Click to sort by Registered Date"
+                >
+                  <div className="d-inline-flex align-items-center gap-1 justify-content-center">
+                    <span>Reg. Date</span>
+                    {sortField === 'created_at' ? (
+                      sortOrder === 'asc' ? <LuArrowUp size={12} className="text-primary" /> : <LuArrowDown size={12} className="text-primary" />
+                    ) : (
+                      <LuArrowUpDown size={11} className="text-muted opacity-50" />
+                    )}
+                  </div>
+                </th>
+                <th className="text-center" style={{ width: '55px', padding: '6px 4px' }}>Action</th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan={8}>
-                    <div className="table-empty-state py-5">
-                      <div className="spinner-border text-success mb-3" style={{ width: '2.2rem', height: '2.2rem' }}></div>
+                  <td colSpan={9}>
+                    <div className="table-empty-state py-4">
+                      <div className="spinner-border text-success mb-2" style={{ width: '2rem', height: '2rem' }}></div>
                       <h6 className="table-empty-title mb-1">Loading Registered Users...</h6>
                       <p className="table-empty-desc">Fetching user directory from server</p>
                     </div>
@@ -400,13 +739,13 @@ const AdminUsersPage = () => {
                 </tr>
               ) : filteredUsers.length === 0 ? (
                 <tr>
-                  <td colSpan={8}>
-                    <div className="table-empty-state">
+                  <td colSpan={9}>
+                    <div className="table-empty-state py-4">
                       <div className="table-empty-icon-box" style={{ background: 'rgba(22, 163, 74, 0.1)', color: '#16a34a' }}>
-                        <LuUsers size={26} />
+                        <LuUsers size={24} />
                       </div>
                       <h5 className="table-empty-title">No Users Found</h5>
-                      <p className="table-empty-desc">
+                      <p className="table-empty-desc mb-0">
                         {search || roleFilter
                           ? "No registered accounts match your current search terms or role filter."
                           : "No delegate accounts have been created yet."}
@@ -417,88 +756,94 @@ const AdminUsersPage = () => {
               ) : (
                 paginatedUsers.map((u, idx) => (
                   <tr key={u.id}>
-                    <td className="text-center">
-                      <span className="fw-semibold text-muted" style={{ fontSize: '0.82rem' }}>
+                    <td className="text-center" style={{ padding: '6px 4px' }}>
+                      <span className="fw-semibold text-muted" style={{ fontSize: '0.78rem' }}>
                         {(currentPage - 1) * pageSize + idx + 1}
                       </span>
                     </td>
-                    <td>
-                      <div className="d-flex align-items-center gap-2.5">
-                        <div className={`user-avatar-badge ${u.role || 'user'}`}>
+                    <td className="text-center" style={{ padding: '6px 4px' }}>
+                      <span className="badge bg-light text-primary border font-monospace fw-bold px-1.5 py-0.5" style={{ fontSize: '0.75rem' }}>
+                        #{u.id}
+                      </span>
+                    </td>
+                    <td style={{ padding: '6px 6px' }}>
+                      <div className="d-flex align-items-center gap-1.5">
+                        <div className={`user-avatar-badge ${u.role || 'user'}`} style={{ width: '26px', height: '26px', fontSize: '0.68rem' }}>
                           {getInitials(u.name)}
                         </div>
-                        <div className="text-truncate">
-                          <div className="fw-bold text-dark text-truncate" title={`${u.title ? `${u.title} ` : ''}${u.name}`}>
+                        <div className="text-truncate" style={{ maxWidth: '145px' }}>
+                          <div className="fw-bold text-dark text-truncate" title={`${u.title ? `${u.title} ` : ''}${u.name}`} style={{ fontSize: '0.81rem' }}>
                             {u.title ? `${u.title} ` : ''}{u.name}
                           </div>
-                          <div className="text-muted small" style={{ fontSize: '0.73rem' }}>
-                            <span className="badge bg-light text-secondary border px-1.5 py-0.5">ID: #{u.id}</span>
+                        </div>
+                      </div>
+                    </td>
+                    <td style={{ padding: '6px 6px' }}>
+                      <div className="text-truncate" style={{ maxWidth: '165px' }}>
+                        <div className="d-flex align-items-center gap-1 text-dark fw-semibold small text-truncate" title={u.email}>
+                          <LuMail size={11} className="text-primary flex-shrink-0" />
+                          <span className="text-truncate" style={{ fontSize: '0.78rem' }}>{u.email}</span>
+                        </div>
+                        {u.phone && (
+                          <div className="d-flex align-items-center gap-1 text-muted small text-truncate mt-0.5" style={{ fontSize: '0.72rem' }}>
+                            <LuPhone size={10} className="text-muted flex-shrink-0" />
+                            <span>{u.phone}</span>
                           </div>
-                        </div>
-                      </div>
-                    </td>
-                    <td>
-                      <div className="d-flex align-items-center gap-1.5 text-dark fw-semibold small text-truncate" title={u.email}>
-                        <LuMail size={13} className="text-primary flex-shrink-0" />
-                        <span className="text-truncate" style={{ fontSize: '0.82rem' }}>{u.email}</span>
-                      </div>
-                      {u.phone && (
-                        <div className="d-flex align-items-center gap-1.5 text-muted mt-1 small" style={{ fontSize: '0.76rem' }}>
-                          <LuPhone size={12} className="text-muted flex-shrink-0" />
-                          <span>{u.phone}</span>
-                        </div>
-                      )}
-                    </td>
-                    <td>
-                      <div className="d-flex align-items-center gap-1.5 small text-truncate" title={u.organization || 'Not specified'}>
-                        <LuBuilding2 size={14} className="text-muted flex-shrink-0" />
-                        {u.organization ? (
-                          <span className="fw-medium text-dark text-truncate">{u.organization}</span>
-                        ) : (
-                          <span className="text-muted fst-italic">Not specified</span>
                         )}
                       </div>
                     </td>
-                    <td className="text-center">
+                    <td style={{ padding: '6px 6px' }}>
+                      <div className="d-flex align-items-center gap-1 small text-truncate" style={{ maxWidth: '145px' }} title={u.organization || 'Not specified'}>
+                        <LuBuilding2 size={12} className="text-muted flex-shrink-0" />
+                        {u.organization ? (
+                          <span className="fw-medium text-dark text-truncate" style={{ fontSize: '0.78rem' }}>{u.organization}</span>
+                        ) : (
+                          <span className="text-muted fst-italic" style={{ fontSize: '0.75rem' }}>Not specified</span>
+                        )}
+                      </div>
+                    </td>
+                    <td className="text-center" style={{ padding: '6px 4px' }}>
                       <span className={`badge ${u.role === 'admin' ? 'bg-purple-subtle text-purple border border-purple' :
                           u.role === 'manager' ? 'bg-primary-subtle text-primary border border-primary' :
                             'bg-info-subtle text-info border border-info'
-                        } text-uppercase px-2 py-1 rounded-pill d-inline-flex align-items-center justify-content-center gap-1`} style={{ fontSize: '0.7rem', letterSpacing: '0.04em', fontWeight: 600, whiteSpace: 'nowrap' }}>
-                        {u.role === 'admin' && <LuShieldCheck size={12} className="flex-shrink-0" />}
+                        } text-uppercase px-1.5 py-0.5 rounded-pill d-inline-flex align-items-center justify-content-center gap-0.5`} style={{ fontSize: '0.65rem', letterSpacing: '0.02em', fontWeight: 600, whiteSpace: 'nowrap' }}>
+                        {u.role === 'admin' && <LuShieldCheck size={10} className="flex-shrink-0" />}
                         <span>{u.role || 'User'}</span>
                       </span>
                     </td>
-                    <td className="text-center">
+                    <td className="text-center" style={{ padding: '6px 4px' }}>
                       <span className={`badge ${u.status === 'active' ? 'bg-success-subtle text-success border border-success' : 'bg-danger-subtle text-danger border border-danger'
-                        } text-uppercase px-2 py-1 rounded-pill d-inline-flex align-items-center justify-content-center`} style={{ fontSize: '0.7rem', letterSpacing: '0.04em', fontWeight: 600, whiteSpace: 'nowrap' }}>
+                        } text-uppercase px-1.5 py-0.5 rounded-pill d-inline-flex align-items-center justify-content-center`} style={{ fontSize: '0.65rem', letterSpacing: '0.02em', fontWeight: 600, whiteSpace: 'nowrap' }}>
                         <span>{u.status || 'active'}</span>
                       </span>
                     </td>
-                    <td>
-                      <div className="d-flex align-items-center gap-1.5 text-muted small text-nowrap" style={{ fontSize: '0.78rem' }}>
-                        <LuCalendar size={13} className="text-muted flex-shrink-0" />
+                    <td className="text-center" style={{ padding: '6px 4px' }}>
+                      <div className="d-inline-flex align-items-center gap-1 text-muted small text-nowrap" style={{ fontSize: '0.73rem' }}>
+                        <LuCalendar size={11} className="text-muted flex-shrink-0" />
                         <span>{new Date(u.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}</span>
                       </div>
                     </td>
-                    <td className="text-center text-nowrap">
-                      <div className="d-inline-flex align-items-center gap-2">
+                    <td className="text-center text-nowrap" style={{ padding: '6px 4px' }}>
+                      <div className="d-inline-flex align-items-center gap-1">
                         <button
                           type="button"
                           onClick={() => handleOpenEdit(u)}
                           className="tbl-action-btn tbl-action-btn-edit"
+                          style={{ width: '26px', height: '26px', padding: 0 }}
                           title={`Edit ${u.name}`}
                           aria-label="Edit user"
                         >
-                          <LuPencil size={15} />
+                          <LuPencil size={13} />
                         </button>
                         <button
                           type="button"
                           onClick={() => setDeleteTarget(u)}
                           className="tbl-action-btn tbl-action-btn-delete"
+                          style={{ width: '26px', height: '26px', padding: 0 }}
                           title={`Delete ${u.name}`}
                           aria-label="Delete user"
                         >
-                          <LuTrash2 size={15} />
+                          <LuTrash2 size={13} />
                         </button>
                       </div>
                     </td>

@@ -190,9 +190,15 @@ const AdminRegistrationDetailPage = () => {
                 <span className="badge bg-dark text-white font-monospace px-2.5 py-1">
                   ID: #{registration.id}
                 </span>
-                <span className="badge bg-primary-subtle text-primary font-monospace px-2.5 py-1 fw-bold">
-                  {registration.registration_code}
-                </span>
+                {registration.registration_code ? (
+                  <span className="badge bg-primary-subtle text-primary font-monospace px-2.5 py-1 fw-bold">
+                    {registration.registration_code}
+                  </span>
+                ) : (
+                  <span className="badge bg-secondary-subtle text-secondary font-monospace px-2.5 py-1">
+                    No Reg. Code (Payment Pending)
+                  </span>
+                )}
               </div>
               <p className="text-muted small mb-0 mt-1">
                 {registration.email} &bull; {registration.phone || 'No phone'} &bull; Registered on: {registration.created_at ? new Date(registration.created_at).toLocaleString('en-IN') : 'N/A'}
