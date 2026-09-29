@@ -5,7 +5,7 @@ import bannerImg from '../assets/images/banner1.jpeg';
 import logoImg from '../assets/images/logo.png';
 import { authApi, saveAuthSession } from '../services/api';
 
-const RECAPTCHA_SITE_KEY = '6LeyktUtAAAAADvLGtQlJzU5x6ZkmpxWfdvL6ci6';
+const RECAPTCHA_SITE_KEY = import.meta.env.VITE_RECAPTCHA_SITE_KEY || import.meta.env.RECAPTCHA_SITE_KEY || '6Ld-idUtAAAAABluEAC-E_PzMoGS8MNfEB20Lzm2';
 
 const LoginPage = () => {
   const navigate = useNavigate();
