@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import UserHeader from '../../components/Layout/UserHeader';
-import { getUserAuth, registrationApi } from '../../services/api';
+import { getUserAuth, registrationApi, paymentApi } from '../../services/api';
 
 const RegistrationWizardPage = () => {
   const navigate = useNavigate();
@@ -284,6 +284,22 @@ const RegistrationWizardPage = () => {
     setBillingData(prev => ({ ...prev, [name]: value }));
   };
 
+  // Helper to dynamically load Razorpay checkout script
+  const loadRazorpayScript = () => {
+    return new Promise((resolve) => {
+      if (window.Razorpay) {
+        resolve(true);
+        return;
+      }
+      const script = document.createElement('script');
+      script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+      script.async = true;
+      script.onload = () => resolve(true);
+      script.onerror = () => resolve(false);
+      document.body.appendChild(script);
+    });
+  };
+
   const handleMakePayment = async () => {
     setError('');
 
@@ -292,7 +308,114 @@ const RegistrationWizardPage = () => {
       // Ensure billing details are saved
       await registrationApi.saveStep4Billing(billingData);
 
-      // Execute Payment
+      // 1. Create Razorpay order on backend
+      let orderData = null;
+      try {
+        const orderRes = await paymentApi.createOrder({
+          registrationId: registration?.id,
+          amount: totalPayable
+        });
+        if (orderRes?.data) {
+          orderData = orderRes.data;
+        }
+      } catch (orderErr) {
+        console.warn('Could not initialize Razorpay order:', orderErr.message);
+      }
+
+      // 2. Check if Razorpay Key is configured and script can be loaded
+      const isRazorpayLoaded = await loadRazorpayScript();
+      const rzpKey = orderData?.keyId;
+
+      if (isRazorpayLoaded && window.Razorpay && rzpKey && !rzpKey.includes('YourKeyIdHere')) {
+        // Open Razorpay Checkout modal
+        const options = {
+          key: rzpKey,
+          amount: orderData.amountInPaise,
+          currency: orderData.currency || 'INR',
+          name: 'SPCTT 2027',
+          description: `Registration: ${orderData.registrationCode || registration?.registration_code || ''} (${orderData.categoryName || selectedCat.name})`,
+          image: 'https://pub-32253d31098b4cfc9f901824d48b3dc5.r2.dev/assets/spctt_2027_banner_header.png',
+          order_id: orderData.orderId,
+          prefill: {
+            name: attendeeData.fullName,
+            email: attendeeData.email,
+            contact: attendeeData.phone
+          },
+          theme: {
+            color: '#13254A'
+          },
+          handler: async function (response) {
+            try {
+              setSaving(true);
+              const verifyRes = await paymentApi.verifyPayment({
+                registrationId: registration?.id || orderData?.registrationId,
+                razorpayOrderId: response.razorpay_order_id || orderData?.orderId,
+                razorpayPaymentId: response.razorpay_payment_id,
+                razorpaySignature: response.razorpay_signature,
+                paymentMethod: 'Razorpay (PAGE WORLDWIDE)'
+              });
+
+              if (verifyRes.status && verifyRes.data) {
+                setPaymentSuccessData(verifyRes.data);
+                setRegistration(verifyRes.data.registration);
+                setInvoices(verifyRes.data.invoices || []);
+                setStep(5);
+              } else {
+                setError(verifyRes.message || 'Payment verification failed.');
+              }
+            } catch (vErr) {
+              setError(vErr.message || 'Payment verification error.');
+            } finally {
+              setSaving(false);
+            }
+          },
+          modal: {
+            ondismiss: async function () {
+              setSaving(false);
+              // Record cancelled attempt in DB and trigger alert
+              try {
+                await paymentApi.recordFailure({
+                  registrationId: registration?.id || orderData?.registrationId,
+                  orderId: orderData?.orderId,
+                  errorReason: 'Payment checkout modal was closed / cancelled by user before completion.',
+                  amount: totalPayable,
+                  paymentMethod: 'Razorpay (PAGE WORLDWIDE)'
+                });
+              } catch (recErr) {
+                console.warn('Could not record cancelled payment:', recErr.message);
+              }
+            }
+          }
+        };
+
+        const rzp = new window.Razorpay(options);
+        rzp.on('payment.failed', async function (failResponse) {
+          setSaving(false);
+          const errorMsg = failResponse?.error?.description || failResponse?.error?.reason || 'Payment failed at gateway';
+          setError(`Payment Failed: ${errorMsg}`);
+
+          try {
+            await paymentApi.recordFailure({
+              registrationId: registration?.id || orderData?.registrationId,
+              orderId: orderData?.orderId,
+              paymentId: failResponse?.error?.metadata?.payment_id,
+              errorCode: failResponse?.error?.code,
+              errorDescription: failResponse?.error?.description,
+              errorReason: errorMsg,
+              amount: totalPayable,
+              paymentMethod: 'Razorpay (PAGE WORLDWIDE)',
+              rawResponse: failResponse?.error
+            });
+          } catch (recErr) {
+            console.warn('Could not record failed payment:', recErr.message);
+          }
+        });
+
+        rzp.open();
+        return;
+      }
+
+      // Fallback: Direct / Simulated payment when Razorpay keys are not yet configured in env
       const payRes = await registrationApi.makePayment({
         paymentMethod,
         amount: totalPayable
@@ -305,9 +428,23 @@ const RegistrationWizardPage = () => {
         setStep(5);
       } else {
         setError(payRes.message || 'Payment processing failed.');
+        try {
+          await paymentApi.recordFailure({
+            registrationId: registration?.id,
+            errorReason: payRes.message || 'Payment processing failed',
+            amount: totalPayable
+          });
+        } catch (fErr) {}
       }
     } catch (err) {
       setError(err.message || 'An error occurred during payment processing.');
+      try {
+        await paymentApi.recordFailure({
+          registrationId: registration?.id,
+          errorReason: err.message || 'Payment processing error',
+          amount: totalPayable
+        });
+      } catch (fErr) {}
     } finally {
       setSaving(false);
     }

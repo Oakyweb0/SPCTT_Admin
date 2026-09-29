@@ -47,6 +47,7 @@ export const API_ENDPOINTS = {
     CREATE_ORDER: '/payments/create-order',
     PROCESS: '/payments/process',
     VERIFY: '/payments/verify',
+    RECORD_FAILURE: '/payments/failure',
     STATUS: '/payments/status',
     STATUS_BY_ID: (registrationId) => `/payments/status/${registrationId}`,
     HISTORY: '/payments/history',

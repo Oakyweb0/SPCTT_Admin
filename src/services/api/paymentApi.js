@@ -24,6 +24,13 @@ export const paymentApi = {
   },
 
   /**
+   * Record payment failure & trigger alert emails
+   */
+  recordFailure: (payload = {}) => {
+    return apiClient.post(API_ENDPOINTS.PAYMENT.RECORD_FAILURE, payload);
+  },
+
+  /**
    * Get current user payment status
    */
   getStatus: () => {
