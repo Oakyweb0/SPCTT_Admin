@@ -103,7 +103,7 @@ const LoginPage = () => {
       return;
     }
 
-    if (!captchaToken) {
+    if (!captchaToken && import.meta.env.PROD && widgetIdRef.current !== null) {
       setErrorMsg('Please complete the CAPTCHA verification (I am not a robot).');
       return;
     }

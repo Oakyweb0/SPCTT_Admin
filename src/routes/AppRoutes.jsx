@@ -51,13 +51,13 @@ const AppRoutes = () => {
           isAdminLoggedIn ? (
             <Navigate to="/admin/dashboard" replace />
           ) : (
-            <Navigate to="/user/login" replace />
+            <Navigate to="/admin/login" replace />
           )
         }
       />
 
-      {/* User Authentication Routes */}
-      <Route path="/user/login" element={<UserLoginPage />} />
+      {/* User Authentication Routes - Redirect to Admin Login */}
+      <Route path="/user/login" element={<Navigate to="/admin/login" replace />} />
       <Route path="/user/register" element={<UserRegisterPage />} />
       <Route path="/register" element={<UserRegisterPage />} />
       <Route path="/user/forgot-password" element={<UserForgotPasswordPage />} />
@@ -148,7 +148,7 @@ const AppRoutes = () => {
       </Route>
 
       {/* Global Fallback */}
-      <Route path="*" element={<Navigate to="/user/login" replace />} />
+      <Route path="*" element={<Navigate to="/admin/login" replace />} />
     </Routes>
   );
 };
