@@ -616,83 +616,83 @@ const AdminUsersPage = () => {
         </div>
 
         {/* Users Table */}
-        <div className="table-responsive">
-          <table className="spctt-table align-middle w-100" style={{ fontSize: '0.8rem' }}>
+        <div className="activity-table-container table-responsive">
+          <table className="spctt-table align-middle w-100" style={{ minWidth: '920px' }}>
             <thead>
-              <tr>
-                <th className="text-center" style={{ width: '38px', padding: '6px 4px' }}>S.No</th>
+              <tr style={{ background: '#f8fafc' }}>
+                <th className="py-3 px-3 text-center" style={{ width: '5%', minWidth: '45px' }}>S.No</th>
                 <th
-                  className="text-center user-select-none"
-                  style={{ width: '75px', cursor: 'pointer', padding: '6px 4px' }}
+                  className="py-3 px-3 text-center user-select-none"
+                  style={{ width: '9%', cursor: 'pointer' }}
                   onClick={() => toggleSort('id')}
                   title="Click to sort by User ID (Ascending / Descending)"
                 >
                   <div className="d-inline-flex align-items-center gap-1 justify-content-center">
                     <span>User ID</span>
                     {sortField === 'id' ? (
-                      sortOrder === 'asc' ? <LuArrowUp size={12} className="text-primary" /> : <LuArrowDown size={12} className="text-primary" />
+                      sortOrder === 'asc' ? <LuArrowUp size={13} className="text-primary" /> : <LuArrowDown size={13} className="text-primary" />
                     ) : (
-                      <LuArrowUpDown size={11} className="text-muted opacity-50" />
+                      <LuArrowUpDown size={12} className="text-muted opacity-50" />
                     )}
                   </div>
                 </th>
                 <th
-                  className="user-select-none"
-                  style={{ cursor: 'pointer', padding: '6px 6px' }}
+                  className="py-3 px-3 user-select-none"
+                  style={{ width: '22%', cursor: 'pointer' }}
                   onClick={() => toggleSort('name')}
                   title="Click to sort by Name"
                 >
                   <div className="d-inline-flex align-items-center gap-1">
                     <span>Delegate Profile</span>
                     {sortField === 'name' ? (
-                      sortOrder === 'asc' ? <LuArrowUp size={12} className="text-primary" /> : <LuArrowDown size={12} className="text-primary" />
+                      sortOrder === 'asc' ? <LuArrowUp size={13} className="text-primary" /> : <LuArrowDown size={13} className="text-primary" />
                     ) : (
-                      <LuArrowUpDown size={11} className="text-muted opacity-50" />
+                      <LuArrowUpDown size={12} className="text-muted opacity-50" />
                     )}
                   </div>
                 </th>
-                <th style={{ padding: '6px 6px' }}>Contact Details</th>
-                <th style={{ padding: '6px 6px' }}>Institution / Organization</th>
-                <th className="text-center" style={{ width: '65px', padding: '6px 4px' }}>Role</th>
-                <th className="text-center" style={{ width: '65px', padding: '6px 4px' }}>Status</th>
+                <th className="py-3 px-3" style={{ width: '20%' }}>Contact Details</th>
+                <th className="py-3 px-3" style={{ width: '18%' }}>Institution / Organization</th>
+                <th className="py-3 px-2 text-center" style={{ width: '8%' }}>Role</th>
+                <th className="py-3 px-2 text-center" style={{ width: '8%' }}>Status</th>
                 <th
-                  className="text-center user-select-none"
-                  style={{ width: '95px', cursor: 'pointer', padding: '6px 4px' }}
+                  className="py-3 px-3 text-center user-select-none"
+                  style={{ width: '11%', cursor: 'pointer' }}
                   onClick={() => toggleSort('created_at')}
                   title="Click to sort by Registered Date"
                 >
                   <div className="d-inline-flex align-items-center gap-1 justify-content-center">
                     <span>Reg. Date</span>
                     {sortField === 'created_at' ? (
-                      sortOrder === 'asc' ? <LuArrowUp size={12} className="text-primary" /> : <LuArrowDown size={12} className="text-primary" />
+                      sortOrder === 'asc' ? <LuArrowUp size={13} className="text-primary" /> : <LuArrowDown size={13} className="text-primary" />
                     ) : (
-                      <LuArrowUpDown size={11} className="text-muted opacity-50" />
+                      <LuArrowUpDown size={12} className="text-muted opacity-50" />
                     )}
                   </div>
                 </th>
-                <th className="text-center" style={{ width: '55px', padding: '6px 4px' }}>Action</th>
+                <th className="py-3 px-3 text-center" style={{ width: '9%', minWidth: '90px' }}>Actions</th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
                 <tr>
                   <td colSpan={9}>
-                    <div className="table-empty-state py-4">
-                      <div className="spinner-border text-success mb-2" style={{ width: '2rem', height: '2rem' }}></div>
+                    <div className="table-empty-state py-4 text-center">
+                      <div className="spinner-border text-primary mb-2" style={{ width: '2rem', height: '2rem' }}></div>
                       <h6 className="table-empty-title mb-1">Loading Registered Users...</h6>
-                      <p className="table-empty-desc">Fetching user directory from server</p>
+                      <p className="table-empty-desc small text-muted">Fetching user directory from server</p>
                     </div>
                   </td>
                 </tr>
               ) : users.length === 0 ? (
                 <tr>
                   <td colSpan={9}>
-                    <div className="table-empty-state py-4">
-                      <div className="table-empty-icon-box" style={{ background: 'rgba(22, 163, 74, 0.1)', color: '#16a34a' }}>
+                    <div className="table-empty-state text-center py-4">
+                      <div className="table-empty-icon-box mb-2" style={{ background: 'rgba(71, 110, 172, 0.1)', color: 'var(--spctt-primary)' }}>
                         <LuUsers size={24} />
                       </div>
-                      <h5 className="table-empty-title">No Users Found</h5>
-                      <p className="table-empty-desc mb-0">
+                      <h5 className="table-empty-title mb-1">No Users Found</h5>
+                      <p className="table-empty-desc small text-muted">
                         {search || roleFilter
                           ? "No registered accounts match your current search terms or role filter."
                           : "No delegate accounts have been created yet."}
@@ -702,95 +702,95 @@ const AdminUsersPage = () => {
                 </tr>
               ) : (
                 users.map((u, idx) => (
-                  <tr key={u.id}>
-                    <td className="text-center" style={{ padding: '6px 4px' }}>
-                      <span className="fw-semibold text-muted" style={{ fontSize: '0.78rem' }}>
+                  <tr key={u.id} style={{ borderBottom: '1px solid #eef2f6' }}>
+                    <td className="py-3 px-2 align-middle text-center">
+                      <span className="fw-semibold text-muted" style={{ fontSize: '0.82rem' }}>
                         {(currentPage - 1) * pageSize + idx + 1}
                       </span>
                     </td>
-                    <td className="text-center" style={{ padding: '6px 4px' }}>
-                      <span className="badge bg-light text-primary border font-monospace fw-bold px-1.5 py-0.5" style={{ fontSize: '0.75rem' }}>
+                    <td className="py-3 px-3 align-middle text-center">
+                      <span className="badge bg-light text-primary border font-monospace px-2 py-1" style={{ fontSize: '0.78rem', fontWeight: 600 }}>
                         #{u.id}
                       </span>
                     </td>
-                    <td style={{ padding: '6px 6px' }}>
-                      <div className="d-flex align-items-center gap-1.5">
-                        <div className={`user-avatar-badge ${u.role || 'user'}`} style={{ width: '26px', height: '26px', fontSize: '0.68rem' }}>
+                    <td className="py-3 px-3 align-middle">
+                      <div className="d-flex align-items-center gap-2">
+                        <div className={`user-avatar-badge ${u.role || 'user'}`} style={{ width: '32px', height: '32px', fontSize: '0.75rem', fontWeight: 700 }}>
                           {getInitials(u.name)}
                         </div>
-                        <div className="text-truncate" style={{ maxWidth: '145px' }}>
-                          <div className="fw-bold text-dark text-truncate" title={`${u.title ? `${u.title} ` : ''}${u.name}`} style={{ fontSize: '0.81rem' }}>
+                        <div className="text-truncate" style={{ maxWidth: '180px' }}>
+                          <div className="fw-bold text-dark text-truncate" title={`${u.title ? `${u.title} ` : ''}${u.name}`} style={{ fontSize: '0.86rem', lineHeight: '1.35', marginBottom: '2px' }}>
                             {u.title ? `${u.title} ` : ''}{u.name}
                           </div>
                         </div>
                       </div>
                     </td>
-                    <td style={{ padding: '6px 6px' }}>
-                      <div className="text-truncate" style={{ maxWidth: '165px' }}>
-                        <div className="d-flex align-items-center gap-1 text-dark fw-semibold small text-truncate" title={u.email}>
-                          <LuMail size={11} className="text-primary flex-shrink-0" />
-                          <span className="text-truncate" style={{ fontSize: '0.78rem' }}>{u.email}</span>
+                    <td className="py-3 px-3 align-middle">
+                      <div className="text-truncate" style={{ maxWidth: '185px' }}>
+                        <div className="d-flex align-items-center gap-1 text-dark fw-medium text-truncate" title={u.email} style={{ fontSize: '0.80rem' }}>
+                          <LuMail size={13} className="text-primary flex-shrink-0" />
+                          <span className="text-truncate">{u.email}</span>
                         </div>
                         {u.phone && (
-                          <div className="d-flex align-items-center gap-1 text-muted small text-truncate mt-0.5" style={{ fontSize: '0.72rem' }}>
-                            <LuPhone size={10} className="text-muted flex-shrink-0" />
+                          <div className="d-flex align-items-center gap-1 text-muted small text-truncate mt-0.5" style={{ fontSize: '0.75rem' }}>
+                            <LuPhone size={12} className="text-muted flex-shrink-0" />
                             <span>{u.phone}</span>
                           </div>
                         )}
                       </div>
                     </td>
-                    <td style={{ padding: '6px 6px' }}>
-                      <div className="d-flex align-items-center gap-1 small text-truncate" style={{ maxWidth: '145px' }} title={u.organization || 'Not specified'}>
-                        <LuBuilding2 size={12} className="text-muted flex-shrink-0" />
+                    <td className="py-3 px-3 align-middle">
+                      <div className="d-flex align-items-center gap-1.5 text-truncate" style={{ maxWidth: '170px' }} title={u.organization || 'Not specified'}>
+                        <LuBuilding2 size={13} className="text-muted flex-shrink-0" />
                         {u.organization ? (
-                          <span className="fw-medium text-dark text-truncate" style={{ fontSize: '0.78rem' }}>{u.organization}</span>
+                          <span className="text-dark text-truncate" style={{ fontSize: '0.80rem', lineHeight: '1.3', color: '#475569' }}>{u.organization}</span>
                         ) : (
                           <span className="text-muted fst-italic" style={{ fontSize: '0.75rem' }}>Not specified</span>
                         )}
                       </div>
                     </td>
-                    <td className="text-center" style={{ padding: '6px 4px' }}>
+                    <td className="py-3 px-2 align-middle text-center">
                       <span className={`badge ${u.role === 'admin' ? 'bg-purple-subtle text-purple border border-purple' :
                           u.role === 'manager' ? 'bg-primary-subtle text-primary border border-primary' :
                             'bg-info-subtle text-info border border-info'
-                        } text-uppercase px-1.5 py-0.5 rounded-pill d-inline-flex align-items-center justify-content-center gap-0.5`} style={{ fontSize: '0.65rem', letterSpacing: '0.02em', fontWeight: 600, whiteSpace: 'nowrap' }}>
-                        {u.role === 'admin' && <LuShieldCheck size={10} className="flex-shrink-0" />}
+                        } text-uppercase px-2.5 py-1 rounded-pill d-inline-flex align-items-center justify-content-center gap-1`} style={{ fontSize: '0.68rem', letterSpacing: '0.03em', fontWeight: 700, whiteSpace: 'nowrap' }}>
+                        {u.role === 'admin' && <LuShieldCheck size={11} className="flex-shrink-0" />}
                         <span>{u.role || 'User'}</span>
                       </span>
                     </td>
-                    <td className="text-center" style={{ padding: '6px 4px' }}>
+                    <td className="py-3 px-2 align-middle text-center">
                       <span className={`badge ${u.status === 'active' ? 'bg-success-subtle text-success border border-success' : 'bg-danger-subtle text-danger border border-danger'
-                        } text-uppercase px-1.5 py-0.5 rounded-pill d-inline-flex align-items-center justify-content-center`} style={{ fontSize: '0.65rem', letterSpacing: '0.02em', fontWeight: 600, whiteSpace: 'nowrap' }}>
+                        } text-uppercase px-2.5 py-1 rounded-pill d-inline-flex align-items-center justify-content-center`} style={{ fontSize: '0.68rem', letterSpacing: '0.03em', fontWeight: 700, whiteSpace: 'nowrap' }}>
                         <span>{u.status || 'active'}</span>
                       </span>
                     </td>
-                    <td className="text-center" style={{ padding: '6px 4px' }}>
-                      <div className="d-inline-flex align-items-center gap-1 text-muted small text-nowrap" style={{ fontSize: '0.73rem' }}>
-                        <LuCalendar size={11} className="text-muted flex-shrink-0" />
+                    <td className="py-3 px-3 align-middle text-center">
+                      <div className="d-inline-flex align-items-center gap-1 text-muted text-nowrap" style={{ fontSize: '0.75rem' }}>
+                        <LuCalendar size={13} className="text-muted flex-shrink-0" />
                         <span>{new Date(u.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}</span>
                       </div>
                     </td>
-                    <td className="text-center text-nowrap" style={{ padding: '6px 4px' }}>
-                      <div className="d-inline-flex align-items-center gap-1">
+                    <td className="py-3 px-3 align-middle text-center text-nowrap">
+                      <div className="d-inline-flex align-items-center justify-content-center" style={{ gap: '6px' }}>
                         <button
                           type="button"
                           onClick={() => handleOpenEdit(u)}
-                          className="tbl-action-btn tbl-action-btn-edit"
-                          style={{ width: '26px', height: '26px', padding: 0 }}
+                          className="btn btn-sm btn-outline-secondary d-inline-flex align-items-center justify-content-center rounded-2 shadow-none"
+                          style={{ width: '32px', height: '32px', padding: 0 }}
                           title={`Edit ${u.name}`}
                           aria-label="Edit user"
                         >
-                          <LuPencil size={13} />
+                          <LuPencil size={14} />
                         </button>
                         <button
                           type="button"
                           onClick={() => setDeleteTarget(u)}
-                          className="tbl-action-btn tbl-action-btn-delete"
-                          style={{ width: '26px', height: '26px', padding: 0 }}
+                          className="btn btn-sm btn-outline-danger d-inline-flex align-items-center justify-content-center rounded-2 shadow-none"
+                          style={{ width: '32px', height: '32px', padding: 0 }}
                           title={`Delete ${u.name}`}
                           aria-label="Delete user"
                         >
-                          <LuTrash2 size={13} />
+                          <LuTrash2 size={14} />
                         </button>
                       </div>
                     </td>

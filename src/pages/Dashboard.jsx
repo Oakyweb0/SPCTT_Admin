@@ -213,11 +213,11 @@ const Dashboard = () => {
                 <div className="activity-table-container">
                   <table className="spctt-table spctt-dashboard-table">
                     <thead>
-                      <tr>
-                        <th style={{ width: '22%' }}>Code</th>
-                        <th style={{ width: '43%' }}>Delegate</th>
-                        <th style={{ width: '20%' }}>Category</th>
-                        <th className="text-center" style={{ width: '15%' }}>Status</th>
+                      <tr style={{ background: '#f8fafc' }}>
+                        <th className="py-2.5 px-3" style={{ width: '22%' }}>Code</th>
+                        <th className="py-2.5 px-3" style={{ width: '43%' }}>Delegate</th>
+                        <th className="py-2.5 px-2 text-center" style={{ width: '20%' }}>Category</th>
+                        <th className="py-2.5 px-2 text-center" style={{ width: '15%' }}>Status</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -242,36 +242,36 @@ const Dashboard = () => {
                         </tr>
                       ) : (
                         paginatedRegistrations.map((reg) => (
-                          <tr key={reg.id}>
-                            <td>
+                          <tr key={reg.id} style={{ borderBottom: '1px solid #eef2f6' }}>
+                            <td className="py-2.5 px-3 align-middle text-nowrap">
                               {reg.registration_code ? (
-                                <span className="badge bg-light text-primary border font-monospace px-1.5 py-0.5">
+                                <span className="badge bg-light text-primary border font-monospace px-2 py-1" style={{ fontSize: '0.78rem', fontWeight: 600 }}>
                                   {reg.registration_code}
                                 </span>
                               ) : (
-                                <span className="text-muted small fst-italic px-1">—</span>
+                                <span className="text-muted small fst-italic px-1" style={{ fontSize: '0.75rem' }}>—</span>
                               )}
                             </td>
-                            <td>
-                              <div className="fw-bold text-dark text-truncate" style={{ maxWidth: '180px' }}>
+                            <td className="py-2.5 px-3 align-middle">
+                              <div className="fw-bold text-dark text-truncate" style={{ lineHeight: '1.35', fontSize: '0.86rem', maxWidth: '180px', marginBottom: '2px' }} title={`${reg.title || ''} ${reg.full_name || 'Delegate'}`}>
                                 {reg.title || ''} {reg.full_name || 'Delegate'}
                               </div>
-                              <div className="text-muted text-truncate" style={{ fontSize: '0.75rem', maxWidth: '180px' }}>
+                              <div className="text-muted text-truncate" style={{ fontSize: '0.75rem', maxWidth: '180px' }} title={reg.email}>
                                 {reg.email}
                               </div>
                             </td>
-                            <td>
-                              <span className="badge bg-light text-dark border text-truncate d-inline-block" style={{ fontSize: '0.72rem', maxWidth: '140px' }} title={reg.category_name || 'Standard'}>
+                            <td className="py-2.5 px-2 align-middle text-center">
+                              <span className="badge badge-category-teal px-2.5 py-1 rounded-pill text-truncate d-inline-block" style={{ fontSize: '0.72rem', fontWeight: 700, maxWidth: '140px' }} title={reg.category_name || 'Standard'}>
                                 {reg.category_name || 'Standard'}
                               </span>
                             </td>
-                            <td className="text-center">
+                            <td className="py-2.5 px-2 align-middle text-center">
                               <span className={`badge ${reg.payment_status === 'paid'
                                   ? 'bg-success-subtle text-success border border-success'
                                   : reg.payment_status === 'failed'
                                     ? 'bg-danger-subtle text-danger border border-danger'
                                     : 'bg-warning-subtle text-warning border border-warning'
-                                } text-uppercase px-2.5 py-1 rounded-pill`} style={{ fontSize: '0.68rem', letterSpacing: '0.04em', fontWeight: 700 }}>
+                                } text-uppercase px-2.5 py-1 rounded-pill`} style={{ fontSize: '0.68rem', letterSpacing: '0.03em', fontWeight: 700 }}>
                                 {reg.payment_status || 'pending'}
                               </span>
                             </td>
@@ -315,11 +315,11 @@ const Dashboard = () => {
                 <div className="activity-table-container">
                   <table className="spctt-table spctt-dashboard-table">
                     <thead>
-                      <tr>
-                        <th style={{ width: '22%' }}>Code</th>
-                        <th style={{ width: '43%' }}>Abstract Title</th>
-                        <th style={{ width: '20%' }}>Category</th>
-                        <th className="text-center" style={{ width: '15%' }}>Status</th>
+                      <tr style={{ background: '#f8fafc' }}>
+                        <th className="py-2.5 px-3" style={{ width: '22%' }}>Code</th>
+                        <th className="py-2.5 px-3" style={{ width: '43%' }}>Abstract Title</th>
+                        <th className="py-2.5 px-2 text-center" style={{ width: '20%' }}>Category</th>
+                        <th className="py-2.5 px-2 text-center" style={{ width: '15%' }}>Status</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -344,31 +344,31 @@ const Dashboard = () => {
                         </tr>
                       ) : (
                         paginatedAbstracts.map((abs) => (
-                          <tr key={abs.id}>
-                            <td>
-                              <span className="badge bg-light text-info border font-monospace px-1.5 py-0.5">
+                          <tr key={abs.id} style={{ borderBottom: '1px solid #eef2f6' }}>
+                            <td className="py-2.5 px-3 align-middle text-nowrap">
+                              <span className="badge bg-light text-primary border font-monospace px-2 py-1" style={{ fontSize: '0.78rem', fontWeight: 600 }}>
                                 {abs.abstract_code}
                               </span>
                             </td>
-                            <td>
-                              <div className="fw-bold text-dark text-truncate" style={{ maxWidth: '180px' }}>
-                                {abs.title}
+                            <td className="py-2.5 px-3 align-middle">
+                              <div className="fw-bold text-dark text-truncate" style={{ lineHeight: '1.35', fontSize: '0.86rem', maxWidth: '180px', marginBottom: '2px' }} title={abs.title || abs.topic}>
+                                {abs.title || abs.topic}
                               </div>
-                              <div className="text-muted text-truncate" style={{ fontSize: '0.75rem', maxWidth: '180px' }}>
-                                By {abs.authors}
+                              <div className="text-muted text-truncate" style={{ fontSize: '0.75rem', maxWidth: '180px' }} title={abs.authors || abs.name}>
+                                By {abs.authors || abs.name || 'Author'}
                               </div>
                             </td>
-                            <td>
+                            <td className="py-2.5 px-2 align-middle text-center">
                               <span className="badge badge-category-teal px-2.5 py-1 rounded-pill" style={{ fontSize: '0.72rem', fontWeight: 700 }}>
                                 {abs.category || 'Poster'}
                               </span>
                             </td>
-                            <td className="text-center">
+                            <td className="py-2.5 px-2 align-middle text-center">
                               <span className={`badge ${abs.status === 'accepted' ? 'bg-success-subtle text-success border border-success' :
                                   abs.status === 'rejected' ? 'bg-danger-subtle text-danger border border-danger' :
                                     abs.status === 'under_review' ? 'bg-info-subtle text-info border border-info' :
                                       'bg-warning-subtle text-warning border border-warning'
-                                } text-uppercase px-2.5 py-1 rounded-pill`} style={{ fontSize: '0.68rem', letterSpacing: '0.04em', fontWeight: 700 }}>
+                                } text-uppercase px-2.5 py-1 rounded-pill`} style={{ fontSize: '0.68rem', letterSpacing: '0.03em', fontWeight: 700 }}>
                                 {abs.status ? abs.status.replace('_', ' ') : 'pending'}
                               </span>
                             </td>
