@@ -1,7 +1,17 @@
 import axios from 'axios';
 import { getToken, clearAuthSession, clearUserAuth } from '../../utils/storage';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://api.spctt.org/api';
+// Normalize base URL so it always targets the /api endpoints reliably
+const normalizeApiUrl = (url) => {
+  let clean = (url || '').trim().replace(/\/+$/, '');
+  if (!clean) return 'https://api.spctt.org/api';
+  if (!clean.endsWith('/api')) {
+    clean = `${clean}/api`;
+  }
+  return clean;
+};
+
+const API_BASE_URL = normalizeApiUrl(import.meta.env.VITE_API_URL);
 
 /**
  * Custom Axios Instance
