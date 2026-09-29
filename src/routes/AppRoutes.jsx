@@ -6,6 +6,7 @@ import LoginPage from '../pages/LoginPage';
 
 // Admin Pages
 import AdminRegistrationsPage from '../pages/admin/AdminRegistrationsPage';
+import AdminRegistrationDetailPage from '../pages/admin/AdminRegistrationDetailPage';
 import AdminAbstractsPage from '../pages/admin/AdminAbstractsPage';
 import AdminUsersPage from '../pages/admin/AdminUsersPage';
 
@@ -138,6 +139,7 @@ const AppRoutes = () => {
         <Route index element={<Navigate to="/admin/dashboard" replace />} />
         <Route path="dashboard" element={<Dashboard />} />
         <Route path="registration" element={<AdminRegistrationsPage />} />
+        <Route path="registration/:id" element={<AdminRegistrationDetailPage />} />
         <Route path="abstract" element={<AdminAbstractsPage />} />
         <Route path="users" element={<AdminUsersPage />} />
 

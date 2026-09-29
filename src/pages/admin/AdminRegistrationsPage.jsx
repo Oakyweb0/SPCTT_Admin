@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { 
   LuSearch, 
   LuRefreshCw, 
@@ -6,7 +7,6 @@ import {
   LuTriangleAlert,
   LuClipboardList,
   LuSlidersHorizontal,
-  LuX,
   LuDownload,
   LuCreditCard,
   LuFileText,
@@ -18,6 +18,7 @@ import { downloadBlobFile } from '../../services/api/adminApi';
 import Pagination from '../../components/Common/Pagination';
 
 const AdminRegistrationsPage = () => {
+  const navigate = useNavigate();
   const [registrations, setRegistrations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [exporting, setExporting] = useState(false);
@@ -25,14 +26,6 @@ const AdminRegistrationsPage = () => {
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [paymentFilter, setPaymentFilter] = useState('');
-  const [selectedReg, setSelectedReg] = useState(null);
-  const [paymentDetail, setPaymentDetail] = useState(null);
-  const [paymentDetailLoading, setPaymentDetailLoading] = useState(false);
-  const [updating, setUpdating] = useState(false);
-  const [updateStatus, setUpdateStatus] = useState({
-    status: '',
-    paymentStatus: ''
-  });
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
@@ -54,28 +47,6 @@ const AdminRegistrationsPage = () => {
       console.error('Error loading registrations:', err);
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleOpenDetails = async (reg) => {
-    setSelectedReg(reg);
-    setPaymentDetail(null);
-    setUpdateStatus({
-      status: reg.status,
-      paymentStatus: reg.payment_status,
-      sendEmail: true
-    });
-
-    try {
-      setPaymentDetailLoading(true);
-      const res = await adminApi.getPaymentStatusByRegistrationId(reg.id);
-      if (res && res.status && res.data) {
-        setPaymentDetail(res.data);
-      }
-    } catch (err) {
-      console.warn('Could not load detailed payment status:', err.message);
-    } finally {
-      setPaymentDetailLoading(false);
     }
   };
 
@@ -119,31 +90,6 @@ const AdminRegistrationsPage = () => {
     loadRegistrations();
   };
 
-  const handleStatusUpdate = async () => {
-    if (!selectedReg) return;
-    try {
-      setUpdating(true);
-      const res = await adminApi.updateRegistrationStatus(selectedReg.id, updateStatus);
-      setSelectedReg(null);
-      setPaymentDetail(null);
-      setNotification({
-        type: 'success',
-        message: res?.message || 'Registration & payment status updated successfully!'
-      });
-      await loadRegistrations();
-    } catch (err) {
-      setNotification({
-        type: 'danger',
-        message: err.message || 'Failed to update registration status'
-      });
-    } finally {
-      setUpdating(false);
-      setTimeout(() => {
-        setNotification(null);
-      }, 4000);
-    }
-  };
-
   const formatCurrency = (amount) => {
     const num = parseFloat(amount || 0);
     return `₹${num.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
@@ -168,7 +114,7 @@ const AdminRegistrationsPage = () => {
             style={{ 
               pointerEvents: 'auto', 
               animation: 'fadeIn 0.25s ease-in-out',
-              backdropFilter: 'blur(8px)',
+              backdropFilter: 'blur(8px)', 
               fontSize: '0.85rem'
             }}
           >
@@ -248,97 +194,93 @@ const AdminRegistrationsPage = () => {
             </div>
 
             <div className="col-md-6 col-12 d-flex justify-content-md-end gap-2">
-              <select
-                value={paymentFilter}
-                onChange={(e) => setPaymentFilter(e.target.value)}
-                className="form-select form-select-sm w-auto shadow-none"
-              >
-                <option value="">All Payments</option>
-                <option value="paid">Paid</option>
-                <option value="pending">Pending</option>
-                <option value="failed">Failed</option>
-              </select>
+              <div className="d-flex align-items-center gap-2">
+                <LuSlidersHorizontal size={16} className="text-muted" />
+                <select
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value)}
+                  className="form-select form-select-sm shadow-none"
+                  style={{ width: '150px' }}
+                >
+                  <option value="">All Statuses</option>
+                  <option value="draft">Draft</option>
+                  <option value="submitted">Submitted</option>
+                  <option value="confirmed">Confirmed</option>
+                  <option value="cancelled">Cancelled</option>
+                </select>
 
-              <select
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
-                className="form-select form-select-sm w-auto shadow-none"
-              >
-                <option value="">All Statuses</option>
-                <option value="confirmed">Confirmed</option>
-                <option value="submitted">Submitted</option>
-                <option value="draft">Draft</option>
-                <option value="cancelled">Cancelled</option>
-              </select>
+                <select
+                  value={paymentFilter}
+                  onChange={(e) => setPaymentFilter(e.target.value)}
+                  className="form-select form-select-sm shadow-none"
+                  style={{ width: '160px' }}
+                >
+                  <option value="">All Payments</option>
+                  <option value="pending">Pending</option>
+                  <option value="paid">Paid</option>
+                  <option value="failed">Failed</option>
+                  <option value="refunded">Refunded</option>
+                </select>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Table */}
-        <div className="activity-table-container">
-          <table className="spctt-table w-100">
+        {/* Table Content */}
+        <div className="table-responsive">
+          <table className="spctt-table align-middle">
             <thead>
               <tr>
-                <th className="text-center" style={{ width: '7%' }}>Reg ID</th>
-                <th style={{ width: '12%' }}>Reg Code</th>
-                <th style={{ width: '22%' }}>Delegate Details</th>
-                <th style={{ width: '15%' }}>Category</th>
-                <th style={{ width: '15%' }}>Organization</th>
-                <th className="text-end" style={{ width: '11%' }}>Grand Total</th>
-                <th className="text-center" style={{ width: '8%' }}>Payment</th>
-                <th className="text-center" style={{ width: '8%' }}>Status</th>
-                <th className="text-center" style={{ width: '6%' }}>Action</th>
+                <th style={{ width: '60px' }}>ID</th>
+                <th>Reg. Code</th>
+                <th>Delegate Info</th>
+                <th>Category</th>
+                <th>Organization</th>
+                <th className="text-end">Amount</th>
+                <th className="text-center">Payment Status</th>
+                <th className="text-center">Status</th>
+                <th className="text-center" style={{ width: '110px' }}>Action</th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan={8}>
-                    <div className="table-empty-state py-5">
-                      <div className="spinner-border text-primary mb-3" style={{ width: '2.2rem', height: '2.2rem' }}></div>
-                      <h6 className="table-empty-title mb-1">Loading Delegate Registrations...</h6>
-                      <p className="table-empty-desc">Fetching conference registrations from server</p>
+                  <td colSpan="9" className="text-center py-5">
+                    <div className="spinner-border text-primary" role="status">
+                      <span className="visually-hidden">Loading...</span>
                     </div>
+                    <div className="text-muted mt-2 small">Loading registrations...</div>
                   </td>
                 </tr>
-              ) : registrations.length === 0 ? (
+              ) : paginatedRegistrations.length === 0 ? (
                 <tr>
-                  <td colSpan={8}>
-                    <div className="table-empty-state">
-                      <div className="table-empty-icon-box">
-                        <LuClipboardList size={26} />
-                      </div>
-                      <h5 className="table-empty-title">No Registrations Found</h5>
-                      <p className="table-empty-desc">
-                        {search || statusFilter || paymentFilter
-                          ? "No delegate registrations match your filter or search query."
-                          : "No delegate registrations have been recorded yet."}
-                      </p>
-                    </div>
+                  <td colSpan="9" className="text-center py-5 text-muted">
+                    <LuClipboardList size={36} className="text-muted mb-2 opacity-50" />
+                    <p className="mb-0">No registrations found matching the filters.</p>
                   </td>
                 </tr>
               ) : (
                 paginatedRegistrations.map((reg) => (
                   <tr key={reg.id}>
-                    <td className="text-center">
-                      <span className="badge bg-secondary-subtle text-dark border font-monospace px-2 py-1 fw-bold" style={{ fontSize: '0.8rem' }}>
-                        #{reg.id}
+                    <td className="text-muted font-monospace small">#{reg.id}</td>
+                    <td>
+                      <span className="badge bg-light text-primary border font-monospace fw-bold px-2 py-1">
+                        {reg.registration_code}
                       </span>
                     </td>
                     <td>
-                      <span className="badge bg-light text-primary border font-monospace px-2.5 py-1 fw-bold" style={{ fontSize: '0.82rem' }}>
-                        {reg.registration_code || `REG-${reg.id}`}
-                      </span>
-                    </td>
-                    <td>
-                      <div className="fw-bold text-dark">{reg.title || ''} {reg.full_name || 'Delegate'}</div>
+                      <div className="fw-semibold text-dark">
+                        {reg.title || ''} {reg.full_name}
+                      </div>
                       <div className="text-muted small">{reg.email}</div>
-                      {reg.phone && <div className="text-muted" style={{ fontSize: '0.72rem' }}>{reg.phone}</div>}
+                      {reg.phone && <div className="text-muted small opacity-75">{reg.phone}</div>}
                     </td>
                     <td>
-                      <div className="fw-semibold text-dark">{reg.category_name || 'Standard'}</div>
+                      <span className="badge bg-light text-dark border">
+                        {reg.category_name || 'Standard'}
+                      </span>
                       {reg.accompanying_count > 0 && (
-                        <span className="badge bg-purple-subtle text-purple mt-1" style={{ fontSize: '0.68rem' }}>
+                        <span className="badge bg-purple-subtle text-purple mt-1 d-block" style={{ fontSize: '0.68rem', width: 'fit-content' }}>
                           +{reg.accompanying_count} Accompanying
                         </span>
                       )}
@@ -350,11 +292,16 @@ const AdminRegistrationsPage = () => {
                       <div>{formatCurrency(reg.total_payable || (parseFloat(reg.grand_total || 0) * 1.045))}</div>
                     </td>
                     <td className="text-center">
-                      <span className={`badge ${
-                        reg.payment_status === 'paid'
-                          ? 'bg-success-subtle text-success border border-success'
-                          : 'bg-warning-subtle text-warning border border-warning'
-                      } text-uppercase px-2.5 py-1 rounded-pill`} style={{ fontSize: '0.68rem', letterSpacing: '0.04em', fontWeight: 700 }}>
+                      <span 
+                        className="badge text-uppercase px-2.5 py-1 rounded-pill" 
+                        style={{ 
+                          fontSize: '0.68rem', 
+                          letterSpacing: '0.04em', 
+                          fontWeight: 700,
+                          backgroundColor: reg.payment_status === 'paid' ? '#16a34a' : reg.payment_status === 'refunded' ? '#7c3aed' : reg.payment_status === 'failed' ? '#dc2626' : '#d97706',
+                          color: '#ffffff'
+                        }}
+                      >
                         {reg.payment_status}
                       </span>
                     </td>
@@ -369,9 +316,9 @@ const AdminRegistrationsPage = () => {
                     </td>
                     <td className="text-center text-nowrap">
                       <button
-                        onClick={() => handleOpenDetails(reg)}
+                        onClick={() => navigate(`/admin/registration/${reg.id}`)}
                         className="btn btn-outline-primary btn-sm px-3 py-1.5 rounded-2 d-inline-flex align-items-center gap-1.5 shadow-none"
-                        style={{ fontSize: '0.78rem', fontWeight: 500 }}
+                        style={{ fontSize: '0.78rem', fontWeight: 600 }}
                       >
                         <LuClipboardList size={14} />
                         <span>Manage</span>
@@ -397,207 +344,8 @@ const AdminRegistrationsPage = () => {
           itemLabel="registrations"
         />
       </div>
-
-      {/* Registration & Payment Details Modal */}
-      {selectedReg && (
-        <div className="modal fade show d-block" style={{ backgroundColor: 'rgba(15, 23, 42, 0.65)', backdropFilter: 'blur(4px)' }}>
-          <div className="modal-dialog modal-dialog-centered modal-lg">
-            <div className="modal-content rounded-4 shadow-2xl border-0 overflow-hidden">
-              {/* Header */}
-              <div className="modal-header bg-light py-3 px-4 border-bottom d-flex align-items-center justify-content-between">
-                <div>
-                  <div className="d-flex align-items-center gap-2 flex-wrap">
-                    <h5 className="modal-title fw-bold text-dark mb-0">Registration & Payment Details</h5>
-                    <span className="badge bg-dark text-white font-monospace px-2.5 py-1">
-                      ID: #{selectedReg.id}
-                    </span>
-                    <span className="badge bg-primary-subtle text-primary font-monospace px-2.5 py-1 fw-bold">
-                      {selectedReg.registration_code}
-                    </span>
-                  </div>
-                  <p className="text-muted small mb-0 mt-0.5">
-                    {selectedReg.title || ''} {selectedReg.full_name} &bull; {selectedReg.email}
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  className="btn-close shadow-none"
-                  onClick={() => {
-                    setSelectedReg(null);
-                    setPaymentDetail(null);
-                  }}
-                ></button>
-              </div>
-
-              {/* Body */}
-              <div className="modal-body p-4">
-                {paymentDetailLoading ? (
-                  <div className="text-center py-5">
-                    <div className="spinner-border text-primary mb-3" style={{ width: '2rem', height: '2rem' }}></div>
-                    <div className="text-muted small">Fetching live payment status from server...</div>
-                  </div>
-                ) : (
-                  <div className="space-y-4">
-                    {/* Payment Info Card */}
-                    <div className="p-3 bg-light rounded-3 border mb-3">
-                      <div className="d-flex align-items-center justify-content-between mb-2">
-                        <div className="d-flex align-items-center gap-2 text-primary fw-bold small text-uppercase">
-                          <LuCreditCard size={16} />
-                          <span>Razorpay Payment Gateway Info</span>
-                        </div>
-                        <span className={`badge ${
-                          (paymentDetail?.paymentStatus || updateStatus.paymentStatus) === 'paid'
-                            ? 'bg-success text-white'
-                            : 'bg-warning text-dark'
-                        } text-uppercase px-2.5 py-1 rounded-pill`} style={{ fontSize: '0.72rem', letterSpacing: '0.04em' }}>
-                          {paymentDetail?.paymentStatus || updateStatus.paymentStatus || 'pending'}
-                        </span>
-                      </div>
-
-                      <div className="row g-2 small text-dark mt-1">
-                        <div className="col-sm-6">
-                          <span className="text-muted">Payment Method:</span>{' '}
-                          <span className="fw-semibold">{(paymentDetail?.paymentMethod || selectedReg.payment_method || 'Razorpay (PAGE WORLDWIDE)').replace(/Axis\s*Razorpay/gi, 'Razorpay').replace(/Elisyan\s*India/gi, 'PAGE WORLDWIDE')}</span>
-                        </div>
-                        <div className="col-sm-6">
-                          <span className="text-muted">Transaction ID:</span>{' '}
-                          <span className="font-monospace fw-semibold text-primary">{paymentDetail?.transactionId || selectedReg.transaction_id || 'Not Generated Yet'}</span>
-                        </div>
-                        <div className="col-sm-6">
-                          <span className="text-muted">Category:</span>{' '}
-                          <span className="fw-semibold">{paymentDetail?.categoryName || selectedReg.category_name || 'Standard'}</span>
-                        </div>
-                        <div className="col-sm-6">
-                          <span className="text-muted">Paid Date:</span>{' '}
-                          <span className="fw-semibold">{paymentDetail?.paidAt ? new Date(paymentDetail.paidAt).toLocaleString('en-IN') : (selectedReg.paid_at ? new Date(selectedReg.paid_at).toLocaleString('en-IN') : 'N/A')}</span>
-                        </div>
-                      </div>
-
-                      {/* Financial Breakdown */}
-                      {paymentDetail?.breakdown && (
-                        <div className="mt-3 pt-2 border-top">
-                          <div className="row g-1 small">
-                            <div className="col-6 text-muted">Category Base Price:</div>
-                            <div className="col-6 text-end fw-medium">{formatCurrency(paymentDetail.breakdown.categoryPrice)}</div>
-                            
-                            {paymentDetail.breakdown.accompanyingTotal > 0 && (
-                              <>
-                                <div className="col-6 text-muted">Accompanying Delegates Total:</div>
-                                <div className="col-6 text-end fw-medium">{formatCurrency(paymentDetail.breakdown.accompanyingTotal)}</div>
-                              </>
-                            )}
-
-                            <div className="col-6 text-muted">Subtotal:</div>
-                            <div className="col-6 text-end fw-medium">{formatCurrency(paymentDetail.breakdown.subtotal)}</div>
-
-                            <div className="col-6 text-muted">GST ({paymentDetail.breakdown.gstRate}%):</div>
-                            <div className="col-6 text-end fw-medium">{formatCurrency(paymentDetail.breakdown.gstAmount)}</div>
-
-                            <div className="col-6 text-muted">Sub Total (Base + GST):</div>
-                            <div className="col-6 text-end fw-semibold text-dark">{formatCurrency(paymentDetail.breakdown.grandTotal)}</div>
-
-                            <div className="col-6 text-muted">Facilitation Charges (4.5%):</div>
-                            <div className="col-6 text-end fw-medium">{formatCurrency(paymentDetail.breakdown.facilitationCharges || (paymentDetail.breakdown.grandTotal * 0.045))}</div>
-
-                            <div className="col-6 fw-bold text-dark border-top pt-1 mt-1">Total Payable Amount:</div>
-                            <div className="col-6 text-end fw-bold text-danger border-top pt-1 mt-1">{formatCurrency(paymentDetail.breakdown.totalPayable || (paymentDetail.breakdown.grandTotal * 1.045))}</div>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Status Update Form */}
-                    <div className="p-3 bg-white border rounded-3">
-                      <h6 className="fw-bold text-dark small text-uppercase mb-3">Update Registration & Payment Status</h6>
-                      <div className="row g-3">
-                        <div className="col-md-6 col-12">
-                          <label className="form-label small fw-bold text-muted text-uppercase">Registration Status</label>
-                          <select
-                            value={updateStatus.status}
-                            onChange={(e) => setUpdateStatus({ ...updateStatus, status: e.target.value })}
-                            className="form-select shadow-none"
-                          >
-                            <option value="draft">Draft</option>
-                            <option value="submitted">Submitted</option>
-                            <option value="confirmed">Confirmed</option>
-                            <option value="cancelled">Cancelled</option>
-                          </select>
-                        </div>
-
-                        <div className="col-md-6 col-12">
-                          <label className="form-label small fw-bold text-muted text-uppercase">Payment Status</label>
-                          <select
-                            value={updateStatus.paymentStatus}
-                            onChange={(e) => setUpdateStatus({ ...updateStatus, paymentStatus: e.target.value })}
-                            className="form-select shadow-none"
-                          >
-                            <option value="pending">Pending</option>
-                            <option value="paid">Paid</option>
-                            <option value="failed">Failed</option>
-                            <option value="refunded">Refunded</option>
-                          </select>
-                        </div>
-
-                        {/* Email Notification Option */}
-                        <div className="col-12 mt-3 pt-2 border-top">
-                          <div className="form-check form-switch d-flex align-items-center gap-2">
-                            <input
-                              className="form-check-input ms-0"
-                              type="checkbox"
-                              role="switch"
-                              id="sendPaymentEmailNotification"
-                              checked={updateStatus.sendEmail !== false}
-                              onChange={(e) => setUpdateStatus({ ...updateStatus, sendEmail: e.target.checked })}
-                            />
-                            <label className="form-check-label small fw-semibold text-dark cursor-pointer" htmlFor="sendPaymentEmailNotification">
-                              📧 Send instant confirmation & receipt email to delegate ({selectedReg.email}) & CC admin alert
-                            </label>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* Footer */}
-              <div className="modal-footer bg-light border-top py-3 px-4 d-flex justify-content-between">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setSelectedReg(null);
-                    setPaymentDetail(null);
-                  }}
-                  className="btn btn-outline-secondary px-4 shadow-none"
-                >
-                  Close
-                </button>
-                <button
-                  type="button"
-                  onClick={handleStatusUpdate}
-                  disabled={updating}
-                  className="btn btn-primary px-4 shadow-none d-inline-flex align-items-center gap-2"
-                >
-                  {updating ? (
-                    <>
-                      <div className="spinner-border spinner-border-sm"></div>
-                      <span>Saving...</span>
-                    </>
-                  ) : (
-                    <>
-                      <LuCheck size={16} />
-                      <span>Save Changes</span>
-                    </>
-                  )}
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
 
 export default AdminRegistrationsPage;
-

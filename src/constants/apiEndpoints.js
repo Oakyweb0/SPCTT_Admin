@@ -66,6 +66,7 @@ export const API_ENDPOINTS = {
   ADMIN: {
     STATS: '/admin/dashboard-stats',
     REGISTRATIONS: '/admin/registrations',
+    REGISTRATION_BY_ID: (id) => `/admin/registrations/${id}`,
     EXPORT_REGISTRATIONS: '/admin/registrations/export',
     UPDATE_REGISTRATION_STATUS: (id) => `/admin/registrations/${id}/status`,
     ABSTRACTS: '/admin/abstracts',

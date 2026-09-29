@@ -50,6 +50,10 @@ export const adminApi = {
     return apiClient.put(API_ENDPOINTS.ADMIN.UPDATE_REGISTRATION_STATUS(id), statusData);
   },
 
+  getRegistrationById: (id) => {
+    return apiClient.get(API_ENDPOINTS.ADMIN.REGISTRATION_BY_ID(id));
+  },
+
   getPaymentStatusByRegistrationId: (id) => {
     return apiClient.get(API_ENDPOINTS.PAYMENT.STATUS_BY_ID(id));
   },
