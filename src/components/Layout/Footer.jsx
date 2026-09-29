@@ -7,7 +7,7 @@ const Footer = () => {
     <footer className="spctt-footer">
       <div className="footer-left">
         <span>
-          © {currentYear} <strong>SPCTT</strong> (Society of Pulmonary and Critical Care Tribals). All rights reserved.
+          © {currentYear} <strong>SPCTT</strong> (Society for Pediatric Cellular Therapy and Transplant). All rights reserved.
         </span>
       </div>
       <div className="footer-right">

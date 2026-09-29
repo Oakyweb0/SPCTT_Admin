@@ -138,7 +138,7 @@ export const quickActionsList = [
 
 export const conferenceInfo = {
   name: 'SPCTT 2026',
-  fullTitle: 'Society of Pulmonary and Critical Care Tribals Annual Conference',
+  fullTitle: 'Society for Pediatric Cellular Therapy and Transplant Annual Conference',
   status: 'System Operational',
   version: 'v1.0.0 (Phase 1 Direct Access)',
   websiteUrl: 'https://2026.spctt.org/'

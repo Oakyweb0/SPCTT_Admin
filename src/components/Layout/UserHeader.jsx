@@ -111,7 +111,7 @@ const UserHeader = ({ pageTitle, subtitle }) => {
             {pageTitle || 'SPCTT 2026'}
           </h1>
           <p className="text-xs md:text-sm text-cyan-100 font-normal opacity-90 max-w-xl mx-auto">
-            {subtitle || 'Society for Pulmonary, Critical Care & Thoracic Therapy • 14th Annual Conference'}
+            {subtitle || 'Society for Pediatric Cellular Therapy and Transplant • Annual Conference'}
           </p>
         </div>
       </div>
