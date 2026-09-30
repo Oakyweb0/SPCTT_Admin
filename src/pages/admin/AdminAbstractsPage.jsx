@@ -14,7 +14,8 @@ import {
   LuPhone,
   LuDownload,
   LuArrowUp,
-  LuArrowDown
+  LuArrowDown,
+  LuTriangleAlert
 } from 'react-icons/lu';
 import { adminApi } from '../../services/api';
 import { downloadBlobFile } from '../../services/api/adminApi';
@@ -41,7 +42,7 @@ const AdminAbstractsPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
 
-  // Delete / notification state
+  // Notification state
   const [notification, setNotification] = useState(null);
 
   const getFullUrl = (url) => {
@@ -321,15 +322,6 @@ const AdminAbstractsPage = () => {
 
               {/* Action Buttons */}
               <div className="d-flex align-items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => setDeleteTarget(selectedAbs)}
-                  className="btn btn-sm btn-outline-danger d-inline-flex align-items-center justify-content-center gap-1.5 px-3 rounded-2 shadow-none fw-medium"
-                  style={{ height: '34px', fontSize: '0.80rem' }}
-                  title="Delete Abstract"
-                >
-                  <LuTrash2 size={15} /> <span>Delete</span>
-                </button>
                 <button
                   type="button"
                   onClick={() => {
