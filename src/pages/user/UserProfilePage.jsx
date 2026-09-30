@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import UserHeader from '../../components/Layout/UserHeader';
 import { getUserAuth, userApi, authApi, saveUserAuth } from '../../services/api';
+import Skeleton from '../../components/Common/Skeleton';
 
 const UserProfilePage = () => {
   const navigate = useNavigate();
@@ -178,9 +179,37 @@ const UserProfilePage = () => {
         )}
 
         {loading ? (
-          <div className="py-20 text-center text-gray-500">
-            <div className="w-8 h-8 border-4 border-[#004b63] border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
-            Loading profile...
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
+              <div className="md:col-span-3">
+                <Skeleton width="40px" height="14px" className="mb-2" />
+                <Skeleton width="100%" height="44px" className="rounded" />
+              </div>
+              <div className="md:col-span-9">
+                <Skeleton width="60px" height="14px" className="mb-2" />
+                <Skeleton width="100%" height="44px" className="rounded" />
+              </div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Skeleton width="50px" height="14px" className="mb-2" />
+                <Skeleton width="100%" height="44px" className="rounded" />
+              </div>
+              <div>
+                <Skeleton width="80px" height="14px" className="mb-2" />
+                <Skeleton width="100%" height="44px" className="rounded" />
+              </div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Skeleton width="90px" height="14px" className="mb-2" />
+                <Skeleton width="100%" height="44px" className="rounded" />
+              </div>
+              <div>
+                <Skeleton width="50px" height="14px" className="mb-2" />
+                <Skeleton width="100%" height="44px" className="rounded" />
+              </div>
+            </div>
           </div>
         ) : (
           <div className="space-y-12">

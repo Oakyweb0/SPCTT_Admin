@@ -686,6 +686,7 @@ a:hover {
   top: 50%;
   transform: translateY(-50%);
   color: #94a3b8;
+  opacity: 0.7;
   pointer-events: none;
   display: flex;
   align-items: center;
@@ -707,6 +708,13 @@ a:hover {
   font-size: 0.88rem !important;
   transition: all var(--spctt-transition-fast) !important;
   width: 100%;
+}
+
+.search-input-box .form-control::placeholder,
+.search-input-box input::placeholder {
+  color: #94a3b8 !important;
+  opacity: 0.65 !important;
+  font-weight: 400 !important;
 }
 
 .search-input-box .form-control:focus,
@@ -2122,6 +2130,7 @@ a:hover {
   top: 50%;
   transform: translateY(-50%);
   color: #94a3b8;
+  opacity: 0.7;
   pointer-events: none;
   display: flex;
   align-items: center;
@@ -2137,6 +2146,12 @@ a:hover {
   color: var(--spctt-dark);
   font-size: 0.88rem;
   transition: all var(--spctt-transition-fast);
+}
+
+.search-input-box input::placeholder {
+  color: #94a3b8 !important;
+  opacity: 0.65 !important;
+  font-weight: 400 !important;
 }
 
 .search-input-box input:focus {
@@ -2204,11 +2219,13 @@ a:hover {
 }
 
 [data-theme="dark"] .search-input-box input::placeholder {
-  color: #64748b !important;
+  color: #94a3b8 !important;
+  opacity: 0.55 !important;
 }
 
 [data-theme="dark"] .search-input-box .input-icon {
-  color: #64748b;
+  color: #94a3b8;
+  opacity: 0.6;
 }
 
 [data-theme="dark"] select.form-select {
@@ -2572,3 +2589,53 @@ a:hover {
   border-color: #c0192b;
   color: #ffffff !important;
 }
+
+/* --------------------------------------------------------------------------
+   SPCTT Modern Shimmer Skeleton Loading Styles
+   -------------------------------------------------------------------------- */
+@keyframes spctt-shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.spctt-skeleton {
+  background: linear-gradient(90deg, #e9ecef 0%, #f8f9fa 50%, #e9ecef 100%);
+  background-size: 200% 100%;
+  animation: spctt-shimmer 1.5s ease-in-out infinite;
+  border-radius: 4px;
+  display: inline-block;
+  vertical-align: middle;
+  min-height: 10px;
+}
+
+.spctt-skeleton-circle {
+  border-radius: 50% !important;
+}
+
+.spctt-skeleton-pill {
+  border-radius: 9999px !important;
+}
+
+.spctt-skeleton-row {
+  transition: background-color 0.2s ease;
+}
+
+.spctt-skeleton-row td {
+  padding-top: 0.85rem !important;
+  padding-bottom: 0.85rem !important;
+  vertical-align: middle;
+  border-bottom: 1px solid #eef2f6 !important;
+}
+
+[data-theme="dark"] .spctt-skeleton {
+  background: linear-gradient(90deg, #1e293b 0%, #334155 50%, #1e293b 100%);
+  background-size: 200% 100%;
+}
+
+[data-theme="dark"] .spctt-skeleton-row td {
+  border-bottom-color: #1e293b !important;
+}

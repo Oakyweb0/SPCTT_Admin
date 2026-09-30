@@ -20,6 +20,7 @@ import {
 import { adminApi } from '../../services/api';
 import { downloadBlobFile } from '../../services/api/adminApi';
 import Pagination from '../../components/Common/Pagination';
+import TableSkeleton from '../../components/Common/TableSkeleton';
 
 const AdminRegistrationsPage = () => {
   const navigate = useNavigate();
@@ -298,15 +299,21 @@ const AdminRegistrationsPage = () => {
             </thead>
             <tbody>
               {loading ? (
-                <tr>
-                  <td colSpan={10}>
-                    <div className="table-empty-state py-4 text-center">
-                      <div className="spinner-border text-primary mb-2" style={{ width: '2rem', height: '2rem' }}></div>
-                      <h6 className="table-empty-title mb-1">Loading Conference Registrations...</h6>
-                      <p className="table-empty-desc small text-muted">Fetching registration directory from server</p>
-                    </div>
-                  </td>
-                </tr>
+                <TableSkeleton
+                  rows={pageSize > 10 ? 8 : pageSize || 6}
+                  columns={[
+                    { width: '32px', align: 'center', height: '14px' },
+                    { width: '72px', align: 'center', pill: true, height: '22px' },
+                    { type: 'double-text' },
+                    { width: '130px', height: '14px' },
+                    { width: '85px', align: 'center', pill: true, height: '22px' },
+                    { width: '100px', height: '14px' },
+                    { width: '60px', align: 'end', height: '14px' },
+                    { width: '60px', align: 'center', pill: true, height: '22px' },
+                    { width: '65px', align: 'center', pill: true, height: '22px' },
+                    { type: 'action', align: 'center', width: '75px' }
+                  ]}
+                />
               ) : paginatedRegistrations.length === 0 ? (
                 <tr>
                   <td colSpan={10}>

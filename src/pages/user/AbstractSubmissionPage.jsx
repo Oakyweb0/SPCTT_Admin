@@ -3,6 +3,7 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import UserHeader from '../../components/Layout/UserHeader';
 import { getUserAuth, abstractApi } from '../../services/api';
 import { LuFileText, LuImage, LuCloudUpload, LuCheck, LuX, LuExternalLink } from 'react-icons/lu';
+import Skeleton from '../../components/Common/Skeleton';
 
 const AbstractSubmissionPage = () => {
   const navigate = useNavigate();
@@ -453,9 +454,29 @@ const AbstractSubmissionPage = () => {
         ) : (
           <div>
             {loading ? (
-              <div className="py-20 text-center text-gray-500">
-                <div className="w-8 h-8 border-4 border-[#004b63] border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
-                <p className="text-sm font-medium">Loading your submitted abstracts...</p>
+              <div className="space-y-4">
+                {[1, 2, 3].map((n) => (
+                  <div key={`abs-skel-${n}`} className="border border-gray-200 rounded-xl p-6 bg-white shadow-2xs">
+                    <div className="flex items-center justify-between gap-3 border-b border-gray-100 pb-3 mb-4">
+                      <div className="flex items-center gap-2">
+                        <Skeleton width="90px" height="24px" pill={true} />
+                        <Skeleton width="60px" height="24px" pill={true} />
+                      </div>
+                      <Skeleton width="80px" height="24px" pill={true} />
+                    </div>
+                    <Skeleton width="65%" height="20px" className="mb-3" />
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 bg-gray-50/70 p-3 rounded-lg mb-4">
+                      <Skeleton width="75%" height="14px" />
+                      <Skeleton width="80%" height="14px" />
+                      <Skeleton width="60%" height="14px" />
+                      <Skeleton width="50%" height="14px" />
+                    </div>
+                    <Skeleton width="100%" height="40px" className="rounded-lg mb-3" />
+                    <div className="pt-2 border-t border-gray-100">
+                      <Skeleton width="150px" height="30px" className="rounded-lg" />
+                    </div>
+                  </div>
+                ))}
               </div>
             ) : abstracts.length === 0 ? (
               <div className="text-center py-16 bg-white rounded-xl border border-dashed border-gray-300 shadow-2xs">

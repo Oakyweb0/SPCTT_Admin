@@ -17,6 +17,8 @@ import {
   LuClock
 } from 'react-icons/lu';
 import { adminApi } from '../../services/api';
+import Skeleton from '../../components/Common/Skeleton';
+import TableSkeleton from '../../components/Common/TableSkeleton';
 
 const AdminRegistrationDetailPage = () => {
   const { id } = useParams();
@@ -104,10 +106,51 @@ const AdminRegistrationDetailPage = () => {
 
   if (loading) {
     return (
-      <div className="dashboard-page-container w-100 py-5 text-center">
-        <div className="spinner-border text-primary mb-3" style={{ width: '3rem', height: '3rem' }}></div>
-        <h5 className="text-dark fw-bold">Loading Registration Details...</h5>
-        <p className="text-muted small">Please wait while we fetch the latest delegate information & payment status.</p>
+      <div className="dashboard-page-container w-100 pb-5">
+        <div className="bg-white p-4 rounded-4 border shadow-sm mb-4">
+          <div className="d-flex align-items-center justify-content-between mb-3">
+            <div className="d-flex align-items-center gap-3">
+              <Skeleton width="100px" height="36px" className="rounded-3" />
+              <div>
+                <Skeleton width="220px" height="24px" className="mb-2" />
+                <Skeleton width="340px" height="14px" />
+              </div>
+            </div>
+            <Skeleton width="90px" height="36px" className="rounded-3" />
+          </div>
+          <div className="row g-3 pt-3 border-top">
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="col-md-3 col-6">
+                <div className="p-3 bg-light rounded-3 border">
+                  <Skeleton width="60%" height="12px" className="mb-2" />
+                  <Skeleton width="85%" height="18px" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="row g-4">
+          <div className="col-lg-8">
+            <div className="bg-white p-4 rounded-4 border shadow-sm mb-4">
+              <Skeleton width="180px" height="22px" className="mb-3" />
+              <div className="row g-3">
+                {[1, 2, 3, 4, 5, 6].map((i) => (
+                  <div key={i} className="col-md-6">
+                    <Skeleton width="40%" height="12px" className="mb-1.5" />
+                    <Skeleton width="90%" height="18px" />
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+          <div className="col-lg-4">
+            <div className="bg-white p-4 rounded-4 border shadow-sm">
+              <Skeleton width="140px" height="22px" className="mb-3" />
+              <Skeleton width="100%" height="60px" className="rounded-3 mb-3" />
+              <Skeleton width="100%" height="40px" className="rounded-3" />
+            </div>
+          </div>
+        </div>
       </div>
     );
   }

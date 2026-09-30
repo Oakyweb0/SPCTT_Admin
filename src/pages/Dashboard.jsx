@@ -11,6 +11,7 @@ import {
 } from 'react-icons/lu';
 import { adminApi, getStoredAuth } from '../services/api';
 import Pagination from '../components/Common/Pagination';
+import TableSkeleton from '../components/Common/TableSkeleton';
 
 const Dashboard = () => {
   const authUser = getStoredAuth();
@@ -222,12 +223,15 @@ const Dashboard = () => {
                     </thead>
                     <tbody>
                       {loading ? (
-                        <tr>
-                          <td colSpan={4} className="text-center py-4 text-muted">
-                            <div className="spinner-border spinner-border-sm text-primary me-2"></div>
-                            Loading registrations...
-                          </td>
-                        </tr>
+                        <TableSkeleton
+                          rows={5}
+                          columns={[
+                            { width: '75px', pill: true, height: '22px' },
+                            { type: 'double-text' },
+                            { width: '80px', align: 'center', pill: true, height: '22px' },
+                            { width: '65px', align: 'center', pill: true, height: '22px' }
+                          ]}
+                        />
                       ) : allRegistrations.length === 0 ? (
                         <tr>
                           <td colSpan={4}>
@@ -324,12 +328,15 @@ const Dashboard = () => {
                     </thead>
                     <tbody>
                       {loading ? (
-                        <tr>
-                          <td colSpan={4} className="text-center py-4 text-muted">
-                            <div className="spinner-border spinner-border-sm text-info me-2"></div>
-                            Loading abstracts...
-                          </td>
-                        </tr>
+                        <TableSkeleton
+                          rows={5}
+                          columns={[
+                            { width: '75px', pill: true, height: '22px' },
+                            { type: 'double-text' },
+                            { width: '70px', align: 'center', pill: true, height: '22px' },
+                            { width: '65px', align: 'center', pill: true, height: '22px' }
+                          ]}
+                        />
                       ) : allAbstracts.length === 0 ? (
                         <tr>
                           <td colSpan={4}>

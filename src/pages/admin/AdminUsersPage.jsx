@@ -29,6 +29,7 @@ import {
 import { adminApi } from '../../services/api';
 import { downloadBlobFile } from '../../services/api/adminApi';
 import Pagination from '../../components/Common/Pagination';
+import TableSkeleton from '../../components/Common/TableSkeleton';
 
 const AdminUsersPage = () => {
   const [users, setUsers] = useState([]);
@@ -677,15 +678,20 @@ const AdminUsersPage = () => {
             </thead>
             <tbody>
               {loading ? (
-                <tr>
-                  <td colSpan={9}>
-                    <div className="table-empty-state py-4 text-center">
-                      <div className="spinner-border text-primary mb-2" style={{ width: '2rem', height: '2rem' }}></div>
-                      <h6 className="table-empty-title mb-1">Loading Registered Users...</h6>
-                      <p className="table-empty-desc small text-muted">Fetching user directory from server</p>
-                    </div>
-                  </td>
-                </tr>
+                <TableSkeleton
+                  rows={pageSize > 10 ? 8 : pageSize || 6}
+                  columns={[
+                    { width: '28px', align: 'center', height: '14px' },
+                    { width: '56px', align: 'center', pill: true, height: '22px' },
+                    { type: 'avatar-text' },
+                    { type: 'double-text' },
+                    { width: '80%', height: '14px' },
+                    { width: '60px', align: 'center', pill: true, height: '22px' },
+                    { width: '65px', align: 'center', pill: true, height: '22px' },
+                    { width: '85px', align: 'center', height: '14px' },
+                    { type: 'action', align: 'center', width: '70px' }
+                  ]}
+                />
               ) : users.length === 0 ? (
                 <tr>
                   <td colSpan={9}>

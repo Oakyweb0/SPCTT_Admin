@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import UserHeader from '../../components/Layout/UserHeader';
 import { getUserAuth, registrationApi } from '../../services/api';
+import TableSkeleton from '../../components/Common/TableSkeleton';
 
 const InvoiceReceiptPage = () => {
   const navigate = useNavigate();
@@ -75,9 +76,32 @@ const InvoiceReceiptPage = () => {
         </div>
 
         {loading ? (
-          <div className="py-20 text-center text-gray-500">
-            <div className="w-8 h-8 border-4 border-[#004b63] border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
-            Loading invoices...
+          <div className="border border-gray-200 rounded-lg overflow-hidden shadow-sm bg-white">
+            <table className="w-full text-left border-collapse text-sm">
+              <thead>
+                <tr className="bg-gray-100 text-gray-700 font-semibold border-b border-gray-200">
+                  <th className="py-3 px-4">Invoice #</th>
+                  <th className="py-3 px-4">Description</th>
+                  <th className="py-3 px-4">Type</th>
+                  <th className="py-3 px-4 text-right">Amount</th>
+                  <th className="py-3 px-4 text-center">Status</th>
+                  <th className="py-3 px-4 text-center">Action</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100 text-gray-800">
+                <TableSkeleton
+                  rows={4}
+                  columns={[
+                    { width: '100px', height: '16px' },
+                    { type: 'double-text' },
+                    { width: '65px', height: '14px' },
+                    { width: '75px', align: 'end', height: '16px' },
+                    { width: '60px', align: 'center', pill: true, height: '22px' },
+                    { width: '70px', align: 'center', pill: true, height: '26px' }
+                  ]}
+                />
+              </tbody>
+            </table>
           </div>
         ) : invoices.length === 0 ? (
           <div className="text-center py-16 bg-gray-50 rounded-lg border border-dashed border-gray-300">

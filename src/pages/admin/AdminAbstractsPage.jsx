@@ -21,6 +21,7 @@ import {
 import { adminApi } from '../../services/api';
 import { downloadBlobFile } from '../../services/api/adminApi';
 import Pagination from '../../components/Common/Pagination';
+import TableSkeleton from '../../components/Common/TableSkeleton';
 
 const AdminAbstractsPage = () => {
   const [abstracts, setAbstracts] = useState([]);
@@ -748,15 +749,20 @@ const AdminAbstractsPage = () => {
               </thead>
               <tbody>
                 {loading ? (
-                  <tr>
-                    <td colSpan={9}>
-                      <div className="table-empty-state py-4 text-center">
-                        <div className="spinner-border text-primary mb-2" style={{ width: '2rem', height: '2rem' }}></div>
-                        <h6 className="table-empty-title mb-1">Loading Research Abstracts...</h6>
-                        <p className="table-empty-desc small text-muted">Fetching submission directory from server</p>
-                      </div>
-                    </td>
-                  </tr>
+                  <TableSkeleton
+                    rows={pageSize > 10 ? 8 : pageSize || 6}
+                    columns={[
+                      { width: '28px', align: 'center', height: '14px' },
+                      { width: '68px', pill: true, height: '22px' },
+                      { type: 'double-text' },
+                      { width: '80%', height: '14px' },
+                      { width: '60px', align: 'center', pill: true, height: '22px' },
+                      { type: 'double-text' },
+                      { width: '55px', align: 'center', pill: true, height: '22px' },
+                      { width: '70px', align: 'center', pill: true, height: '22px' },
+                      { type: 'action', align: 'center', width: '80px' }
+                    ]}
+                  />
                 ) : filteredAbstracts.length === 0 ? (
                   <tr>
                     <td colSpan={9}>
