@@ -10,8 +10,10 @@ const AdminLayout = () => {
 
   // Helper to get clean title based on current route
   const getPageTitle = (path) => {
+    if (path.includes('/admin/registration/')) return 'Registration Details';
     if (path.includes('/admin/registration')) return 'Registration';
     if (path.includes('/admin/abstract')) return 'Abstract';
+    if (path.includes('/admin/users') || path.includes('/admin/user')) return 'Users';
     return 'Dashboard';
   };
 
