@@ -86,10 +86,6 @@ export const adminApi = {
     return apiClient.get(API_ENDPOINTS.ADMIN.GET_ABSTRACT_EMAIL_LOGS(id));
   },
 
-  deleteAbstract: (id) => {
-    return apiClient.delete(API_ENDPOINTS.ADMIN.DELETE_ABSTRACT(id));
-  },
-
   /**
    * 4. Invoices Management
    */
@@ -123,15 +119,7 @@ export const adminApi = {
 
   updateUser: (id, userData) => {
     return apiClient.put(API_ENDPOINTS.ADMIN.UPDATE_USER(id), userData);
-  },
-
-  /**
-   * Delete User by ID
-   * @param {number|string} id
-   */
-  deleteUser: (id) => {
-    return apiClient.delete(API_ENDPOINTS.ADMIN.DELETE_USER(id));
-  },
+  }
 };
 
 export default adminApi;

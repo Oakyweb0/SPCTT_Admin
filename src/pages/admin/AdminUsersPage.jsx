@@ -8,9 +8,7 @@ import {
   LuBuilding2,
   LuShieldCheck,
   LuCalendar,
-  LuTrash2,
   LuPencil,
-  LuTriangleAlert,
   LuCircleAlert,
   LuCheck,
   LuX,
@@ -54,10 +52,6 @@ const AdminUsersPage = () => {
 
   // Notification state
   const [notification, setNotification] = useState(null);
-
-  // Delete state
-  const [deleteTarget, setDeleteTarget] = useState(null);
-  const [isDeleting, setIsDeleting] = useState(false);
 
   // Edit state
   const [editTarget, setEditTarget] = useState(null);
@@ -267,38 +261,6 @@ const AdminUsersPage = () => {
       setEditError(err.response?.data?.message || err.message || 'Failed to update user.');
     } finally {
       setIsUpdating(false);
-      setTimeout(() => {
-        setNotification(null);
-      }, 5000);
-    }
-  };
-
-  const handleDeleteUser = async () => {
-    if (!deleteTarget) return;
-    try {
-      setIsDeleting(true);
-      const res = await adminApi.deleteUser(deleteTarget.id);
-      if (res.status) {
-        setNotification({
-          type: 'success',
-          message: `User ${deleteTarget.name} (ID: #${deleteTarget.id}) and all associated records deleted successfully.`
-        });
-        setDeleteTarget(null);
-        await loadUsers();
-      } else {
-        setNotification({
-          type: 'danger',
-          message: res.message || 'Failed to delete user.'
-        });
-      }
-    } catch (err) {
-      console.error('Error deleting user:', err);
-      setNotification({
-        type: 'danger',
-        message: err.response?.data?.message || err.message || 'Failed to delete user.'
-      });
-    } finally {
-      setIsDeleting(false);
       setTimeout(() => {
         setNotification(null);
       }, 5000);
@@ -790,16 +752,6 @@ const AdminUsersPage = () => {
                         >
                           <LuPencil size={13} />
                         </button>
-                        <button
-                          type="button"
-                          onClick={() => setDeleteTarget(u)}
-                          className="btn btn-sm btn-outline-danger d-inline-flex align-items-center justify-content-center rounded-2 shadow-none"
-                          style={{ width: '30px', height: '30px', padding: 0 }}
-                          title={`Delete ${u.name}`}
-                          aria-label="Delete user"
-                        >
-                          <LuTrash2 size={13} />
-                        </button>
                       </div>
                     </td>
                   </tr>
@@ -1182,76 +1134,6 @@ const AdminUsersPage = () => {
                   </button>
                 </div>
               </form>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Delete User Confirmation Modal */}
-      {deleteTarget && (
-        <div className="modal show d-block" style={{ backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 1050 }} tabIndex="-1">
-          <div className="modal-dialog modal-dialog-centered" style={{ maxWidth: '480px' }}>
-            <div className="modal-content border-0 shadow-lg rounded-4 overflow-hidden bg-white">
-              <div className="modal-header border-bottom py-3 px-4 d-flex justify-content-between align-items-center">
-                <h5 className="modal-title fw-bold text-dark mb-0 fs-6">Delete User Account</h5>
-                <button
-                  type="button"
-                  className="btn-close shadow-none"
-                  onClick={() => setDeleteTarget(null)}
-                  disabled={isDeleting}
-                ></button>
-              </div>
-
-              <div className="modal-body p-4">
-                <p className="text-secondary mb-3">
-                  Are you sure you want to permanently delete this delegate/user account?
-                </p>
-
-                <div className="bg-light p-3 rounded-3 border mb-3">
-                  <div className="d-flex align-items-center gap-3 mb-2">
-                    <div className={`user-avatar-badge ${deleteTarget.role || 'user'}`}>
-                      {getInitials(deleteTarget.name)}
-                    </div>
-                    <div>
-                      <div className="fw-bold text-dark">{deleteTarget.title ? `${deleteTarget.title} ` : ''}{deleteTarget.name}</div>
-                      <div className="text-muted small">{deleteTarget.email}</div>
-                    </div>
-                  </div>
-                  <div className="d-flex gap-2 mt-2">
-                    <span className="badge bg-secondary-subtle text-secondary border px-2 py-1">ID: #{deleteTarget.id}</span>
-                    <span className={`badge ${deleteTarget.role === 'admin' ? 'bg-purple-subtle text-purple border border-purple' :
-                        deleteTarget.role === 'manager' ? 'bg-primary-subtle text-primary border border-primary' :
-                          'bg-info-subtle text-info border border-info'
-                      } px-2 py-1 text-uppercase d-inline-flex align-items-center gap-1`}>
-                      {deleteTarget.role === 'admin' && <LuShieldCheck size={12} />}
-                      <span>{deleteTarget.role || 'user'}</span>
-                    </span>
-                  </div>
-                </div>
-
-                <div className="alert alert-warning border-warning-subtle small mb-0 rounded-3">
-                  <strong>Warning:</strong> This will also remove any registrations, uploaded abstracts, and invoices linked to this user from the database. This action cannot be undone.
-                </div>
-              </div>
-
-              <div className="modal-footer bg-light border-0 py-3 px-4 d-flex justify-content-end gap-2">
-                <button
-                  type="button"
-                  className="btn btn-outline-secondary px-3 rounded-2 fw-medium shadow-none"
-                  onClick={() => setDeleteTarget(null)}
-                  disabled={isDeleting}
-                >
-                  Cancel
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-danger px-4 rounded-2 fw-medium shadow-none"
-                  onClick={handleDeleteUser}
-                  disabled={isDeleting}
-                >
-                  {isDeleting ? 'Deleting...' : 'Confirm Delete'}
-                </button>
-              </div>
             </div>
           </div>
         </div>

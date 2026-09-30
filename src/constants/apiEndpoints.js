@@ -59,7 +59,6 @@ export const API_ENDPOINTS = {
     SUBMIT: '/abstracts',
     MY_ABSTRACTS: '/abstracts/my',
     BY_ID: (id) => `/abstracts/${id}`,
-    DELETE: (id) => `/abstracts/${id}`,
   },
 
   // Admin Operations
@@ -74,14 +73,12 @@ export const API_ENDPOINTS = {
     UPDATE_ABSTRACT_STATUS: (id) => `/admin/abstracts/${id}/status`,
     SEND_ABSTRACT_EMAIL: (id) => `/admin/abstracts/${id}/send-email`,
     GET_ABSTRACT_EMAIL_LOGS: (id) => `/admin/abstracts/${id}/email-logs`,
-    DELETE_ABSTRACT: (id) => `/admin/abstracts/${id}`,
     INVOICES: '/admin/invoices',
     USERS: '/admin/users',
     EXPORT_USERS: '/admin/users/export',
     CREATE_USER: '/admin/users',
     USER_BY_ID: (id) => `/admin/users/${id}`,
     UPDATE_USER: (id) => `/admin/users/${id}`,
-    DELETE_USER: (id) => `/admin/users/${id}`,
   },
 };
 
